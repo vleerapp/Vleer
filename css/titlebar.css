@@ -4,9 +4,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #16151a;
+  background-color: #0d0d0f;
   color: #fff;
-  padding: 5px;
+  position: fixed;
+  width: 100%;
 }
 
 .titlebar-drag {
@@ -18,20 +19,8 @@
 .titlebar-close,
 .titlebar-minimize,
 .titlebar-maximize {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   margin-right: 10px;
   -webkit-app-region: no-drag;
-}
-
-.titlebar-close {
-  background-image: url('close.svg');
-}
-
-.titlebar-minimize {
-  background-image: url('minimize.svg');
-}
-
-.titlebar-maximize {
-  background-image: url('maximize.svg');
 }

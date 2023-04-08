@@ -1,6 +1,7 @@
 <template>
   <div>
-    test2
+    <sidebar />
+    songs
   </div>
 </template>
 
