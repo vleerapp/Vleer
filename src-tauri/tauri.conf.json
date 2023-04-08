@@ -56,10 +56,12 @@
     "windows": [
       {
         "fullscreen": false,
+        "maximized": true,
         "height": 720,
         "resizable": true,
-        "title": "Music Player",
         "width": 1280,
+        "minWidth": 1000,
+        "minHeight": 600,
         "decorations": false
       }
     ]
