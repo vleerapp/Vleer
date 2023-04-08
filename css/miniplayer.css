@@ -1,0 +1,32 @@
+@font-face {
+  font-family: Inter;
+  src: url("../fonts/Inter.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  /*=======COLORS===========*/
+  --bg: #16151a;
+  --fg: #19181d;
+  --e: #1c1b21;
+  --tx: #85868b;
+  --txb: #ffffff;
+  --t: #e06c75;
+  --search: #1e1d23;
+}
+
+#miniplayer {
+  background-color: var(--bg);
+  border-radius: 24px;
+  width: 376px;
+  overflow: auto;
+}
+
+.mp-info {
+  margin: 22px;
+}
+
+.mp-img {
+  width: 332px;
+  border-radius: 14px;
+}

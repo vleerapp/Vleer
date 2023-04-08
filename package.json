@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "music-player",
   "private": true,
   "scripts": {
     "tauri": "tauri",
@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.2.3",
     "nuxt": "^3.3.3"
   }
 }

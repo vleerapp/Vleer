@@ -1,0 +1,82 @@
+@font-face {
+  font-family: Inter;
+  src: url("../fonts/Inter.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  /*=======COLORS===========*/
+  --bg: #16151a;
+  --fg: #19181d;
+  --e: #1c1b21;
+  --tx: #85868b;
+  --txb: #ffffff;
+  --t: #e06c75;
+  --search: #1e1d23;
+}
+
+#main-page {
+  height: calc(100% - 44px);
+  width: calc(100% - 366px);
+  left: 344px;
+  position: fixed;
+  top: 22px;
+  padding: 18px;
+  transition: 0.2s;
+  overflow: hidden;
+}
+
+.search {
+  width: 325px;
+  height: 40px;
+  background-color: var(--search);
+  border: 1px solid #26252b;
+  border-radius: 10px;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding-inline: 10px;
+  color: var(--tx);
+  outline: none;
+}
+
+.tab-description {
+  font-size: 40px;
+  color: var(--txb);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+#main {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.recomendations {
+  display: grid;
+  width: 800px;
+  display: grid;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  margin: 10px;
+  margin-inline: 0;
+}
+
+.rec-image {
+  width: 140px;
+  border-radius: 25px;
+  -webkit-box-shadow: 0px 21px 23px -19px #000000;
+  box-shadow: 0px 21px 23px -19px #000000;
+}
+
+.rec-name {
+  color: white;
+  font-size: 18px;
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+.rec-artist {
+  font-size: 14px;
+}

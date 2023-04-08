@@ -1,0 +1,144 @@
+@font-face {
+  font-family: Inter;
+  src: url("../fonts/Inter.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  /*=======COLORS===========*/
+  --bg: #16151a;
+  --fg: #19181d;
+  --e: #1c1b21;
+  --tx: #85868b;
+  --txb: #ffffff;
+  --t: #e06c75;
+  --search: #1e1d23;
+}
+
+#player {
+  background-color: var(--fg);
+  border-radius: 24px;
+  position: absolute;
+  height: 124px;
+  overflow: hidden;
+  bottom: 0;
+  margin: 22px;
+  margin-bottom: 22px;
+  width: calc(100% - 44px);
+  left: 0;
+  display: grid;
+  grid-template-columns: minmax(260px, 20%) minmax(570px, 60%) minmax(260px, 20%);
+  padding: 17px;
+}
+
+.song-info {
+  display: inline-grid;
+  grid-template-columns: 90px calc(100% - 90px);
+  grid-template-rows: 100%;
+  align-items: center;
+}
+
+.song-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bgsrc) no-repeat;
+  background-size: 90px;
+}
+
+.text-info {
+  padding-left: 20px;
+}
+
+.name {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--txb);
+}
+
+.artist {
+  font-size: 13px;
+}
+
+.progress-controlls {
+  display: grid;
+  grid-template-columns: 30% 30% 30%;
+  place-items: center;
+  height: 100%;
+}
+
+.progress-controlls>img {
+  width: 55px;
+  padding: 10px;
+}
+
+.progressbar {
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  align-items: center;
+  height: 100%;
+  padding-inline: 20px;
+}
+
+.progress-time {
+  justify-self: end;
+  margin-right: 10px;
+}
+
+.time-left {
+  justify-self: start;
+  margin-left: 10px;
+}
+
+.progressbar>.bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--tx);
+  border-radius: 10px;
+}
+
+.progressbar>.bar>.bar-filled {
+  height: 6px;
+  background-color: var(--txb);
+  border-radius: 10px;
+}
+
+.sound-controlls {
+  display: grid;
+  grid-template-columns: 20% 60% 20%;
+  align-items: center;
+  height: 100%;
+}
+
+.sound-controlls>.sound-bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--tx);
+  border-radius: 10px;
+}
+
+.sound-controlls>.sound-bar>.sound-bar-filled {
+  height: 6px;
+  background-color: var(--txb);
+  border-radius: 10px;
+}
+
+.less {
+  justify-self: end;
+  margin-right: 5px;
+}
+
+.more {
+  justify-self: start;
+  margin-left: 5px;
+}
+
+.credit_link {
+  text-decoration: underline;
+}
+
+.controlls {
+  display: grid;
+  grid-template-columns: minmax(170px, 20%) minmax(400px, 80%);
+}
