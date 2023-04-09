@@ -79,7 +79,7 @@
   #sidenav_tabs {
     position: absolute;
     width: 100%;
-    top: 70px;
+    top: 130px;
     display: flex;
     flex-direction: column;
     justify-content: center;
