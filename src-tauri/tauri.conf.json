@@ -65,6 +65,7 @@
         "minHeight": 600,
         "decorations": false
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }
