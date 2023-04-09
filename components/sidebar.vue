@@ -37,4 +37,5 @@
 
 <style>
 @import '~/css/sidebar.css';
+@import '~/css/media.css';
 </style>

@@ -88,7 +88,7 @@
 
   .tab-link {
     grid-template-columns: 100%;
-    place-items: start;
+    place-items: center;
   }
 
   .tab_text {
@@ -108,10 +108,22 @@
   .sidebar {
     position: fixed;
     background-color: var(--fg);
-    width: 100px;
+    width: 80px;
     height: calc(100% - 44px);
     margin: 22px;
     border-radius: 12px;
+  }
+
+  .tab_icon {
+    margin-left: 0;
+  }
+
+  .settings {
+    display: none;
+  }
+
+  .minibar {
+    margin-left: 20px;
   }
 
   #main-page {
