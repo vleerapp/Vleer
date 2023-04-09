@@ -1,65 +1,23 @@
 .titlebar {
-  height: 32px;
-  -webkit-app-region: drag;
+  height: 30px;
+  background: #329ea3;
+  user-select: none;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #0d0d0f;
-  color: #fff;
+  justify-content: flex-end;
   position: fixed;
-  width: 100%;
-}
-
-.titlebar-drag {
-  width: 100%;
-  height: 100%;
-  -webkit-app-region: drag;
-}
-
-.titlebar-close,
-.titlebar-minimize,
-.titlebar-maximize {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
-  -webkit-app-region: no-drag;
-}
-
-/* --------------------------- */
-
-.titlebar {
-  height: 32px;
-  -webkit-app-region: drag;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #252525;
-  color: #fff;
-}
-
-.titlebar-drag {
-  width: 100%;
-  height: 100%;
-  -webkit-app-region: drag;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .titlebar-button {
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
-  -webkit-app-region: no-drag;
-  background-repeat: no-repeat;
-  background-position: center center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
 }
 
-#titlebar-close {
-  background-image: url('../assets/svg/linear/close.svg');
-}
-
-#titlebar-minimize {
-  background-image: url('minimize.svg');
-}
-
-#titlebar-maximize {
-  background-image: url('maximize.svg');
+.titlebar-button:hover {
+  background: #5bbec3;
 }
