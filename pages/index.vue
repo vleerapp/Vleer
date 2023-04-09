@@ -12,5 +12,4 @@ export default {
 
 <style>
 @import '~/css/style.css';
-@import '~/css/titlebar.css';
 </style>

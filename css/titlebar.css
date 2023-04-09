@@ -24,3 +24,42 @@
   margin-right: 10px;
   -webkit-app-region: no-drag;
 }
+
+/* --------------------------- */
+
+.titlebar {
+  height: 32px;
+  -webkit-app-region: drag;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #252525;
+  color: #fff;
+}
+
+.titlebar-drag {
+  width: 100%;
+  height: 100%;
+  -webkit-app-region: drag;
+}
+
+.titlebar-button {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  -webkit-app-region: no-drag;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+#titlebar-close {
+  background-image: url('../assets/svg/linear/close.svg');
+}
+
+#titlebar-minimize {
+  background-image: url('minimize.svg');
+}
+
+#titlebar-maximize {
+  background-image: url('maximize.svg');
+}
