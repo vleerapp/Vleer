@@ -1,5 +1,5 @@
 # Music player
-Tauri Application for playing music trough youtube.
+Free and opensource Music App as replacement for Spotify, Apple Music, etc. 
 
 **IMPORTANT: This project is in the early development stage**
 
