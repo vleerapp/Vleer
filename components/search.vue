@@ -1,6 +1,19 @@
 <template>
-  <input type="text" class="search" placeholder="Search" />
+  <input type="text" class="search" placeholder="Search" @input="handleInputChange" />
 </template>
+
+<script>
+export default {
+  methods: {
+    handleInputChange(event) {
+      const inputValue = event.target.value;
+      if (inputValue) {
+        this.$router.push(`/search?q=${inputValue}`);
+      }
+    }
+  }
+};
+</script>
 
 <style>
 .search {
