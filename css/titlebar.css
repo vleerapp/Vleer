@@ -20,6 +20,13 @@
   top: 50%;
   transform: translateY(-50%);
   fill: white;
+  width: 28px;
+  height: 26px;
+  border-radius: 3px;
+}
+
+.titlebar-button:last-child {
+  margin-right: 6px;
 }
 
 .titlebar-button:hover {
