@@ -9,25 +9,25 @@
     <div id="sidenav_tabs">
       <div class="tab">
         <nuxt-link to="/" class="tab-link">
-          <img src="../assets/svg/bold/home-2.svg" class="tab_icon">
+          <div style="--img: url('/_nuxt/assets/svg/linear/home-2.svg');" class="tab_icon home_icon"></div>
           <span class="tab_text">Home</span>
         </nuxt-link>
       </div>
       <div class="tab">
         <nuxt-link to="/songs" class="tab-link">
-          <img src="../assets/svg/linear/music.svg" class="tab_icon">
+          <div style="--img: url('/_nuxt/assets/svg/linear/music.svg');" class="tab_icon songs_icon"></div>
           <span class="tab_text">Songs</span>
         </nuxt-link>
       </div>
       <div class="tab">
         <nuxt-link to="/playlists" class="tab-link">
-          <img src="../assets/svg/linear/note.svg" class="tab_icon">
+          <div style="--img: url('/_nuxt/assets/svg/linear/note.svg');" class="tab_icon playlists_icon"></div>
           <span class="tab_text">Playlists</span>
         </nuxt-link>
       </div>
       <div class="tab">
         <nuxt-link to="/library" class="tab-link">
-          <img src="../assets/svg/linear/video-square.svg" class="tab_icon">
+          <div style="--img: url('/_nuxt/assets/svg/linear/video-square.svg');" class="tab_icon library_icon"></div>
           <span class="tab_text">Library</span>
         </nuxt-link>
       </div>
