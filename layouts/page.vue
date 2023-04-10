@@ -7,6 +7,9 @@
 </template>
 
 <style>
+body {
+  background-color: transparent;
+}
 .content {
   position: absolute;
   top: 40px;

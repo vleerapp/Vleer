@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <NuxtLayout>
       <titlebar />
       <NuxtPage />
@@ -22,5 +22,16 @@
 
 body {
   overflow: hidden;
+  background-color: transparent !important;
+}
+#app {
+  background-color: var(--bg);
+  height: 100vh;
+  width: 100vw;
+  border-radius: 6px;
 }
 </style>
+
+<script>
+
+</script>
