@@ -15,10 +15,17 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 30px;
-  height: 30px;
+  vertical-align: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  fill: white;
 }
 
 .titlebar-button:hover {
-  background: #5bbec3;
+  background: #303030;
+}
+
+#titlebar-close:hover {
+  background-color: var(--t);
 }
