@@ -4,19 +4,8 @@
   font-display: swap;
 }
 
-:root {
-  /*=======COLORS===========*/
-  --bg: #16151a;
-  --fg: #19181d;
-  --e: #1c1b21;
-  --tx: #85868b;
-  --txb: #ffffff;
-  --t: #e06c75;
-  --search: #1e1d23;
-}
-
 .sidebar {
-  position: fixed;
+  position: absolute;
   background-color: var(--fg);
   width: 300px;
   height: calc(100% - 44px);
@@ -73,7 +62,6 @@
 
 .tab {
   height: 60px;
-  padding: 10px;
   padding-inline: 0px;
   margin-inline: 10px;
   cursor: pointer;
