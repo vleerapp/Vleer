@@ -10,33 +10,38 @@
 
 <script>
 export default {
-  computed: {
-    searchQuery() {
-      return this.$route.query.q || '';
-    },
-    searchResults() {
-      // Perform search based on searchQuery and return the results
-      // This is just a placeholder code. You'll need to implement the search functionality
-      // that fits your app's needs.
-      return ['Result 1', 'Result 2', 'Result 3'];
-    },
-    formattedSearchQuery() {
-      if (this.searchQuery === '') {
-        return ' ';
-      } else {
-        return `"${this.searchQuery}"`;
-      }
+  data() {
+    return {
+      searchQuery: this.$route.query.q || '',
+      searchResults: []
     }
   },
+  created() {
+    this.search();
+  },
   watch: {
-    searchQuery: function (newQuery) {
-      this.$router.push({ path: '/search', query: { q: newQuery } });
+    '$route.query.q': function () {
+      this.searchQuery = this.$route.query.q || '';
+      this.search();
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.$refs.searchInput.focus();
     });
+  },
+  computed: {
+    formattedSearchQuery() {
+      return this.searchQuery ? this.searchQuery.charAt(0).toUpperCase() + this.searchQuery.slice(1) : '';
+    }
+  },
+  methods: {
+    search() {
+      // Perform search based on searchQuery and update the searchResults array
+      // This is just a placeholder code. You'll need to implement the search functionality
+      // that fits your app's needs.
+      this.searchResults = ['Result 1', 'Result 2', 'Result 3'];
+    }
   }
 };
 </script>
