@@ -7,12 +7,13 @@
 :root {
   /*=======COLORS===========*/
   --bg: #16151a;
-  --fg: #19181d;
+  --sidebar: #19181d;
   --e: #1c1b21;
-  --tx: #85868b;
-  --txb: #ffffff;
+  --dtx: #85868b;
+  --tx: #ffffff;
   --t: #e06c75;
   --search: #1e1d23;
+  --border: #26252b;
 }
 
 * {
@@ -35,4 +36,8 @@ body {
   font-size: 16px;
   user-select: none;
   background-color: var(--bg);
+}
+
+.page-title {
+  color: var(--tx);
 }

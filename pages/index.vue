@@ -1,7 +1,7 @@
 <template>
-  <div class="page">
-    <sidebar />
-  </div>
+  <NuxtLayout name="page">
+    <h1 class="page-title">Home</h1>
+  </NuxtLayout>
 </template>
 
 <script lang="js">
