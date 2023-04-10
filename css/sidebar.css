@@ -81,12 +81,7 @@
   place-items: center;
   height: 100%;
   display: flex;
-}
-
-.tab-icon-div {
-  display: grid;
-  place-items: center;
-  height: 100%;
+  width: 100%;
 }
 
 .tab_text {
@@ -103,14 +98,14 @@
   background-position: 50% 50%;
   background-repeat: no-repeat;
   height: 30px;
-  width: 30px;
+  width: 100%;
 }
 
 .tab_text {
   color: var(--dtx);
 }
 
-.router-link-active.router-link-exact-active.tab-link {
+.tab:has(.router-link-active.router-link-exact-active.tab-link) {
   background-color: #1e1d23;
   border-radius: 18px;
 }
