@@ -118,6 +118,10 @@
     margin-left: 0;
   }
 
+  .tab_icon {
+    width: 100%;
+  }
+
   .settings {
     display: none;
   }
