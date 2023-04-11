@@ -4,7 +4,7 @@
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../dist"
+    "distDir": "../.output"
   },
   "package": {
     "productName": "music-player",
@@ -13,7 +13,36 @@
   "tauri": {
     "allowlist": {
       "window": {
-        "all": true
+        "all": true,
+        "create": true,
+        "center": true,
+        "requestUserAttention": true,
+        "setResizable": true,
+        "setTitle": true,
+        "maximize": true,
+        "unmaximize": true,
+        "minimize": true,
+        "unminimize": true,
+        "show": true,
+        "hide": true,
+        "close": true,
+        "setDecorations": true,
+        "setAlwaysOnTop": true,
+        "setSize": true,
+        "setMinSize": true,
+        "setMaxSize": true,
+        "setPosition": true,
+        "setFullscreen": true,
+        "setFocus": true,
+        "setIcon": true,
+        "setSkipTaskbar": true,
+        "setCursorGrab": true,
+        "setCursorVisible": true,
+        "setCursorIcon": true,
+        "setCursorPosition": true,
+        "setIgnoreCursorEvents": true,
+        "startDragging": true,
+        "print": true
       }
     },
     "bundle": {
@@ -65,8 +94,8 @@
         "minWidth": 1000,
         "minHeight": 600,
         "decorations": false,
-        "transparent": true,
-        "center": true
+        "transparent": false,
+        "maximized": true
       }
     ],
     "macOSPrivateApi": true
