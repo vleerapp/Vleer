@@ -5,7 +5,7 @@
 }
 
 .sidebar {
-  position: absolute;
+  position: fixed;
   background-color: var(--fg);
   width: 300px;
   height: calc(100% - 44px);
@@ -57,7 +57,7 @@
 #sidenav_tabs {
   position: absolute;
   width: 100%;
-  top: 158px;
+  top: 130px;
 }
 
 .tab {
@@ -110,19 +110,22 @@
   border-radius: 18px;
 }
 
-.router-link-active.router-link-exact-active.tab-link > .tab_text {
+.router-link-active.router-link-exact-active.tab-link>.tab_text {
   color: white;
 }
 
-.router-link-active.router-link-exact-active.tab-link > .home_icon {
+.router-link-active.router-link-exact-active.tab-link>.home_icon {
   --img: url('/_nuxt/assets/svg/bold/home-2.svg') !important;
 }
-.router-link-active.router-link-exact-active.tab-link > .songs_icon {
+
+.router-link-active.router-link-exact-active.tab-link>.songs_icon {
   --img: url('/_nuxt/assets/svg/bold/music.svg') !important;
 }
-.router-link-active.router-link-exact-active.tab-link > .playlists_icon {
+
+.router-link-active.router-link-exact-active.tab-link>.playlists_icon {
   --img: url('/_nuxt/assets/svg/bold/note.svg') !important;
 }
-.router-link-active.router-link-exact-active.tab-link > .library_icon {
+
+.router-link-active.router-link-exact-active.tab-link>.library_icon {
   --img: url('/_nuxt/assets/svg/bold/video-square.svg') !important;
 }
