@@ -5,6 +5,7 @@
 }
 
 .sidebar {
+  z-index: 2;
   position: absolute;
   background-color: var(--fg);
   width: 300px;

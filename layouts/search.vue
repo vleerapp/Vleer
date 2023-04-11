@@ -3,12 +3,19 @@
   <div class="content">
     <slot />
   </div>
+  <div class="bg"></div>
 </template>
 
 <style>
+body {
+  position: relative;
+}
+.sidebar {
+  position: fixed;
+}
 .content {
   position: absolute;
-  top: 40px;
+  top: 45px;
   left: 372px;
   transition: .2s;
 }
