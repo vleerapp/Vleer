@@ -7,8 +7,7 @@
       class="search"
       placeholder="Search"
     />
-    <h1>Search Results for "{{ formattedSearchQuery }}"</h1>
-    <br>
+    <div style="display: none;">{{ formattedSearchQuery }}</div>
     <ul>
       <li class="searchResults" v-for="(result, index) in searchResults" :key="index">
         <div class="searchResult">
@@ -24,7 +23,6 @@
 
 <script>
 const itunes = "https://itunes.apple.com/search?";
-const itunesLookup = "https://itunes.apple.com/lookup?";
 
 const apiKey = "AIzaSyA5tnrbbwA_Z-ckEq-E5vgQZ7IvcDojQ_k";
 const maxResults = 10;
@@ -129,7 +127,7 @@ function resizeImage(url, size) {
 function get(term, country = "CH", limit = 10, explicit = true) {
   const apiUrl = `${itunes}term=${term}&entity=song&country=${country}&limit=${limit}&explicit=${
     explicit ? "Yes" : "No"
-  }`;
+  }&attribute=popularityTerm`;
   return fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
