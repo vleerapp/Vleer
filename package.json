@@ -4,6 +4,7 @@
   "scripts": {
     "nuxt": "nuxt",
     "tauri": "tauri",
+    "nuxi": "nuxi",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
@@ -12,9 +13,10 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.2.3",
-    "nuxt": "^3.3.3"
+    "nuxt": "^3.4.0"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.2.0"
+    "@tauri-apps/api": "^1.2.0",
+    "nuxi": "^3.4.0"
   }
 }
