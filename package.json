@@ -2,6 +2,7 @@
   "name": "music-player",
   "private": true,
   "scripts": {
+    "nuxt": "nuxt",
     "tauri": "tauri",
     "build": "nuxt build",
     "dev": "nuxt dev",
