@@ -1,10 +1,11 @@
 <template>
-  <div id="app">
+  <div>
     <NuxtLayout>
       <titlebar />
       <NuxtPage />
     </NuxtLayout>
   </div>
+  <div id="app"></div>
 </template>
 
 <style>
@@ -21,14 +22,20 @@
 }
 
 body {
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: transparent !important;
+  position: relative;
+}
+::-webkit-scrollbar {
+  display: none;
 }
 #app {
   background-color: var(--bg);
+  position: fixed;
   height: 100vh;
   width: 100vw;
   border-radius: 6px;
+  z-index: -1;
 }
 </style>
 

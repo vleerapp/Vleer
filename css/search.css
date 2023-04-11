@@ -1,0 +1,69 @@
+@font-face {
+  font-family: Inter;
+  src: url("../fonts/Inter.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  /*=======COLORS===========*/
+  --bg: #16151a;
+  --sidebar: #19181d;
+  --e: #1c1b21;
+  --dtx: #85868b;
+  --tx: #ffffff;
+  --t: #e06c75;
+  --search: #1e1d23;
+  --border: #26252b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.searchResults {
+  overflow: hidden;
+  background-color: var(--search);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.searchResult {
+  height: 60px;
+  display: grid;
+  grid-template-columns: 70px calc(100% - 70px);
+  grid-template-rows: 50% 50%;
+}
+
+.searchResultCover {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  width: 60px;
+  border-radius: 10px;
+}
+
+.searchResultName {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  align-self: end;
+}
+
+.searchResultLenght {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  align-self: end;
+  justify-self: center;
+  color: var(--dtx);
+  margin-right: 30%;
+  font-size: 14px;
+}
+
+.searchResultArtist {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  color: var(--dtx);
+  font-size: 14px;
+}

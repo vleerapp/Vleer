@@ -6,6 +6,8 @@
 
 .sidebar {
   position: fixed;
+  z-index: 2;
+  position: absolute;
   background-color: var(--fg);
   width: 300px;
   height: calc(100% - 44px);
