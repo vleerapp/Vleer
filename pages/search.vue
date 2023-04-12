@@ -1,15 +1,11 @@
 <template>
   <NuxtLayout name="search">
-    <input
-      type="text"
-      v-model="searchQuery"
-      ref="searchInput"
-      class="search"
-      placeholder="Search"
-    />
-    <div style="display: none;">{{ formattedSearchQuery }}</div>
+    <input type="text" v-model="searchQuery" ref="searchInput" class="search" placeholder="Search" />
+    <h1 style="display: none;">Search Results for "{{ formattedSearchQuery }}"</h1>
+    <br>
     <ul>
-      <li class="searchResults" v-for="(result, index) in searchResults" :key="index">
+      <li class="searchResults" :class="index === 0 ? 'bigResult' : ''" v-for="(result, index) in searchResults"
+        :key="index">
         <div class="searchResult">
           <img class="searchResultCover" :src="result.coverURL" />
           <div class="searchResultName"> {{ result.name }}</div>
@@ -23,6 +19,7 @@
 
 <script>
 const itunes = "https://itunes.apple.com/search?";
+const itunesLookup = "https://itunes.apple.com/lookup?";
 
 const apiKey = "AIzaSyA5tnrbbwA_Z-ckEq-E5vgQZ7IvcDojQ_k";
 const maxResults = 10;
@@ -32,7 +29,7 @@ class Song {
     if ("results" in json) {
       try {
         json = json["results"][0];
-      } catch {}
+      } catch { }
     }
     this.kind = json["kind"];
     this.artistName = json["artistName"];
@@ -114,7 +111,7 @@ class Song {
     return get(this.trackName, country, limit, explicit);
   }
 
-  videoURL() {}
+  videoURL() { }
 }
 
 function resizeImage(url, size) {
@@ -125,9 +122,8 @@ function resizeImage(url, size) {
 }
 
 function get(term, country = "CH", limit = 10, explicit = true) {
-  const apiUrl = `${itunes}term=${term}&entity=song&country=${country}&limit=${limit}&explicit=${
-    explicit ? "Yes" : "No"
-  }&attribute=popularityTerm`;
+  const apiUrl = `${itunes}term=${term}&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
+    }`;
   return fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
@@ -171,7 +167,7 @@ export default {
             name: (item.getName().length > 20) ? (item.getName().slice(0, 20).at(-1) == " ") ? item.getName().slice(0, 19) + '...' : item.getName().slice(0, 20) + '...' : item.getName(),
             artist: (item.getArtistName().length > 30) ? (item.getArtistName().slice(0, 30).at(-1) == " ") ? item.getArtistName().slice(0, 29) + '...' : item.getArtistName().slice(0, 30) + '...' : item.getArtistName(),
             lenght: item.getLengthNormal(),
-            coverURL: item.getImage(),
+            coverURL: item.getResizedImage(512),
           });
         });
       });
@@ -179,7 +175,7 @@ export default {
     },
   },
   methods: {
-    search() {},
+    search() { },
   },
 };
 </script>
