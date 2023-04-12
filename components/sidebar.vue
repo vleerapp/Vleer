@@ -33,7 +33,16 @@
       </div>
     </div>
   </div>
+  <div style="--arrow: url('/_nuxt/assets/svg/linear/arrow-close.svg');" onclick="toggleSidebar();"
+    class="minimizeSidebar" alt=""></div>
 </template>
+
+<script>
+function toggleSidebar() {
+  var element = document.getElementById("sidebar");
+  element.classList.toggle("minimized");
+}
+</script>
 
 <style>
 @import '~/css/sidebar.css';

@@ -16,6 +16,31 @@
   transition: .2s;
 }
 
+.minimizeSidebar {
+  position: absolute;
+  top: 60px;
+  left: 282px;
+  transform: translate(-50%, -50%);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: 0.2s;
+  background-image: var(--arrow);
+  height: 40px;
+  width: 40px;
+  background-size: 28px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  z-index: 2;
+}
+
+.minimizeSidebar:hover {
+  background-color: var(--search);
+}
+
+.minimizeSidebar .minimized {
+  --arrow: url('/_nuxt/assets/svg/linear/arrow-open.svg');
+}
+
 .minibar {
   display: flex;
   flex-direction: row;
@@ -40,20 +65,6 @@
   border-radius: 100px;
   cursor: pointer;
   transition: .3s;
-}
-
-.minimizeSidebar {
-  float: right;
-  margin-right: 20px;
-  height: 40px;
-  padding: 10px;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.minimizeSidebar:hover {
-  background-color: var(--search);
 }
 
 #sidenav_tabs {
