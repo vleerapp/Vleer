@@ -1,15 +1,9 @@
 <template>
   <NuxtLayout name="search">
-    <input
-      type="text"
-      v-model="searchQuery"
-      ref="searchInput"
-      class="search"
-      placeholder="Search"
-    />
-    <h1 style="display: none">
+    <input type="text" v-model="searchQuery" ref="searchInput" class="search" placeholder="Search" />
+    <div id="test" style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
-    </h1>
+    </div>
     <br />
     <ul>
       <li
@@ -23,7 +17,7 @@
           <div class="searchResultName">{{ result.name }}</div>
           <div class="searchResultLenght">{{ result.lenght }}</div>
           <div class="searchResultArtist">{{ result.artist }}</div>
-          <div class="searchResultIcon"><img src="/_nuxt/assets/svg/bold/play.svg" class="searchResultIMG"></div>
+          <div class="searchResultPlay"><img src="/_nuxt/assets/svg/bold/play.svg" class="searchResultIMG"></div>
         </div>
       </li>
     </ul>
@@ -42,7 +36,7 @@ class Song {
     if ("results" in json) {
       try {
         json = json["results"][0];
-      } catch {}
+      } catch { }
     }
     this.kind = json["kind"];
     this.artistName = json["artistName"];
@@ -124,7 +118,7 @@ class Song {
     return get(this.trackName, country, limit, explicit);
   }
 
-  videoURL() {}
+  videoURL() { }
 }
 
 function resizeImage(url, size) {
@@ -141,11 +135,10 @@ function get(term, country = "CH", limit = 50, explicit = true) {
   if (oldTerm != term) console.log("%cTerm Changed", 'color: coral');
   console.log("%cTerm: %c" + term, '', 'color: green');
 
-  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
-    explicit ? "Yes" : "No"
-  }&attribute=genreIndex`;
+  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
+    }&attribute=genreIndex`;
 
-  console.log('%cSearch URL: %c'+apiUrl, '', 'color: gold');
+  console.log('%cSearch URL: %c' + apiUrl, '', 'color: gold');
 
   return fetch(apiUrl)
     .then((response) => response.json())
@@ -155,7 +148,7 @@ function get(term, country = "CH", limit = 50, explicit = true) {
         var song = new Song(item);
         songList.push(song);
       });
-      console.log('%cFirst Result: %c'+songList[0].getName(), '', 'color: lightblue');
+      console.log('%cFirst Result: %c' + songList[0].getName(), '', 'color: lightblue');
       return songList;
     });
 }
@@ -184,6 +177,35 @@ export default {
   },
   computed: {
     formattedSearchQuery() {
+      if (this.searchQuery === "Panda") {
+        for (let i = 0; i < 7; i++) {
+          const panda = document.createElement("img");
+          panda.src = "https://media.istockphoto.com/id/1195743934/vector/cute-panda-character-vector-design.jpg?s=612x612&w=0&k=20&c=J3ht-bKADmsXvF6gFIleRtfJ6NGhXnfIsrwlsUF8w80=";
+
+          panda.style.position = "absolute";
+          panda.style.left = `${Math.floor(Math.random() * window.innerWidth)}px`;
+          panda.style.top = `${Math.floor(Math.random() * window.innerHeight)}px`;
+
+          document.getElementById("test").appendChild(panda);
+
+          let rotate = 0;
+          let posX = panda.offsetLeft;
+          let posY = panda.offsetTop;
+
+          const animationFrame = window.requestAnimationFrame(animatePanda);
+
+          function animatePanda() {
+            rotate++;
+            posX += Math.cos(rotate * Math.PI / 180) * 3;
+            posY += Math.sin(rotate * Math.PI / 180) * 3;
+            panda.style.transform = `rotate(${rotate}deg)`;
+            panda.style.left = `${posX}px`;
+            panda.style.top = `${posY}px`;
+
+            window.requestAnimationFrame(animatePanda);
+          }
+        }
+      }
       get(this.searchQuery).then((songList) => {
         this.searchResults = [];
         songList.forEach((item, index) => {
@@ -228,7 +250,7 @@ export default {
     },
   },
   methods: {
-    search() {},
+    search() { },
   },
 };
 </script>
