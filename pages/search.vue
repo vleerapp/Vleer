@@ -23,7 +23,7 @@
           <div class="searchResultName">{{ result.name }}</div>
           <div class="searchResultLenght">{{ result.lenght }}</div>
           <div class="searchResultArtist">{{ result.artist }}</div>
-          <div class="searchResultIcon"><img src="/_nuxt/assets/svg/bold/play.svg" class="searchResultIMG"></div>
+          <div class="searchResultPlay"><img src="/_nuxt/assets/svg/bold/play.svg" class="searchResultIMG"></div>
         </div>
       </li>
     </ul>
