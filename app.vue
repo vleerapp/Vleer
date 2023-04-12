@@ -27,8 +27,24 @@ body {
   position: relative;
 }
 ::-webkit-scrollbar {
-  display: none;
+  width: 8px;
 }
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 3px;
+  margin-top: 45px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sidebar);
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--search);
+}
+
 #app {
   background-color: var(--bg);
   position: fixed;

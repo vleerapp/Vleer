@@ -1,16 +1,29 @@
 <template>
   <NuxtLayout name="search">
-    <input type="text" v-model="searchQuery" ref="searchInput" class="search" placeholder="Search" />
-    <h1 style="display: none;">Search Results for "{{ formattedSearchQuery }}"</h1>
-    <br>
+    <input
+      type="text"
+      v-model="searchQuery"
+      ref="searchInput"
+      class="search"
+      placeholder="Search"
+    />
+    <h1 style="display: none">
+      Search Results for "{{ formattedSearchQuery }}"
+    </h1>
+    <br />
     <ul>
-      <li class="searchResults" :class="index === 0 ? 'bigResult' : ''" v-for="(result, index) in searchResults"
-        :key="index">
+      <li
+      class="searchResults"
+      :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'GradientGPT' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize')"
+        v-for="(result, index) in searchResults"
+        :key="index"
+      >
         <div class="searchResult">
           <img class="searchResultCover" :src="result.coverURL" />
-          <div class="searchResultName"> {{ result.name }}</div>
-          <div class="searchResultLenght"> {{ result.lenght }}</div>
+          <div class="searchResultName">{{ result.name }}</div>
+          <div class="searchResultLenght">{{ result.lenght }}</div>
           <div class="searchResultArtist">{{ result.artist }}</div>
+          <div class="searchResultIcon"><img src="/_nuxt/assets/svg/bold/play.svg" class="searchResultIMG"></div>
         </div>
       </li>
     </ul>
@@ -29,7 +42,7 @@ class Song {
     if ("results" in json) {
       try {
         json = json["results"][0];
-      } catch { }
+      } catch {}
     }
     this.kind = json["kind"];
     this.artistName = json["artistName"];
@@ -121,10 +134,19 @@ function resizeImage(url, size) {
   return url;
 }
 
-function get(term, country = "CH", limit = 100, explicit = true) {
+var oldTerm = ""
+
+function get(term, country = "CH", limit = 50, explicit = true) {
+  term = term.replace(/\s+/g, '+');
+  if (oldTerm != term) console.log("%cTerm Changed", 'color: coral');
+  console.log("%cTerm: %c" + term, '', 'color: green');
+
   const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
     explicit ? "Yes" : "No"
-  }&attribute=ratingIndex`;
+  }&attribute=genreIndex`;
+
+  console.log('%cSearch URL: %c'+apiUrl, '', 'color: gold');
+
   return fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
@@ -133,6 +155,7 @@ function get(term, country = "CH", limit = 100, explicit = true) {
         var song = new Song(item);
         songList.push(song);
       });
+      console.log('%cFirst Result: %c'+songList[0].getName(), '', 'color: lightblue');
       return songList;
     });
 }
@@ -147,7 +170,6 @@ export default {
   },
   created() {
     this.search();
-    this.searchQuery = ""
   },
   watch: {
     "$route.query.q": function () {
@@ -164,24 +186,53 @@ export default {
     formattedSearchQuery() {
       get(this.searchQuery).then((songList) => {
         this.searchResults = [];
-        songList.forEach((item) => {
-          this.searchResults.push({
-            name: (item.getName().length > 20) ? (item.getName().slice(0, 20).at(-1) == " ") ? item.getName().slice(0, 19) + '...' : item.getName().slice(0, 20) + '...' : item.getName(),
-            artist: (item.getArtistName().length > 30) ? (item.getArtistName().slice(0, 30).at(-1) == " ") ? item.getArtistName().slice(0, 29) + '...' : item.getArtistName().slice(0, 30) + '...' : item.getArtistName(),
-            lenght: item.getLengthNormal(),
-            coverURL: item.getResizedImage(512),
-          });
+        songList.forEach((item, index) => {
+          if (index == 0) {
+            this.searchResults.push({
+              name:
+                item.getName().length > 12
+                  ? item.getName().slice(0, 12).at(-1) == " "
+                    ? item.getName().slice(0, 11) + "..."
+                    : item.getName().slice(0, 12) + "..."
+                  : item.getName(),
+              artist:
+                item.getArtistName().length > 30
+                  ? item.getArtistName().slice(0, 30).at(-1) == " "
+                    ? item.getArtistName().slice(0, 29) + "..."
+                    : item.getArtistName().slice(0, 30) + "..."
+                  : item.getArtistName(),
+              lenght: item.getLengthNormal(),
+              coverURL: item.getResizedImage(512),
+            });
+          } else {
+            this.searchResults.push({
+              name:
+                item.getName().length > 20
+                  ? item.getName().slice(0, 20).at(-1) == " "
+                    ? item.getName().slice(0, 19) + "..."
+                    : item.getName().slice(0, 20) + "..."
+                  : item.getName(),
+              artist:
+                item.getArtistName().length > 30
+                  ? item.getArtistName().slice(0, 30).at(-1) == " "
+                    ? item.getArtistName().slice(0, 29) + "..."
+                    : item.getArtistName().slice(0, 30) + "..."
+                  : item.getArtistName(),
+              lenght: item.getLengthNormal(),
+              coverURL: item.getResizedImage(512),
+            });
+          }
         });
       });
       return this.searchQuery ? this.searchQuery : "";
     },
   },
   methods: {
-    search() { },
+    search() {},
   },
 };
 </script>
 
 <style>
-@import '~/css/search.css';
+@import "~/css/search.css";
 </style>

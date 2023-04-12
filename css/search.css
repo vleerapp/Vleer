@@ -45,6 +45,15 @@
   border-radius: 10px;
 }
 
+.searchResultIcon {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+  justify-self: end;
+  display: flex;
+  place-items: center;
+  margin-right: 5px;
+}
+
 .searchResultName {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
@@ -73,8 +82,21 @@
 .bigResult {
   display: flex;
   height: 188px;
+  min-height: 188px;
   padding: 16px;
   width: 424px;
+  min-width: 424px;
+  max-width: 100%;
+}
+
+.noresize.bigResult {
+  height: 188px !important;
+  width: 424px !important;
+}
+
+
+.flip.searchResults {
+  scale: 1 -1;
 }
 
 .bigResult .searchResult {
@@ -83,6 +105,11 @@
   grid-template-rows: 40px 20px calc(100% - 60px);
   height: 100%;
   width: 100%;
+  overflow: visible;
+}
+
+.bigResult .searchResultLenght {
+  display: none;
 }
 
 .bigResult .searchResultLenght {
@@ -102,4 +129,34 @@
 .bigResult .searchResult .searchResultCover {
   height: 156px;
   width: 156px;
+}
+
+.gradient.bigResult {
+  --gradientColor1: #404050;
+  --gradientColor2: #413350;
+  background: unset;
+  background-image: linear-gradient(180deg, var(--gradientColor1) 0%, var(--gradientColor2) 100%) !important;
+}
+
+.gradient.bigResult .searchResultIcon {
+  background-color: transparent;
+}
+
+.resize.bigResult {
+  resize: both;
+}
+
+.bigResult .searchResultIcon {
+  outline: 2px solid var(--border);
+  background-color: var(--e);
+  grid-row: 3 / 4;
+  width: 45px;
+  height: 45px;
+  justify-content: center;
+  border-radius: 100%;
+  align-self: end;
+}
+
+.bigResult .searchResultIcon > img {
+  width: 25px;
 }
