@@ -124,10 +124,10 @@ function resizeImage(url, size) {
   return url;
 }
 
-function get(term, country = "CH", limit = 10, explicit = true) {
-  const apiUrl = `${itunes}term=${term}&entity=song&country=${country}&limit=${limit}&explicit=${
+function get(term, country = "CH", limit = 100, explicit = true) {
+  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
     explicit ? "Yes" : "No"
-  }&attribute=popularityTerm`;
+  }&attribute=ratingIndex`;
   return fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
@@ -150,6 +150,7 @@ export default {
   },
   created() {
     this.search();
+    this.searchQuery = ""
   },
   watch: {
     "$route.query.q": function () {
