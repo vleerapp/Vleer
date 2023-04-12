@@ -10,12 +10,14 @@
 body {
   position: relative;
 }
+
 .sidebar {
   position: fixed;
 }
+
 .content {
   position: absolute;
-  top: 45px;
+  top: 40px;
   left: 372px;
   transition: .2s;
 }

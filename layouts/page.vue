@@ -1,19 +1,20 @@
 <template>
-    <sidebar />
-    <div class="content">
-      <search />
-      <slot />
-    </div>
-    <div class="bg"></div>
+  <sidebar />
+  <div class="content">
+    <search />
+    <slot />
+  </div>
+  <div class="bg"></div>
 </template>
 
 <style>
 .bg {
   background-color: red;
 }
+
 .content {
   position: absolute;
-  top: 45px;
+  top: 40px;
   left: 372px;
   transition: 0.2s;
   width: calc(100% - 450px);
