@@ -78,11 +78,25 @@
 }
 
 .bigResult .searchResult {
-  display: flex;
+  display: grid;
+  grid-template-columns: 176px calc(100% - 176px);
+  grid-template-rows: 40px 20px calc(100% - 60px);
+  height: 100%;
+  width: 100%;
 }
 
 .bigResult .searchResultLenght {
   margin-right: 0;
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+  align-self: end;
+  justify-self: end;
+  margin-inline: 5px;
+}
+
+.bigResult .searchResultName {
+  font-size: 25px;
+  font-weight: bold;
 }
 
 .bigResult .searchResult .searchResultCover {
