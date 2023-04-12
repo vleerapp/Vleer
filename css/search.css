@@ -26,13 +26,13 @@
 .searchResults {
   overflow: hidden;
   background-color: var(--search);
-  border-radius: 14px;
+  border-radius: 16px;
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 8px;
 }
 
 .searchResult {
-  height: 60px;
+  height: 44px;
   display: grid;
   grid-template-columns: 70px calc(100% - 70px);
   grid-template-rows: 50% 50%;
@@ -41,7 +41,7 @@
 .searchResultCover {
   grid-column: 1 / 2;
   grid-row: 1 / 3;
-  width: 60px;
+  width: 44px;
   border-radius: 10px;
 }
 
@@ -49,6 +49,14 @@
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   align-self: end;
+  font-size: 15px;
+}
+
+.searchResultArtist {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  color: var(--dtx);
+  font-size: 12px;
 }
 
 .searchResultLenght {
@@ -58,12 +66,26 @@
   justify-self: center;
   color: var(--dtx);
   margin-right: 30%;
-  font-size: 14px;
+  font-size: 12px;
 }
 
-.searchResultArtist {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  color: var(--dtx);
-  font-size: 14px;
+
+.bigResult {
+  display: flex;
+  height: 188px;
+  padding: 16px;
+  width: 424px;
+}
+
+.bigResult .searchResult {
+  display: flex;
+}
+
+.bigResult .searchResultLenght {
+  margin-right: 0;
+}
+
+.bigResult .searchResult .searchResultCover {
+  height: 156px;
+  width: 156px;
 }
