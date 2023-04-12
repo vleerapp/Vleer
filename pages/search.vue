@@ -14,7 +14,7 @@
     <ul>
       <li
       class="searchResults"
-      :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'GradientGPT' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize')"
+      :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'GradientGPT' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize') + (searchQuery === 'float' ? ' float' : '')"
         v-for="(result, index) in searchResults"
         :key="index"
       >
