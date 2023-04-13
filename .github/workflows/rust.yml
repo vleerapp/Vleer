@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install
+      run: npm install tauri
     - name: Build
       run: npm run tauri build
-    - name: Run tests
-      run: npm run tauri dev
