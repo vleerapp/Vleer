@@ -41,4 +41,6 @@ body {
 .page-title {
   color: var(--tx);
   font-size: 46px;
+  z-index: 5;
+  position: relative;
 }

@@ -18,7 +18,6 @@
   left: 372px;
   transition: 0.2s;
   width: calc(100% - 450px);
-  z-index: 5;
 }
 
 @media screen and (max-width: 1200px) {
