@@ -218,6 +218,7 @@
 }
 
 .gotoTop {
+  transition: .5s;
   position: fixed;
   width: 30px;
   height: 30px;
@@ -226,7 +227,7 @@
   background-position: 50% 50%;
   bottom: 10px;
   right: 20px;
-  background-image: url(../assets/svg/bold/arrow-up.svg);
+  background-image: url(/svg/bold/arrow-up.svg);
   border-radius: 10px;
   z-index: 3;
 }

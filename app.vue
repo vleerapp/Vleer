@@ -61,11 +61,15 @@ export default {
   mounted() {
     document.body.addEventListener("scroll", () => {
       if (document.body.scrollTop < 800) {
-        document.getElementById("gotoTop").style.display = "none";
+        document.getElementById("gotoTop").style.opacity = "0";
+        document.getElementById("gotoTop").style.pointerEvents = "none";
       } else {
-        document.getElementById("gotoTop").style.display = "block";
+        document.getElementById("gotoTop").style.opacity = "1";
+        document.getElementById("gotoTop").style.pointerEvents = "all";
+
       }
     });
   },
 };
+
 </script>

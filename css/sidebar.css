@@ -38,10 +38,6 @@
   background-color: var(--search);
 }
 
-.minimizeSidebar .minimized {
-  --arrow: url('/_nuxt/assets/svg/linear/arrow-open.svg');
-}
-
 .minibar {
   display: flex;
   flex-direction: row;
@@ -129,17 +125,17 @@
 }
 
 .router-link-active.router-link-exact-active.tab-link>.home_icon {
-  --img: url('/_nuxt/assets/svg/bold/home-2.svg') !important;
+  --img: url('/svg/bold/home-2.svg') !important;
 }
 
 .router-link-active.router-link-exact-active.tab-link>.songs_icon {
-  --img: url('/_nuxt/assets/svg/bold/music.svg') !important;
+  --img: url('/svg/bold/music.svg') !important;
 }
 
 .router-link-active.router-link-exact-active.tab-link>.playlists_icon {
-  --img: url('/_nuxt/assets/svg/bold/note.svg') !important;
+  --img: url('/svg/bold/note.svg') !important;
 }
 
 .router-link-active.router-link-exact-active.tab-link>.library_icon {
-  --img: url('/_nuxt/assets/svg/bold/video-square.svg') !important;
+  --img: url('/svg/bold/video-square.svg') !important;
 }

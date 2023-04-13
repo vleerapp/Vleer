@@ -4,7 +4,7 @@
     <div style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
     </div>
-    <a class="gotoTop" style="display: none;" id="gotoTop" href="#top"></a>
+    <a class="gotoTop" style="opacity:0;pointer-events:none;" id="gotoTop" href="#top"></a>
     <div id="top"></div>
     <ul class="searchResultList">
       <li class="searchResults"
@@ -15,7 +15,7 @@
           <div class="searchResultName">{{ result.name }}</div>
           <div class="searchResultLenght">{{ result.lenght }}</div>
           <div class="searchResultArtist">{{ result.artist }}</div>
-          <div class="searchResultPlay"><img src="../assets/svg/bold/play.svg" class="searchResultIMG"></div>
+          <div class="searchResultPlay"><img src="/svg/bold/play.svg" class="searchResultIMG"></div>
         </div>
       </li>
     </ul>

@@ -1,10 +1,10 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "npm run generate",
     "beforeDevCommand": "npm run dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../.output"
+    "distDir": "../.output/public"
   },
   "package": {
     "productName": "music-player",
@@ -43,7 +43,8 @@
         "setIgnoreCursorEvents": true,
         "startDragging": true,
         "print": true
-      }
+      },
+      "all": true
     },
     "bundle": {
       "active": true,
