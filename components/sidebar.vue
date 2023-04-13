@@ -2,9 +2,9 @@
   <div class="sidebar" id="sidebar">
     <div class="minibar">
       <img src="~/assets/pandadev.png" alt="userimg" class="user-img" />
-      <div class="settings">
+      <nuxt-link class="settings" to="/settings">
         <img src="/svg/linear/setting-2.svg" width="18" height="18" />
-      </div>
+      </nuxt-link>
     </div>
     <div id="sidenav_tabs">
       <div class="tab">
