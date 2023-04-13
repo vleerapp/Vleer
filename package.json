@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
-    "nuxi": "^3.4.0"
+    "nuxi": "^3.4.1"
   }
 }
