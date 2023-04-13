@@ -6,7 +6,7 @@
   <div class="bg"></div>
 </template>
 
-<style>
+<style scoped>
 body {
   position: relative;
 }
@@ -19,6 +19,7 @@ body {
   position: absolute;
   left: 372px;
   transition: .2s;
+  top: 110px;
 }
 
 @media screen and (max-width: 1200px) {
