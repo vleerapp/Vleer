@@ -4,14 +4,10 @@
     <div id="test" style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
     </div>
-    <br />
     <ul>
-      <li
-      class="searchResults"
-      :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'GradientGPT' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize') + (searchQuery === 'float' ? ' float' : '')"
-        v-for="(result, index) in searchResults"
-        :key="index"
-      >
+      <li class="searchResults"
+        :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'GradientGPT' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize') + (searchQuery === 'float' ? ' float' : '')"
+        v-for="(result, index) in searchResults" :key="index">
         <div class="searchResult">
           <img class="searchResultCover" :src="result.coverURL" />
           <div class="searchResultName">{{ result.name }}</div>
@@ -132,13 +128,10 @@ var oldTerm = ""
 
 function get(term, country = "CH", limit = 50, explicit = true) {
   term = term.replace(/\s+/g, '+');
-  if (oldTerm != term) console.log("%cTerm Changed", 'color: coral');
-  console.log("%cTerm: %c" + term, '', 'color: green');
 
   const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
     }&attribute=genreIndex`;
 
-  console.log('%cSearch URL: %c' + apiUrl, '', 'color: gold');
 
   return fetch(apiUrl)
     .then((response) => response.json())
@@ -148,7 +141,6 @@ function get(term, country = "CH", limit = 50, explicit = true) {
         var song = new Song(item);
         songList.push(song);
       });
-      console.log('%cFirst Result: %c' + songList[0].getName(), '', 'color: lightblue');
       return songList;
     });
 }
@@ -179,8 +171,9 @@ export default {
     formattedSearchQuery() {
       if (this.searchQuery === "Panda") {
         for (let i = 0; i < 7; i++) {
+          console.log("PANDA HAS WORKED")
           const panda = document.createElement("img");
-          panda.src = "https://media.istockphoto.com/id/1195743934/vector/cute-panda-character-vector-design.jpg?s=612x612&w=0&k=20&c=J3ht-bKADmsXvF6gFIleRtfJ6NGhXnfIsrwlsUF8w80=";
+          panda.src = "/_nuxt/assets/panda.png";
 
           panda.style.position = "absolute";
           panda.style.left = `${Math.floor(Math.random() * window.innerWidth)}px`;

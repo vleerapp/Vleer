@@ -58,22 +58,18 @@
   }
 
   .minimizeSidebar {
-    display: none;
+    rotate: 180deg;
+    left: 108px;
+    transform: translateY(50%);
+    z-index: 2;
   }
 
-  .greetings {
-    display: none;
-  }
 
   #sidenav_bottom {
     position: absolute;
     width: 100%;
     bottom: 0;
     padding-bottom: 12px;
-  }
-
-  .credits {
-    display: none;
   }
 
   #sidenav_tabs {
@@ -129,39 +125,6 @@
   .minibar {
     margin-left: 20px;
   }
-
-  #main-page {
-    height: calc(100% - 44px);
-    width: calc(100% - 166px);
-    left: 144px;
-    position: absolute;
-    top: 22px;
-    padding: 18px;
-  }
-
-  .quick-actions {
-    text-align: center;
-    margin: 12px;
-    margin-top: 15px;
-  }
-
-  .quick-actions-placeholder {
-    margin-inline: 0;
-    width: 50px;
-    height: 50px;
-    margin-top: 5px;
-  }
-
-  .quick-action-inside {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-  }
-
-  .quick-action-inside>img {
-    border-radius: 100%;
-  }
 }
 
 @media screen and (min-width: 1200px) {
@@ -170,12 +133,9 @@
   }
 
   .minimized .userimg {
-    margin-left: 15px;
+    margin-left: 29px;
   }
 
-  .minimized .greetings {
-    display: none;
-  }
 
   .minimized #sidenav_bottom {
     position: absolute;
@@ -184,9 +144,6 @@
     padding-bottom: 12px;
   }
 
-  .minimized .credits {
-    display: none;
-  }
 
   .minimized .minimizeSidebar {
     margin-right: 10px;
@@ -198,12 +155,16 @@
   .minimized #sidenav_tabs {
     position: absolute;
     width: 100%;
-    top: 70px;
+    top: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
   }
 
   .minimized .tab-link {
     grid-template-columns: 100%;
-    place-items: start;
+    place-items: center;
   }
 
   .minimized .tab-icon-div {
@@ -211,6 +172,8 @@
   }
 
   .minimized .tab {
+    justify-content: center;
+    display: flex;
     width: 60px;
   }
 
@@ -222,36 +185,45 @@
     display: none;
   }
 
+  .minimized .tab_icon {
+    width: 100%;
+  }
+
+  .minimized .tab_icon {
+    margin-left: 0;
+  }
+
+  .contentMinimized {
+    left: 152px !important;
+    width: calc(100% - 250px) !important;
+  }
+
+  .mini {
+    rotate: 180deg;
+    left: 108px;
+    transform: translateY(50%);
+    z-index: 2;
+  }
+
   .minimized {
-    width: 100px !important;
+    position: fixed;
+    background-color: var(--fg);
+    width: 80px;
+    height: calc(100% - 44px);
+    margin: 22px;
+    border-radius: 12px;
+  }
+
+  .minimized .settings {
+    display: none;
+  }
+
+  .minimized .minibar {
+    margin-left: 20px;
   }
 
   .minimized+#main-page {
     width: calc(100% - 166px) !important;
     left: 144px !important;
-  }
-
-  .minimized .quick-actions {
-    text-align: center;
-    margin: 12px;
-    margin-top: 15px;
-  }
-
-  .minimized .quick-actions-placeholder {
-    margin-inline: 0;
-    width: 50px;
-    height: 50px;
-    margin-top: 5px;
-  }
-
-  .minimized .quick-action-inside {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-  }
-
-  .minimized .quick-action-inside>img {
-    border-radius: 100%;
   }
 }
