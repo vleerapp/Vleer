@@ -42,7 +42,7 @@
   grid-column: 1 / 2;
   grid-row: 1 / 3;
   width: 44px;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .searchResultPlay {
@@ -210,11 +210,11 @@
 
 #top {
   position: absolute;
-  top: -40px;
+  top: -200px;
 }
 
 .searchResultList {
-  margin-top: 90px;
+  margin-top: 30px;
 }
 
 .gotoTop {

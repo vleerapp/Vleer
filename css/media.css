@@ -126,7 +126,8 @@
 
 @media screen and (min-width: 1200px) {
   .minimized .minimizeSidebar {
-    rotate: 180deg;
+    scale: -1 1;
+    left: 65px;
   }
 
   .minimized .userimg {
@@ -141,12 +142,6 @@
     padding-bottom: 12px;
   }
 
-
-  .minimized .minimizeSidebar {
-    top: 37px;
-    left: 85px;
-  }
-
   .minimized #sidenav_tabs {
     position: absolute;
     width: 100%;
@@ -154,7 +149,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: start-flex;
+    align-items: flex-start;
   }
 
   .minimized .tab-link {
@@ -191,13 +186,6 @@
   .contentMinimized {
     left: 152px !important;
     width: calc(100% - 250px) !important;
-  }
-
-  .mini {
-    rotate: 180deg;
-    left: 108px;
-    transform: translateY(50%);
-    z-index: 2;
   }
 
   .minimized {

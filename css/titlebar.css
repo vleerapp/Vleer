@@ -1,6 +1,5 @@
 .titlebar {
-  height: 120px;
-  background: transparent;
+  height: 40px;
   user-select: none;
   display: flex;
   justify-content: flex-end;
@@ -10,7 +9,7 @@
   right: 0;
   z-index: 1000;
   border-radius: 6px 6px 0px 0px;
-  background: linear-gradient(180deg, rgba(22,21,26,1) 0%, rgba(22,21,26,1) 70%, rgba(22,21,26,0) 100%);
+  background-color: var(--bg);
   z-index: 1;
 }
 
@@ -39,10 +38,12 @@
   background-color: var(--t);
 }
 
-.dragRegion {
-  position: absolute;
-  top: 0;
+.fadeOut {
+  position: fixed;
+  top: 40px;
   left: 0;
-  right: 115px;
-  height: 30px;
+  right: 20px;
+  height: 80px;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(22,21,26,1) 0%, rgba(22,21,26,1) 60%, rgba(22,21,26,0) 100%);
 }

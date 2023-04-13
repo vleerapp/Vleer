@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.2.3",
-    "nuxt": "^3.4.0"
+    "nuxt": "^3.4.1"
   },
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",

@@ -18,6 +18,7 @@ export default {
 <style>
 .search {
   position: fixed;
+  top: 40px;
   width: 325px;
   height: 40px;
   background-color: #1e1d23;
