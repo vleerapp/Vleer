@@ -138,8 +138,26 @@
   background-image: linear-gradient(180deg, var(--gradientColor1) 0%, var(--gradientColor2) 100%) !important;
 }
 
-.float.searchResult {
+.float.searchResults {
   animation: float 6s ease-in-out infinite;
+}
+
+.white.searchResults {
+  background-color: #f1f1f1;
+}
+
+.white .searchResultName {
+  color: #16151a;
+}
+
+.white .searchResultPlay {
+  background-color: #16151a;
+  border-radius: 100%;
+  justify-self: end;
+  align-self: center;
+  height: 30px;
+  width: 30px;
+  padding: 5px;
 }
 
 .gradient.bigResult .searchResultIcon {
@@ -177,4 +195,15 @@
 	100% {
 		transform: translatey(0px);
 	}
+}
+
+.reveals{
+  position: relative;
+  transform: translateY(150px);
+  opacity: 0;
+  transition: 2s all ease;
+}
+.reveal.active{
+  transform: translateY(0);
+  opacity: 1;
 }
