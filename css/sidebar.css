@@ -1,9 +1,3 @@
-@font-face {
-  font-family: Inter;
-  src: url("../fonts/Inter.woff2") format("woff2");
-  font-display: swap;
-}
-
 .sidebar {
   position: fixed;
   z-index: 2;
