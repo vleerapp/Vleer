@@ -125,6 +125,10 @@
   .minibar {
     margin-left: 20px;
   }
+
+  .minimizeSidebar {
+    display: none;
+  }
 }
 
 @media screen and (min-width: 1200px) {
