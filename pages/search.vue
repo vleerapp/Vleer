@@ -4,9 +4,8 @@
     <div style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
     </div>
-    <a class="gotoTop" href="#top"></a>
+    <a class="gotoTop" style="display: none;" id="gotoTop" href="#top"></a>
     <div id="top"></div>
-    <div id="shiftPageDown"></div>
     <ul class="searchResultList">
       <li class="searchResults"
         :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'waradu' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize') + (searchQuery === 'float' ? ' float' : '') + (searchQuery === 'white' ? ' white' : '')"

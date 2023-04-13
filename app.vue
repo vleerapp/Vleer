@@ -57,5 +57,15 @@ body {
 </style>
 
 <script>
-
+export default {
+  mounted() {
+    document.body.addEventListener("scroll", () => {
+      if (document.body.scrollTop < 800) {
+        document.getElementById("gotoTop").style.display = "none";
+      } else {
+        document.getElementById("gotoTop").style.display = "block";
+      }
+    });
+  },
+};
 </script>

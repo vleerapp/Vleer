@@ -17,7 +17,6 @@ body {
 
 .content {
   position: absolute;
-  top: 40px;
   left: 372px;
   transition: .2s;
 }

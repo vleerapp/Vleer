@@ -210,11 +210,11 @@
 
 #top {
   position: absolute;
-  top: -40px;
+  top: -200px;
 }
 
 .searchResultList {
-  margin-top: 90px;
+  margin-top: 30px;
 }
 
 .gotoTop {
