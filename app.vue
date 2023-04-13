@@ -21,12 +21,16 @@
   --border: #26252b;
 }
 
-body {
+* {
   scroll-behavior: smooth;
+}
+
+body {
   overflow-x: hidden;
   background-color: transparent !important;
   position: relative;
 }
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -51,7 +55,7 @@ body {
   position: fixed;
   height: 100vh;
   width: 100vw;
-  border-radius: 6px;
+  border-radius: 10px;
   z-index: -1;
 }
 </style>
