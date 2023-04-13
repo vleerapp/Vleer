@@ -14,12 +14,13 @@
   margin: 22px;
   border-radius: 12px;
   transition: .2s;
+  overflow: visible;
 }
 
 .minimizeSidebar {
   position: absolute;
-  top: 60px;
-  left: 282px;
+  top: 37px;
+  right: 0px;
   transform: translate(-50%, -50%);
   border-radius: 100px;
   cursor: pointer;

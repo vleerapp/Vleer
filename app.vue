@@ -22,6 +22,7 @@
 }
 
 body {
+  scroll-behavior: smooth;
   overflow-x: hidden;
   background-color: transparent !important;
   position: relative;

@@ -17,6 +17,7 @@ export default {
 
 <style>
 .search {
+  position: fixed;
   width: 325px;
   height: 40px;
   background-color: #1e1d23;
@@ -30,5 +31,6 @@ export default {
   color: var(--tx);
   outline: none;
   margin-bottom: 28px;
+  z-index: 3;
 }
 </style>

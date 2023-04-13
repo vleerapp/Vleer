@@ -32,9 +32,8 @@
         </nuxt-link>
       </div>
     </div>
+    <div id="minimizer" style="--arrow: url('/_nuxt/assets/svg/linear/arrow-close.svg');" v-on:click="toggleSidebar" class="minimizeSidebar" alt=""></div>
   </div>
-  <div id="minimizer" style="--arrow: url('/_nuxt/assets/svg/linear/arrow-close.svg');" v-on:click="toggleSidebar"
-    class="minimizeSidebar" alt=""></div>
 </template>
 
 <script>

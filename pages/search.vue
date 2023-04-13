@@ -1,12 +1,15 @@
 <template>
   <NuxtLayout name="search">
     <input type="text" v-model="searchQuery" ref="searchInput" class="search" placeholder="Search" />
-    <div id="test" style="display: none">
+    <div style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
     </div>
-    <ul>
+    <a class="gotoTop" href="#top"></a>
+    <div id="top"></div>
+    <div id="shiftPageDown"></div>
+    <ul class="searchResultList">
       <li class="searchResults"
-        :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'GradientGPT' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize') + (searchQuery === 'float' ? ' float' : '')"
+        :class="(index === 0 ? 'bigResult' : '') + (searchQuery === 'flip' ? ' flip' : '') + (searchQuery === 'waradu' ? ' gradient' : '') + (searchQuery === 'resize' ? ' resize' : ' noresize') + (searchQuery === 'float' ? ' float' : '') + (searchQuery === 'white' ? ' white' : '')"
         v-for="(result, index) in searchResults" :key="index">
         <div class="searchResult">
           <img class="searchResultCover" :src="result.coverURL" />
@@ -179,7 +182,7 @@ export default {
           panda.style.left = `${Math.floor(Math.random() * window.innerWidth)}px`;
           panda.style.top = `${Math.floor(Math.random() * window.innerHeight)}px`;
 
-          document.getElementById("test").appendChild(panda);
+          document.getElementById("top").appendChild(panda);
 
           let rotate = 0;
           let posX = panda.offsetLeft;
@@ -246,6 +249,10 @@ export default {
     search() { },
   },
 };
+function topFunction() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}
 </script>
 
 <style>
