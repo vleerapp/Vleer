@@ -87,7 +87,7 @@
 }
 
 .time-left {
-  justify-self: start;
+  justify-self: start-flex;
   margin-left: 10px;
 }
 
@@ -130,7 +130,7 @@
 }
 
 .more {
-  justify-self: start;
+  justify-self: start-flex;
   margin-left: 5px;
 }
 

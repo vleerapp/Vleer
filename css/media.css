@@ -38,7 +38,7 @@
   }
 
   .for {
-    justify-self: start;
+    justify-self: start-flex;
   }
 
   .less,
@@ -72,7 +72,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: start;
+    align-items: start-flex;
   }
 
   .tab-link {
@@ -154,7 +154,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: start;
+    align-items: start-flex;
   }
 
   .minimized .tab-link {
