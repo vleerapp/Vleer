@@ -19,6 +19,7 @@
   --t: #e06c75;
   --search: #1e1d23;
   --border: #26252b;
+  --accent: #7B00FF;
 }
 
 * {
