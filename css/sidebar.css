@@ -56,6 +56,10 @@
   place-items: center;
 }
 
+.settings:hover {
+  background: #25232b;
+}
+
 .user-img {
   height: 40px;
   width: 40px;
