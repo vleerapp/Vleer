@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <div class="minibar">
       <img src="~/assets/waradu.png" alt="userimg" class="user-img">
       <div class="settings">
@@ -33,14 +33,23 @@
       </div>
     </div>
   </div>
-  <div style="--arrow: url('/_nuxt/assets/svg/linear/arrow-close.svg');" onclick="toggleSidebar();"
+  <div id="minimizer" style="--arrow: url('/_nuxt/assets/svg/linear/arrow-close.svg');" v-on:click="toggleSidebar"
     class="minimizeSidebar" alt=""></div>
 </template>
 
 <script>
 function toggleSidebar() {
   var element = document.getElementById("sidebar");
+  var content = document.getElementById("content");
+  var minimizer = document.getElementById("minimizer");
   element.classList.toggle("minimized");
+  minimizer.classList.toggle("mini");
+  content.classList.toggle("contentMinimized");
+}
+export default {
+  methods: {
+    toggleSidebar
+  }
 }
 </script>
 

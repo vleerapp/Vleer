@@ -1,6 +1,6 @@
 <template>
   <sidebar />
-  <div class="content">
+  <div id="content" class="content">
     <search />
     <slot />
   </div>
