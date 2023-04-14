@@ -105,16 +105,6 @@
     width: 100%;
   }
 
-  .settings {
-    position: absolute;
-    bottom: 18px;
-    left: 11px;
-  }
-
-  .minibar {
-    margin-left: 20px;
-  }
-
   .minimizeSidebar {
     display: none;
   }
@@ -124,10 +114,6 @@
   .minimized .minimizeSidebar {
     scale: -1 1;
     left: 65px;
-  }
-
-  .minimized .userimg {
-    margin-left: 29px;
   }
 
 
@@ -191,16 +177,6 @@
     height: calc(100% - 44px);
     margin: 22px;
     border-radius: 12px;
-  }
-
-  .minimized .settings {
-    position: absolute;
-    bottom: 18px;
-    left: 11px;
-  }
-
-  .minimized .minibar {
-    margin-left: 20px;
   }
 
   .minimized+#main-page {

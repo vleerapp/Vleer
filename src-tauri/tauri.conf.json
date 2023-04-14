@@ -44,6 +44,9 @@
         "startDragging": true,
         "print": true
       },
+      "fs": {
+        "scope": ["$AUDIO/*"]
+      },
       "all": true
     },
     "bundle": {

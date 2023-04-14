@@ -36,7 +36,7 @@
   display: flex;
   flex-direction: row;
   margin-top: 18px;
-  margin-left: 28px;
+  margin-left: 10px;
 }
 
 .settings {
@@ -52,14 +52,6 @@
 
 .settings:hover {
   background: #25232b;
-}
-
-.user-img {
-  height: 40px;
-  width: 40px;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: .3s;
 }
 
 #sidenav_tabs {

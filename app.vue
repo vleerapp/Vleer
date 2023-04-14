@@ -6,6 +6,9 @@
     </NuxtLayout>
   </div>
   <div id="app"></div>
+  <div id="overlay">
+    <img src="/svg/linear/download.svg" width="100" height="100" />
+  </div>
 </template>
 
 <style>
@@ -19,7 +22,7 @@
   --t: #e06c75;
   --search: #1e1d23;
   --border: #26252b;
-  --accent: #7B00FF;
+  --accent: #7b00ff;
 }
 
 @font-face {
@@ -65,10 +68,25 @@ body {
   border-radius: 10px;
   z-index: -1;
 }
+
+#overlay {
+  pointer-events: none;
+  opacity: 0;
+  transition: 0.5s;
+  position: fixed;
+  margin: 10px;
+  height: calc(100vh - 20px);
+  width: calc(100vw - 20px);
+  border-radius: 5px;
+  z-index: 10;
+  border: 5px solid var(--accent);
+  display: grid;
+  place-items: center;
+}
 </style>
 
 <script setup>
-import { appWindow } from '@tauri-apps/api/window';
+import { appWindow } from "@tauri-apps/api/window";
 
 appWindow.onResized(async () => {
   var isma = await appWindow.isMaximized();
@@ -86,6 +104,18 @@ document.body.addEventListener("scroll", () => {
   } else {
     document.getElementById("gotoTop").style.opacity = "1";
     document.getElementById("gotoTop").style.pointerEvents = "all";
+  }
+});
+
+appWindow.onFileDropEvent((event) => {
+  var overlay = document.getElementById("overlay");
+  if (event.payload.type === "hover") {
+    overlay.style.opacity = "1";
+  } else if (event.payload.type === "drop") {
+    overlay.style.opacity = "0";
+    console.log("User dropped", event.payload.paths);
+  } else {
+    overlay.style.opacity = "0";
   }
 });
 </script>

@@ -1,7 +1,6 @@
 <template>
   <div class="sidebar" id="sidebar">
     <div class="minibar">
-      <img src="~/assets/waradu.png" alt="userimg" class="user-img" />
       <nuxt-link class="settings" to="/settings">
         <img src="/svg/linear/setting-2.svg" width="18" height="18" />
       </nuxt-link>
