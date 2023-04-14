@@ -4,12 +4,6 @@
   </NuxtLayout>
 </template>
 
-<script lang="ts">
-export default {
-  ssr: false
-}
-</script>
-
 <style>
 @import '~/css/style.css';
 </style>
