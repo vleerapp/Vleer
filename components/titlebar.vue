@@ -38,7 +38,7 @@
   <div class="fadeOut"></div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { appWindow } from "@tauri-apps/api/window";
 
 function minimize() { appWindow.minimize(); }

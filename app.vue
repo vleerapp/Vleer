@@ -67,20 +67,25 @@ body {
 }
 </style>
 
-<script>
-export default {
-  mounted() {
-    document.body.addEventListener("scroll", () => {
-      if (document.body.scrollTop < 800) {
-        document.getElementById("gotoTop").style.opacity = "0";
-        document.getElementById("gotoTop").style.pointerEvents = "none";
-      } else {
-        document.getElementById("gotoTop").style.opacity = "1";
-        document.getElementById("gotoTop").style.pointerEvents = "all";
+<script setup>
+import { appWindow } from '@tauri-apps/api/window';
 
-      }
-    });
-  },
-};
+appWindow.onResized(async () => {
+  var isma = await appWindow.isMaximized();
+  if (isma) {
+    document.getElementById("app").style.borderRadius = "0";
+  } else {
+    document.getElementById("app").style.borderRadius = "6px";
+  }
+});
 
+document.body.addEventListener("scroll", () => {
+  if (document.body.scrollTop < 800) {
+    document.getElementById("gotoTop").style.opacity = "0";
+    document.getElementById("gotoTop").style.pointerEvents = "none";
+  } else {
+    document.getElementById("gotoTop").style.opacity = "1";
+    document.getElementById("gotoTop").style.pointerEvents = "all";
+  }
+});
 </script>
