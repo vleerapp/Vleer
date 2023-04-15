@@ -12,13 +12,14 @@
   /*=======COLORS===========*/
   --bg: #16151a;
   --sidebar: #19181d;
-  --e: #1c1b21;
-  --dtx: #85868b;
+  --accent: #7b00ff;
+  --accenth: #6c00e0;
+  --element: #1C1B21;
+  --elementh: #232229;
   --tx: #ffffff;
-  --t: #e06c75;
+  --dtx: #85868b;
   --search: #1e1d23;
   --border: #26252b;
-  --accent: #7b00ff;
 }
 
 @font-face {
