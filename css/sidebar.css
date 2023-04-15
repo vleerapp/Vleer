@@ -1,6 +1,6 @@
 .sidebar {
   position: fixed;
-  z-index: 2;
+  z-index: 4;
   position: absolute;
   background-color: var(--fg);
   width: 300px;
@@ -16,7 +16,7 @@
   top: 37px;
   right: 0px;
   transform: translate(-50%, -50%);
-  transition: .2s;
+  transition: scale .2s;
   border-radius: 100px;
   cursor: pointer;
   background-image: var(--arrow);

@@ -4,7 +4,8 @@
     "beforeBuildCommand": "pnpm generate",
     "beforeDevCommand": "pnpm dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../.output/public"
+    "distDir": "../.output/public",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "music-player",
@@ -56,7 +57,8 @@
         "renameFile": true,
         "exists": true,
         "scope": [
-          "$AUDIO/music-player/*"
+          "$AUDIO/*",
+          "$AUDIO/savedMusic/*"
         ]
       },
       "all": true

@@ -10,7 +10,7 @@
   z-index: 1000;
   border-radius: 6px 6px 0px 0px;
   background-color: var(--bg);
-  z-index: 1;
+  z-index: 3;
 }
 
 .titlebar-button {

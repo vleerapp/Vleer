@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
-    "nuxi": "^3.4.1"
+    "nuxi": "^3.4.1",
+    "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra"
   }
 }
