@@ -167,36 +167,6 @@ export default {
   },
   computed: {
     formattedSearchQuery() {
-      if (this.searchQuery === "Panda") {
-        for (let i = 0; i < 7; i++) {
-          console.log("PANDA HAS WORKED")
-          const panda = document.createElement("img");
-          panda.src = "/_nuxt/assets/panda.png";
-
-          panda.style.position = "absolute";
-          panda.style.left = `${Math.floor(Math.random() * window.innerWidth)}px`;
-          panda.style.top = `${Math.floor(Math.random() * window.innerHeight)}px`;
-
-          document.getElementById("top").appendChild(panda);
-
-          let rotate = 0;
-          let posX = panda.offsetLeft;
-          let posY = panda.offsetTop;
-
-          const animationFrame = window.requestAnimationFrame(animatePanda);
-
-          function animatePanda() {
-            rotate++;
-            posX += Math.cos(rotate * Math.PI / 180) * 3;
-            posY += Math.sin(rotate * Math.PI / 180) * 3;
-            panda.style.transform = `rotate(${rotate}deg)`;
-            panda.style.left = `${posX}px`;
-            panda.style.top = `${posY}px`;
-
-            window.requestAnimationFrame(animatePanda);
-          }
-        }
-      }
       get(this.searchQuery).then((songList) => {
         this.searchResults = [];
         songList.forEach((item, index) => {

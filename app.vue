@@ -14,6 +14,7 @@
         place-items: center;
         font-size: 20px;
         font-weight: bold;
+        padding: 10px;
       "
     >
       <svg
@@ -40,6 +41,7 @@
         place-items: center;
         font-size: 20px;
         font-weight: bold;
+        padding: 10px;
       "
     >
       <svg
@@ -146,6 +148,17 @@ body {
   display: none;
 }
 
+#overlay > div > svg {
+  transition: .5s;
+  filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 1));
+}
+
+#overlay > div > div {
+  margin-inline: 5px;
+  transition: .5s;
+  text-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
+}
+
 #overlay > .allowDrop {
   display: grid;
 }
@@ -172,7 +185,6 @@ import {
   exists,
   writeTextFile,
   readTextFile,
-  Dir,
 } from "@tauri-apps/api/fs";
 
 const itunes = "https://itunes.apple.com/search?";
@@ -211,6 +223,9 @@ appWindow.onFileDropEvent(async (event) => {
   var overlay = document.getElementById("overlay");
 
   if (event.payload.type === "cancel") {
+    overlay.style.opacity = "0";
+    return;
+  } else if (event.payload.paths.length === 0) {
     overlay.style.opacity = "0";
     return;
   } else if (event.payload.type === "hover") {
@@ -273,6 +288,7 @@ appWindow.onFileDropEvent(async (event) => {
       index++
     }
     await addPaths(songNames);
+    location.reload();
   }
 });
 
@@ -296,8 +312,6 @@ async function addPaths(songNames) {
   content = JSON.parse(content);
 
   content = content.concat(songNames);
-
-  console.log(content);
 
   await writeTextFile(`savedMusic/_all.json`, JSON.stringify(content), {
     dir: BaseDirectory.Audio,
