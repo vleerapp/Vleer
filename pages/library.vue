@@ -81,13 +81,15 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 20px;
+  margin-bottom: 30px;
 }
 
 .musicItem {
   max-width: 250px;
   height: 320px;
   display: grid;
-  grid-template-rows: auto auto auto; /* First row takes up remaining space, other rows fit content */
+  grid-template-rows: auto auto auto;
+  /* First row takes up remaining space, other rows fit content */
   grid-template-columns: 100%;
 }
 
@@ -98,6 +100,7 @@ export default {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
 }
+
 .searchResultPlay2 {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
@@ -125,6 +128,7 @@ export default {
   overflow: hidden;
   align-self: end;
 }
+
 .searchResultArtist2 {
   grid-row: 3 / 4;
   color: var(--dtx);
