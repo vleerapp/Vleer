@@ -2,7 +2,7 @@
   position: fixed;
   z-index: 2;
   position: absolute;
-  background-color: var(--fg);
+  background-color: var(--sidebar);
   width: 300px;
   height: calc(100% - 44px);
   margin: 22px;

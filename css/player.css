@@ -1,16 +1,5 @@
-:root {
-  /*=======COLORS===========*/
-  --bg: #16151a;
-  --fg: #19181d;
-  --e: #1c1b21;
-  --tx: #85868b;
-  --txb: #ffffff;
-  --t: #e06c75;
-  --search: #1e1d23;
-}
-
 #player {
-  background-color: var(--fg);
+  background-color: var(--sidebar);
   border-radius: 24px;
   position: absolute;
   height: 124px;

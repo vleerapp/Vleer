@@ -35,7 +35,7 @@
 }
 
 #titlebar-close:hover {
-  background-color: var(--t);
+  background-color: #e06c75;
 }
 
 .fadeOut {
