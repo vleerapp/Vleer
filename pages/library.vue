@@ -2,11 +2,7 @@
   <NuxtLayout name="page">
     <h1 class="page-title">Library</h1>
     <ul class="musicList">
-      <li
-        class="musicItem"
-        v-for="(result, index) in searchResults"
-        :key="index"
-      >
+      <li class="musicItem" v-for="(result, index) in searchResults" :key="index">
         <img class="searchResultCover" :src="result.coverURL" />
         <div class="searchResultPlay">
           <img src="/svg/bold/play.svg" class="searchResultIMG" />
@@ -20,7 +16,7 @@
 
 <script setup>
 var searchResults = [
-{ coverURL: "waradu.png", name: "Waradu", artist: "Waradu" },
+  { coverURL: "waradu.png", name: "Waradu", artist: "Waradu" },
   { coverURL: "waradu.png", name: "Waradu", artist: "Waradu" },
   { coverURL: "waradu.png", name: "Waradu", artist: "Waradu" },
   { coverURL: "waradu.png", name: "Waradu", artist: "Waradu" },
@@ -83,13 +79,15 @@ var searchResults = [
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 20px;
+  margin-bottom: 30px;
 }
 
 .musicItem {
   max-width: 250px;
   height: 300px;
   display: grid;
-  grid-template-rows: auto auto auto; /* First row takes up remaining space, other rows fit content */
+  grid-template-rows: auto auto auto;
+  /* First row takes up remaining space, other rows fit content */
   grid-template-columns: 100%;
 }
 
@@ -100,6 +98,7 @@ var searchResults = [
   grid-row: 1 / 2;
   grid-column: 1 / 2;
 }
+
 .searchResultPlay {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
@@ -122,6 +121,7 @@ var searchResults = [
   font-size: 20px;
   align-self: end;
 }
+
 .searchResultArtist {
   grid-row: 3 / 4;
   color: var(--dtx);
