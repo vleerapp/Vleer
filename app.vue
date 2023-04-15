@@ -1,6 +1,10 @@
 <template>
-  <titlebar />
-  <NuxtPage />
+  <div>
+    <NuxtLayout>
+      <titlebar />
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
   <div id="app"></div>
   <div id="overlay">
     <svg
@@ -186,15 +190,14 @@ appWindow.onFileDropEvent(async (event) => {
     }
     console.log(BaseDirectory.Audio);
   } else if (event.payload.type === "drop") {
+    console.log("dropped");
     overlay.style.opacity = "0";
     event.payload.paths.forEach(async (item, index) => {
       var musicName = item.split("\\");
       musicName = musicName[musicName.length - 1];
-      if (
-          !(await exists(musicName, { dir: BaseDirectory.Audio }))
-        ) {
-          return;
-        }
+      if (await exists(musicName, { dir: BaseDirectory.Audio })) {
+        return;
+      }
       if (musicEnd != "mp3") {
         if (!(await exists("savedMusic/", { dir: BaseDirectory.Audio }))) {
           await createDir("savedMusic/", {
@@ -206,15 +209,11 @@ appWindow.onFileDropEvent(async (event) => {
           !(await exists("savedMusic/_all.json", { dir: BaseDirectory.Audio }))
         ) {
           var all = {
-            "all": []
+            all: [],
           };
-          await writeTextFile(
-            `savedMusic/_all.json`,
-            JSON.stringify(all),
-            {
-              dir: BaseDirectory.Audio,
-            }
-          );
+          await writeTextFile(`savedMusic/_all.json`, JSON.stringify(all), {
+            dir: BaseDirectory.Audio,
+          });
         }
         await copyFile(item, `savedMusic/${musicName}`, {
           dir: BaseDirectory.Audio,
@@ -225,18 +224,14 @@ appWindow.onFileDropEvent(async (event) => {
         });
         allFile = JSON.parse(allFile);
 
-        allFile.all.push(musicName)
+        allFile.all.push(musicName);
 
-        await writeTextFile(
-          `savedMusic/_all.json`,
-          JSON.stringify(allFile),
-          {
-            dir: BaseDirectory.Audio,
-          }
-        );
+        await writeTextFile(`savedMusic/_all.json`, JSON.stringify(allFile), {
+          dir: BaseDirectory.Audio,
+        });
 
         var md = await metadata(item);
-        console.log(md)
+        console.log(md);
 
         var musicData = {
           trackName: `${musicName.slice(0, -4)}`,
