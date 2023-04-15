@@ -3,12 +3,12 @@
     <h1 class="page-title">Library</h1>
     <ul class="musicList">
       <li class="musicItem" v-for="(result, index) in searchResults" :key="index">
-        <img class="searchResultCover" :src="result.coverURL" />
-        <div class="searchResultPlay">
-          <img src="/svg/bold/play.svg" class="searchResultIMG" />
+        <img class="searchResultCover2" :src="result.coverURL" />
+        <div class="searchResultPlay2">
+          <img src="/svg/bold/play.svg" class="searchResultIMG2" />
         </div>
-        <div class="searchResultName">{{ result.name }}</div>
-        <div class="searchResultArtist">{{ result.artist }}</div>
+        <div class="searchResultName2">{{ result.name }}</div>
+        <div class="searchResultArtist2">{{ result.artist }}</div>
       </li>
     </ul>
   </NuxtLayout>
@@ -91,7 +91,7 @@ var searchResults = [
   grid-template-columns: 100%;
 }
 
-.searchResultCover {
+.searchResultCover2 {
   align-self: center;
   width: 100%;
   border-radius: 10px;
@@ -99,7 +99,7 @@ var searchResults = [
   grid-column: 1 / 2;
 }
 
-.searchResultPlay {
+.searchResultPlay2 {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
   z-index: 1;
@@ -115,14 +115,14 @@ var searchResults = [
   margin: 10px;
 }
 
-.searchResultName {
+.searchResultName2 {
   grid-row: 2 / 3;
   font-weight: bold;
   font-size: 20px;
   align-self: end;
 }
 
-.searchResultArtist {
+.searchResultArtist2 {
   grid-row: 3 / 4;
   color: var(--dtx);
   align-self: flex-start;
