@@ -56,7 +56,9 @@
         "renameFile": true,
         "exists": true,
         "scope": [
-          "$AUDIO/music-player/*"
+          "$AUDIO/music-player/*",
+          "$APPCONFIG/*",
+          "$APPCONFIG"
         ]
       },
       "all": true
@@ -76,7 +78,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "tk.pandadev",
+      "identifier": ".music-player",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
