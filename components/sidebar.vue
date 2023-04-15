@@ -45,7 +45,6 @@ interface Contents extends JSON {
 }
 
 async function updateSidebarMinimized() {
-  console.log("asd")
   var element = document.getElementById("sidebar");
   var content = document.getElementById("content");
   var minimizer = document.getElementById("minimizer");
@@ -55,10 +54,17 @@ async function updateSidebarMinimized() {
     });
     var parsedContents = JSON.parse(contents) as Contents;
     if (parsedContents["miniSidebar"]) {
-      console.log("asd")
       await element.classList.add('minimized');
       await minimizer.classList.add('mini');
       await content.classList.add('contentMinimized');
+
+      setTimeout(async () => {
+        if (element && content && minimizer) {
+          await element.classList.add('animation');
+          await minimizer.classList.add('animation');
+          await content.classList.add('animation');
+        }
+      }, 100);
     }
   }
 }

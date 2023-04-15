@@ -20,7 +20,6 @@
   position: absolute;
   top: 100px;
   left: 372px;
-  transition: 0.2s;
   width: calc(100% - 450px);
 }
 
