@@ -1,8 +1,8 @@
 [package]
 name = "app"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Free and opensource desktop Music App as replacement for Spotify, Apple Music, etc. Built with Tauri and Nuxt.js "
+authors = ["PandaDEV", "Waradu"]
 license = ""
 repository = ""
 default-run = "app"
