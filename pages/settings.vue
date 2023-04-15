@@ -3,7 +3,7 @@
     <h1 class="page-title">Settings</h1>
     <div class="page">
       <input v-model="userName" type="text" id="input" class="userName" placeholder="Username" />
-      <button @click="selectAvatar" class="avatar"><img class="avatarSvg"
+      <button @click="selectAvatar" id="saveButton" class="avatar"><img class="avatarSvg"
           src="/svg/linear/profile-circle.svg">Avatar</button>
 
       <button @click="saveFile" class="save">Save</button>
@@ -15,15 +15,20 @@
 import { writeTextFile, BaseDirectory, createDir, exists, readTextFile } from "@tauri-apps/api/fs";
 import { ref } from "vue";
 import { open } from '@tauri-apps/api/dialog';
+import { save } from "@tauri-apps/api/dialog";
+
+interface Contents {
+  userName: String;
+  avatarPath: String;
+}
 
 const userName = ref("");
 
 var contents = await readTextFile("config.json", {
   dir: BaseDirectory.AppConfig,
 });
-contents = JSON.parse(contents)
 
-var avatarPath = await selectAvatar();
+var avatarPath: String;
 
 async function selectAvatar() {
   const selectedAvatar = await open({
@@ -34,8 +39,7 @@ async function selectAvatar() {
     }]
   });
 
-  avatarPath = selectedAvatar;
-  saveFile();
+  avatarPath = String(selectedAvatar);
 }
 
 async function saveFile() {
@@ -47,14 +51,21 @@ async function saveFile() {
       });
     }
 
-    var config = {
-      "userName": userName.value,
-      "avatarPath": String(avatarPath)
-    }
+    var parsedContents = JSON.parse(contents) as Contents;
 
-    await writeTextFile("config.json", JSON.stringify(config), {
+    parsedContents["userName"] = userName.value;
+    parsedContents["avatarPath"] = String(avatarPath);
+
+
+    await writeTextFile("config.json", JSON.stringify(parsedContents), {
       dir: BaseDirectory.AppConfig
     });
+
+    var saveButton = document.getElementById("saveButton");
+    if (saveButton) {
+      saveButton.classList.add('saved');
+    }
+
   } catch (err) {
     console.log(err);
   }
