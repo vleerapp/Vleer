@@ -36,21 +36,74 @@
   </div>
 </template>
 
-<script>
-function toggleSidebar() {
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { writeTextFile, createDir, BaseDirectory, exists, readTextFile } from '@tauri-apps/api/fs';
+
+interface Contents extends JSON {
+  miniSidebar: boolean;
+}
+
+async function updateSidebarMinimized() {
+  console.log("asd")
   var element = document.getElementById("sidebar");
   var content = document.getElementById("content");
   var minimizer = document.getElementById("minimizer");
-  element.classList.toggle("minimized");
-  minimizer.classList.toggle("mini");
-  content.classList.toggle("contentMinimized");
+  if (element && content && minimizer) {
+    var contents = await readTextFile("config.json", {
+      dir: BaseDirectory.AppConfig,
+    });
+    var parsedContents = JSON.parse(contents) as Contents;
+    if (parsedContents["miniSidebar"]) {
+      console.log("asd")
+      await element.classList.add('minimized');
+      await minimizer.classList.add('mini');
+      await content.classList.add('contentMinimized');
+    }
+  }
 }
-export default {
-  computed: {},
-  methods: {
-    toggleSidebar,
-  },
-};
+
+onMounted(() => {
+  updateSidebarMinimized();
+});
+
+async function toggleSidebar() {
+  var element = document.getElementById("sidebar");
+  var content = document.getElementById("content");
+  var minimizer = document.getElementById("minimizer");
+  if (element && content && minimizer) {
+    element.classList.toggle("minimized");
+    minimizer.classList.toggle("mini");
+    content.classList.toggle("contentMinimized");
+
+    var contents = await readTextFile("config.json", {
+      dir: BaseDirectory.AppConfig,
+    });
+
+    var parsedContents = JSON.parse(contents) as Contents;
+
+    parsedContents["miniSidebar"] = element.classList.contains("minimized");
+
+    await saveFile(parsedContents);
+  }
+}
+
+async function saveFile(contents: JSON) {
+  try {
+    if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
+      await createDir("", {
+        dir: BaseDirectory.AppConfig,
+        recursive: true,
+      });
+    }
+
+    await writeTextFile("config.json", JSON.stringify(contents), {
+      dir: BaseDirectory.AppConfig
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
 </script>
 
 <style>

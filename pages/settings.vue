@@ -23,7 +23,7 @@ var contents = await readTextFile("config.json", {
 });
 contents = JSON.parse(contents)
 
-var avatarPath = await selectAvatar();
+var avatarPath: String;
 
 async function selectAvatar() {
   const selectedAvatar = await open({
@@ -34,7 +34,7 @@ async function selectAvatar() {
     }]
   });
 
-  avatarPath = selectedAvatar;
+  avatarPath = String(selectedAvatar);
   saveFile();
 }
 
