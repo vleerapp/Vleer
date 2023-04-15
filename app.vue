@@ -1,10 +1,6 @@
 <template>
-  <div>
-    <NuxtLayout>
-      <titlebar />
-      <NuxtPage />
-    </NuxtLayout>
-  </div>
+  <titlebar />
+  <NuxtPage />
   <div id="app"></div>
   <div id="overlay">
     <svg
