@@ -419,4 +419,5 @@ function get(term, country = "CH", limit = 50, explicit = true) {
       return songList;
     });
 }
+
 </script>
