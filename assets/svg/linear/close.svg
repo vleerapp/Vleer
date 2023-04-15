@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <g id="close" transform="translate(88 0)">
-    <path d="M2 22L22 2" id="Vector" fill="none" fill-rule="evenodd" stroke="#85868B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M22 22L2 2" id="Vector" fill="none" fill-rule="evenodd" stroke="#85868B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M24 0L24 24L0 24L0 0L24 0Z" id="Vector" fill="none" fill-rule="evenodd" stroke="none" />
-  </g>
-</svg>
