@@ -12,6 +12,10 @@
   background-color: red;
 }
 
+.sidebar {
+  position: fixed;
+}
+
 .content {
   position: absolute;
   top: 100px;
