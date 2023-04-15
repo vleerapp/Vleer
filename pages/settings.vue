@@ -15,7 +15,6 @@
 import { writeTextFile, BaseDirectory, createDir, exists, readTextFile } from "@tauri-apps/api/fs";
 import { ref } from "vue";
 import { open } from '@tauri-apps/api/dialog';
-import { save } from "@tauri-apps/api/dialog";
 
 interface Contents {
   userName: String;
