@@ -24,10 +24,6 @@
 
 <script>
 const itunes = "https://itunes.apple.com/search?";
-const itunesLookup = "https://itunes.apple.com/lookup?";
-
-const apiKey = "AIzaSyA5tnrbbwA_Z-ckEq-E5vgQZ7IvcDojQ_k";
-const maxResults = 10;
 
 class Song {
   constructor(json) {
