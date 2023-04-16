@@ -1,0 +1,12 @@
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="shield-tick" fill-opacity="1">
+    <path d="M0 0L24 0L24 24L0 24L0 0Z" id="shield-tick" fill="none" fill-rule="evenodd" stroke="none" />
+    <g id="shield-tick">
+      <g id="Group" transform="translate(3.5524902 5.1800537)">
+        <path d="M0 7.69477L4.60517 12.3001" id="Line" fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M4.6051 12.3L16.905 0" id="Line" fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </g>
+      <path d="M0 24L1.90735e-06 0L24 1.90735e-06L24 24L0 24L0 24Z" id="Vector" fill="none" fill-rule="evenodd" stroke="none" />
+    </g>
+  </g>
+</svg>
