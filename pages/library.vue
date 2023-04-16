@@ -8,7 +8,6 @@
 <script>
 import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
 
-var searchResults = [];
 export default {
   async mounted() {
     var contents = await readTextFile(`savedMusic/_all.json`, {
@@ -16,6 +15,7 @@ export default {
     });
     contents = JSON.parse(contents);
 
+    var searchResults = [];
     const promises = contents.map(async (item) => {
       var music = await readTextFile(`savedMusic/${item}.json`, {
         dir: BaseDirectory.Audio,
