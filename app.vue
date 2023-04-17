@@ -149,13 +149,13 @@ body {
 }
 
 #overlay > div > svg {
-  transition: .5s;
+  transition: 0.5s;
   filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 1));
 }
 
 #overlay > div > div {
   margin-inline: 5px;
-  transition: .5s;
+  transition: 0.5s;
   text-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
 }
 
@@ -174,9 +174,33 @@ body {
 #overlay.red > .deniDrop {
   display: grid;
 }
+
+#top {
+  position: absolute;
+  top: -200px;
+}
+
+.gotoTop {
+  transition: .5s;
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-size: 20px;
+  background-position: 50% 50%;
+  bottom: 10px;
+  right: 20px;
+  background-image: url(/svg/bold/arrow-up.svg);
+  border-radius: 10px;
+  z-index: 3;
+}
+
+.gotoTop:hover {
+  background-color: var(--search);
+}
 </style>
 
-<script setup>
+<script>
 import { appWindow } from "@tauri-apps/api/window";
 import {
   copyFile,
@@ -187,18 +211,18 @@ import {
   readTextFile,
 } from "@tauri-apps/api/fs";
 
-const itunes = "https://itunes.apple.com/search?";
-/* import { getMatches } from '@tauri-apps/api/cli';
+export default {
+  async mounted() {
+    var isma = await appWindow.isMaximized();
+    if (isma) {
+      document.getElementById("app").style.borderRadius = "0";
+    } else {
+      document.getElementById("app").style.borderRadius = "6px";
+    }
+  },
+};
 
-const matches = await getMatches();
-if (matches.subcommand?.name === 'run') {
-  const args = matches.subcommand?.matches.args
-  if ('test' in args) {
-    console.log('%c--test was executed', 'color: green');
-  }
-} else {
-  const args = matches.args
-} */
+const itunes = "https://itunes.apple.com/search?";
 
 appWindow.onResized(async () => {
   var isma = await appWindow.isMaximized();
@@ -285,7 +309,7 @@ appWindow.onFileDropEvent(async (event) => {
           dir: BaseDirectory.Audio,
         }
       );
-      index++
+      index++;
     }
     await addPaths(songNames);
     location.reload();
@@ -323,7 +347,7 @@ class Song {
     if ("results" in json) {
       try {
         json = json["results"][0];
-      } catch { }
+      } catch {}
     }
     this.kind = json["kind"];
     this.artistName = json["artistName"];
@@ -405,7 +429,7 @@ class Song {
     return get(this.trackName, country, limit, explicit);
   }
 
-  videoURL() { }
+  videoURL() {}
 }
 
 function resizeImage(url, size) {
@@ -416,11 +440,11 @@ function resizeImage(url, size) {
 }
 
 function get(term, country = "CH", limit = 50, explicit = true) {
-  term = term.replace(/\s+/g, '+');
+  term = term.replace(/\s+/g, "+");
 
-  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
-    }&attribute=genreIndex`;
-
+  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
+    explicit ? "Yes" : "No"
+  }&attribute=genreIndex`;
 
   return fetch(apiUrl)
     .then((response) => response.json())
@@ -433,5 +457,4 @@ function get(term, country = "CH", limit = 50, explicit = true) {
       return songList;
     });
 }
-
 </script>

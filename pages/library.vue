@@ -1,12 +1,17 @@
 <template>
   <NuxtLayout name="page">
+    <a class="gotoTop" style="opacity:0;pointer-events:none;" id="gotoTop" href="#top"></a>
+    <div id="top"></div>
     <h1 class="page-title">Library</h1>
     <ul class="musicList" id="ul"></ul>
+    <audio id="media"></audio>
   </NuxtLayout>
 </template>
 
 <script>
 import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
+import { audioDir, join } from "@tauri-apps/api/path";
+import { convertFileSrc } from '@tauri-apps/api/tauri';
 
 export default {
   async mounted() {
@@ -33,10 +38,10 @@ export default {
       var music = {
         coverURL: music.imageURL,
         name:
-          music.trackName.length > 16
-            ? music.trackName.slice(0, 16).at(-1) == " "
-              ? music.trackName.slice(0, 15) + "..."
-              : music.trackName.slice(0, 16) + "..."
+          music.trackName.length > 15
+            ? music.trackName.slice(0, 15).at(-1) == " "
+              ? music.trackName.slice(0, 14) + "..."
+              : music.trackName.slice(0, 15) + "..."
             : music.trackName,
         artist:
           music.artistName.length > 20
@@ -44,28 +49,53 @@ export default {
               ? music.artistName.slice(0, 19) + "..."
               : music.artistName.slice(0, 20) + "..."
             : music.artistName,
+        originalName: music.trackName,
       };
       searchResults.push(music);
     });
-
-    console.log(searchResults)
 
     await Promise.all(promises);
 
     const ul = document.getElementById("ul");
 
     searchResults.forEach((item) => {
-      ul.innerHTML += `<li class="musicItem">
-      <img class="searchResultCover2" src="${item.coverURL}" />
-      <div class="searchResultPlay2">
-        <img src="/svg/bold/play.svg" class="searchResultIMG2" />
+      ul.innerHTML += `
+      <li class="musicItem">
+        <div class="libaryCover">
+          <img class="searchResultCover2" src="${item.coverURL}" />
+          <div class="searchResultPlay2" audio="${
+            item.originalName + ".mp3"
+          }"></div>
         </div>
         <div class="searchResultName2">${item.name}</div>
         <div class="searchResultArtist2">${item.artist}</div>
-        </li>`;
+      </li>`;
+    });
+
+    var elements = Array.from(
+      document.getElementsByClassName("searchResultPlay2")
+    );
+
+    elements.forEach(async (item) => {
+      item.addEventListener("click", () => {
+        playAudio(item.getAttribute("audio"));
+      });
     });
   },
 };
+
+async function playAudio(path) {
+  const audioDirPath = await audioDir();
+  const filePath = await join(audioDirPath, `savedMusic/${path}`);
+  const assetUrl = convertFileSrc(filePath);
+
+  const audio = document.getElementById('media');
+  const source = document.createElement("source");
+  source.type = "audio/mp3";
+  source.src = assetUrl;
+  audio.appendChild(source);
+  audio.load();
+}
 </script>
 
 <style>
@@ -79,24 +109,32 @@ export default {
 .musicList {
   max-width: 1500px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   grid-gap: 20px;
   margin-bottom: 30px;
 }
 
 .musicItem {
-  max-width: 250px;
-  height: 320px;
+  aspect-ratio: 1 / 1.3;
+  max-width: 200px;
   display: grid;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: auto 20px 20px;
   /* First row takes up remaining space, other rows fit content */
   grid-template-columns: 100%;
 }
 
-.searchResultCover2 {
+.libaryCover {
+  aspect-ratio: 1 / 1;
   align-self: center;
   width: 100%;
-  border-radius: 30px;
+  grid-row: 1 / 2;
+  grid-column: 1 / 2;
+  display: grid;
+}
+
+.searchResultCover2 {
+  width: 100%;
+  border-radius: 20px;
   grid-row: 1 / 2;
   grid-column: 1 / 2;
 }
@@ -106,14 +144,20 @@ export default {
   grid-column: 1 / 2;
   z-index: 1;
   display: grid;
+  background-color: transparent;
   border: 1px solid rgba(64, 62, 68, 0.24);
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
   place-items: center;
   border-radius: 100%;
   align-self: flex-end;
   justify-self: flex-end;
   margin: 15px;
+  margin-bottom: 13px;
+  background-image: url("/svg/bold/play.svg");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: 53% 53%;
 }
 
 .searchResultPlay2:hover {

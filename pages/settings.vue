@@ -3,7 +3,7 @@
     <h1 class="page-title">Settings</h1>
     <div class="page">
       <input v-model="userName" type="text" id="input" class="userName" placeholder="Username" />
-      <button @click="selectAvatar" id="saveButton" class="avatar"><img class="avatarSvg"
+      <button @click="selectAvatar" id="saveButton" class="avatar"><img class="avatarSvg" id="img"
           src="/svg/linear/profile-circle.svg">Avatar</button>
 
       <button @click="saveFile" class="save">Save</button>
