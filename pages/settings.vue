@@ -21,6 +21,19 @@ interface Contents {
   avatarPath: String;
 }
 
+if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
+  await createDir("", {
+    dir: BaseDirectory.AppConfig,
+    recursive: true,
+  });
+}
+
+if (!(await exists("config.json", { dir: BaseDirectory.AppConfig }))) {
+  await writeTextFile("config.json", "{}", {
+    dir: BaseDirectory.AppConfig,
+  });
+}
+
 const userName = ref("");
 
 var contents = await readTextFile("config.json", {
