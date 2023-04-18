@@ -6,6 +6,7 @@
     </NuxtLayout>
   </div>
   <div id="app"></div>
+  <audio id="media"></audio>
   <div id="overlay">
     <div
       class="allowDrop"
@@ -340,7 +341,7 @@ async function addPaths(songNames) {
   });
   content = JSON.parse(content);
 
-  content = content.all.concat(songNames);
+  content.all = content.all.concat(songNames);
 
   await writeTextFile(`savedMusic/_all.json`, JSON.stringify(content), {
     dir: BaseDirectory.Audio,

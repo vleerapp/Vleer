@@ -9,7 +9,6 @@
     <div id="top"></div>
     <h1 class="page-title">Library</h1>
     <ul class="musicList" id="ul"></ul>
-    <audio id="media"></audio>
   </NuxtLayout>
 </template>
 
