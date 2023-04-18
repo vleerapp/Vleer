@@ -2,7 +2,7 @@
   <div id="player" class="player">
     <div class="song-info">
       <div
-        style="--bgsrc: url(empty.png)"
+        style="--bgsrc: url('/empty.png')"
         class="song-img empty"
         border="none"
         id="img"
