@@ -4,13 +4,10 @@
     <search />
     <slot />
   </div>
-  <div class="bg"></div>
+  <player />
 </template>
 
 <style>
-.bg {
-  background-color: red;
-}
 
 .sidebar {
   position: fixed;
@@ -22,6 +19,7 @@
   left: 372px;
   transition: 0.2s;
   width: calc(100% - 450px);
+  padding-bottom: 100px;
 }
 
 @media screen and (max-width: 1200px) {

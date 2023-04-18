@@ -61,7 +61,15 @@
           "$APPCONFIG/*",
           "$APPCONFIG",
           "$AUDIO/*",
-          "$AUDIO/savedMusic/*"
+          "$AUDIO/savedMusic/*",
+          "$AUDIO/savedMusic/*.mp3"
+        ]
+      },
+      "protocol": {
+        "all": true,
+        "asset": true,
+        "assetScope": [
+          "$AUDIO/savedMusic/*.mp3"
         ]
       },
       "all": true
@@ -100,7 +108,7 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": "https://asset.localhost"
     },
     "updater": {
       "active": false

@@ -18,6 +18,7 @@
       "
     >
       <svg
+        id="svg1"
         xmlns="http://www.w3.org/2000/svg"
         width="100"
         height="100"
@@ -45,6 +46,7 @@
       "
     >
       <svg
+        id="svg2"
         xmlns="http://www.w3.org/2000/svg"
         width="100"
         height="100"
@@ -128,16 +130,23 @@ body {
   --overlayColor: var(--succeed);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.5s;
+  transition: 0.5s;
   position: fixed;
-  margin: 10px;
-  height: calc(100vh - 20px);
-  width: calc(100vw - 20px);
-  border-radius: 5px;
+  height: 100vh;
+  width: 100vw;
+  border-radius: 6px;
   z-index: 10;
   border: 5px solid var(--overlayColor);
   display: grid;
   place-items: center;
+  backdrop-filter: brightness(20%);
+}
+
+#svg1,
+#svg2 {
+  scale: 0.5;
+  transition: 0.5s;
+  transition-timing-function: cubic-bezier(1, -0.53, 0.405, 1.425);
 }
 
 #overlay.red {
@@ -146,17 +155,6 @@ body {
 
 .deniDrop {
   display: none;
-}
-
-#overlay > div > svg {
-  transition: 0.5s;
-  filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 1));
-}
-
-#overlay > div > div {
-  margin-inline: 5px;
-  transition: 0.5s;
-  text-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
 }
 
 #overlay > .allowDrop {
@@ -181,7 +179,7 @@ body {
 }
 
 .gotoTop {
-  transition: .5s;
+  transition: 0.5s;
   position: fixed;
   width: 30px;
   height: 30px;
@@ -191,7 +189,7 @@ body {
   bottom: 10px;
   right: 20px;
   background-image: url(/svg/bold/arrow-up.svg);
-  border-radius: 10px;
+  border-radius: 6px;
   z-index: 3;
 }
 
@@ -212,17 +210,16 @@ import {
 } from "@tauri-apps/api/fs";
 
 export default {
-  async mounted() {
-    var isma = await appWindow.isMaximized();
-    if (isma) {
-      document.getElementById("app").style.borderRadius = "0";
-    } else {
-      document.getElementById("app").style.borderRadius = "6px";
-    }
-  },
+    async mounted() {
+        var isma = await appWindow.isMaximized();
+        if (isma) {
+            document.getElementById("app").style.borderRadius = "0";
+        }
+        else {
+            document.getElementById("app").style.borderRadius = "6px";
+        }
+    },
 };
-
-const itunes = "https://itunes.apple.com/search?";
 
 appWindow.onResized(async () => {
   var isma = await appWindow.isMaximized();
@@ -248,12 +245,18 @@ appWindow.onFileDropEvent(async (event) => {
 
   if (event.payload.type === "cancel") {
     overlay.style.opacity = "0";
+    document.getElementById("svg1").style.scale = ".5";
+    document.getElementById("svg2").style.scale = ".5";
     return;
   } else if (event.payload.paths.length === 0) {
     overlay.style.opacity = "0";
+    document.getElementById("svg1").style.scale = ".5";
+    document.getElementById("svg2").style.scale = ".5";
     return;
   } else if (event.payload.type === "hover") {
     overlay.style.opacity = "1";
+    document.getElementById("svg1").style.scale = "1";
+    document.getElementById("svg2").style.scale = "1";
     if (!event.payload.paths.every((path) => path.endsWith(".mp3"))) {
       overlay.classList.add("red");
     } else {
@@ -261,6 +264,8 @@ appWindow.onFileDropEvent(async (event) => {
     }
   } else if (event.payload.type === "drop") {
     overlay.style.opacity = "0";
+    document.getElementById("svg1").style.scale = ".5";
+    document.getElementById("svg2").style.scale = ".5";
     if (!event.payload.paths.every((path) => path.endsWith(".mp3"))) return;
 
     await checkForDefaultFiles();
@@ -323,7 +328,7 @@ async function checkForDefaultFiles() {
     });
   }
   if (!(await exists("savedMusic/_all.json", { dir: BaseDirectory.Audio }))) {
-    var all = [];
+    var all = {"all": [], "counter": 0};
     await writeTextFile(`savedMusic/_all.json`, JSON.stringify(all), {
       dir: BaseDirectory.Audio,
     });
@@ -335,126 +340,10 @@ async function addPaths(songNames) {
   });
   content = JSON.parse(content);
 
-  content = content.concat(songNames);
+  content = content.all.concat(songNames);
 
   await writeTextFile(`savedMusic/_all.json`, JSON.stringify(content), {
     dir: BaseDirectory.Audio,
   });
-}
-
-class Song {
-  constructor(json) {
-    if ("results" in json) {
-      try {
-        json = json["results"][0];
-      } catch {}
-    }
-    this.kind = json["kind"];
-    this.artistName = json["artistName"];
-    this.collectionName = json["collectionName"];
-    this.trackName = json["trackName"];
-    this.artistViewUrl = json["artistViewUrl"];
-    this.collectionViewUrl = json["collectionViewUrl"];
-    this.trackViewUrl = json["trackViewUrl"];
-    this.image = json["artworkUrl100"];
-    this.releaseDate = json["releaseDate"];
-    this.collectionExplicitness =
-      json["collectionExplicitness"] == "notExplicit" ? false : true;
-    this.trackExplicitness =
-      json["trackExplicitness"] == "notExplicit" ? false : true;
-    this.discCount = json["discCount"];
-    this.discNumber = json["discNumber"];
-    this.trackCount = json["trackCount"];
-    this.trackTimeMillis = json["trackTimeMillis"];
-    this.country = json["country"];
-    this.primaryGenreName = json["primaryGenreName"];
-    this.isStreamable = json["isStreamable"].toString();
-    this.artistId = json["artistId"];
-    this.collectionId = json["collectionId"];
-    this.trackId = json["trackId"];
-  }
-
-  getImage() {
-    return this.image;
-  }
-
-  getName() {
-    return this.trackName;
-  }
-
-  getArtistName() {
-    return this.artistName;
-  }
-
-  getCountry() {
-    return this.country;
-  }
-
-  getTrackViewUrl() {
-    return this.trackViewUrl;
-  }
-
-  isStreamable() {
-    return this.isStreamable;
-  }
-
-  getCollectionName() {
-    return this.collectionName;
-  }
-
-  getResizedImage(size) {
-    return resizeImage(this.image, size);
-  }
-
-  getIds() {
-    return [this.trackId, this.collectionId, this.artistId];
-  }
-
-  getLength() {
-    return this.trackTimeMillis;
-  }
-
-  getLengthNormal() {
-    const totalSeconds = Math.floor(this.trackTimeMillis / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }
-
-  isExplicit() {
-    return this.trackExplicitness;
-  }
-
-  searchForSongName(country = "CH", limit = 50, explicit = true) {
-    return get(this.trackName, country, limit, explicit);
-  }
-
-  videoURL() {}
-}
-
-function resizeImage(url, size) {
-  url = url.replace("100x100bb.jpg", `${size}x${size}bb.jpg`);
-  url = url.replace("60x60bb.jpg", `${size}x${size}bb.jpg`);
-  url = url.replace("30x30bb.jpg", `${size}x${size}bb.jpg`);
-  return url;
-}
-
-function get(term, country = "CH", limit = 50, explicit = true) {
-  term = term.replace(/\s+/g, "+");
-
-  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
-    explicit ? "Yes" : "No"
-  }&attribute=genreIndex`;
-
-  return fetch(apiUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      const songList = [];
-      data.results.forEach((item) => {
-        var song = new Song(item);
-        songList.push(song);
-      });
-      return songList;
-    });
 }
 </script>

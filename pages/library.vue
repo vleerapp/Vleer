@@ -1,6 +1,11 @@
 <template>
   <NuxtLayout name="page">
-    <a class="gotoTop" style="opacity:0;pointer-events:none;" id="gotoTop" href="#top"></a>
+    <a
+      class="gotoTop"
+      style="opacity: 0; pointer-events: none"
+      id="gotoTop"
+      href="#top"
+    ></a>
     <div id="top"></div>
     <h1 class="page-title">Library</h1>
     <ul class="musicList" id="ul"></ul>
@@ -11,7 +16,7 @@
 <script>
 import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
 import { audioDir, join } from "@tauri-apps/api/path";
-import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export default {
   async mounted() {
@@ -19,6 +24,7 @@ export default {
       dir: BaseDirectory.Audio,
     });
     contents = JSON.parse(contents);
+    contents = contents.all
 
     var searchResults = [];
     const promises = contents.map(async (item) => {
@@ -77,8 +83,33 @@ export default {
     );
 
     elements.forEach(async (item) => {
-      item.addEventListener("click", () => {
+      item.addEventListener("click", async () => {
         playAudio(item.getAttribute("audio"));
+
+        var music = await readTextFile(`savedMusic/${item.getAttribute("audio")}.json`, {
+          dir: BaseDirectory.Audio,
+        });
+        music = JSON.parse(music);
+        if (music.imageURL == "") {
+          music.imageURL = "/unknown.png";
+        }
+        if (music.trackName == "") {
+          music.trackName = "Unknown Name";
+        }
+        if (music.artistName == "") {
+          music.artistName = "Unknown Artist";
+        }
+
+        const audioPlayed = new CustomEvent("customPlayAudio", {
+          bubbles: true,
+          cancelable: true,
+          detail: {
+            image: music.imageURL,
+            name: music.trackName,
+            artist: music.artistName,
+          },
+        });
+        document.dispatchEvent(audioPlayed);
       });
     });
   },
@@ -89,12 +120,14 @@ async function playAudio(path) {
   const filePath = await join(audioDirPath, `savedMusic/${path}`);
   const assetUrl = convertFileSrc(filePath);
 
-  const audio = document.getElementById('media');
+  const audio = document.getElementById("media");
+  audio.innerHTML = "";
   const source = document.createElement("source");
   source.type = "audio/mp3";
   source.src = assetUrl;
   audio.appendChild(source);
   audio.load();
+  audio.play();
 }
 </script>
 
@@ -134,7 +167,7 @@ async function playAudio(path) {
 
 .searchResultCover2 {
   width: 100%;
-  border-radius: 20px;
+  border-radius: 30px;
   grid-row: 1 / 2;
   grid-column: 1 / 2;
 }
