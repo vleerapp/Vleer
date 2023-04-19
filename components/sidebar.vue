@@ -69,8 +69,6 @@ var contents = await readTextFile("config.json", {
 
 contents = JSON.parse(contents);
 
-console.log(contents);
-
 var minimized = contents.miniSidebar;
 
 async function toggleSidebar() {
