@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar" id="sidebar">
+  <div class="sidebar animation" id="sidebar" :class="minimized ? 'minimized' : ''">
     <div class="minibar">
       <nuxt-link class="settings" to="/settings">
         <img src="/svg/linear/setting-2.svg" width="18" height="18" />
@@ -8,70 +8,70 @@
     <div id="sidenav_tabs">
       <div class="tab">
         <nuxt-link to="/" class="tab-link">
-          <div style="--img: url('/svg/linear/home-2.svg')" class="tab_icon home_icon"></div>
+          <div
+            style="--img: url('/svg/linear/home-2.svg')"
+            class="tab_icon home_icon"
+          ></div>
           <span class="tab_text">Home</span>
         </nuxt-link>
       </div>
       <div class="tab">
         <nuxt-link to="/songs" class="tab-link">
-          <div style="--img: url('/svg/linear/music.svg')" class="tab_icon songs_icon"></div>
+          <div
+            style="--img: url('/svg/linear/music.svg')"
+            class="tab_icon songs_icon"
+          ></div>
           <span class="tab_text">Songs</span>
         </nuxt-link>
       </div>
       <div class="tab">
         <nuxt-link to="/playlists" class="tab-link">
-          <div style="--img: url('/svg/linear/note.svg')" class="tab_icon playlists_icon"></div>
+          <div
+            style="--img: url('/svg/linear/note.svg')"
+            class="tab_icon playlists_icon"
+          ></div>
           <span class="tab_text">Playlists</span>
         </nuxt-link>
       </div>
       <div class="tab">
         <nuxt-link to="/library" class="tab-link">
-          <div style="--img: url('/svg/linear/video-square.svg')" class="tab_icon library_icon"></div>
+          <div
+            style="--img: url(/svg/linear/video-square.svg)"
+            class="tab_icon library_icon"
+          ></div>
           <span class="tab_text">Library</span>
         </nuxt-link>
       </div>
     </div>
-    <div id="minimizer" style="--arrow: url('/svg/linear/arrow-close.svg')" v-on:click="toggleSidebar"
-      class="minimizeSidebar" alt=""></div>
+    <div
+      id="minimizer"
+      style="--arrow: url('/svg/linear/arrow-close.svg')"
+      v-on:click="toggleSidebar"
+      class="minimizeSidebar animation"
+      :class="minimized ? 'mini' : ''"
+      alt=""
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { writeTextFile, createDir, BaseDirectory, exists, readTextFile } from '@tauri-apps/api/fs';
+import {
+  writeTextFile,
+  createDir,
+  BaseDirectory,
+  exists,
+  readTextFile,
+} from "@tauri-apps/api/fs";
 
-interface Contents extends JSON {
-  miniSidebar: boolean;
-}
-
-async function updateSidebarMinimized() {
-  var element = document.getElementById("sidebar");
-  var content = document.getElementById("content");
-  var minimizer = document.getElementById("minimizer");
-  if (element && content && minimizer) {
-    var contents = await readTextFile("config.json", {
-      dir: BaseDirectory.AppConfig,
-    });
-    var parsedContents = JSON.parse(contents) as Contents;
-    if (parsedContents["miniSidebar"]) {
-      await element.classList.add('minimized');
-      await minimizer.classList.add('mini');
-      await content.classList.add('contentMinimized');
-
-      setTimeout(async () => {
-        if (element && content && minimizer) {
-          await element.classList.add('animation');
-          await minimizer.classList.add('animation');
-          await content.classList.add('animation');
-        }
-      }, 100);
-    }
-  }
-}
-
-onMounted(() => {
-  updateSidebarMinimized();
+var contents = await readTextFile("config.json", {
+  dir: BaseDirectory.AppConfig,
 });
+
+contents = JSON.parse(contents);
+
+console.log(contents);
+
+var minimized = contents.miniSidebar;
 
 async function toggleSidebar() {
   var element = document.getElementById("sidebar");
@@ -86,7 +86,7 @@ async function toggleSidebar() {
       dir: BaseDirectory.AppConfig,
     });
 
-    var parsedContents = JSON.parse(contents) as Contents;
+    var parsedContents = JSON.parse(contents);
 
     parsedContents["miniSidebar"] = element.classList.contains("minimized");
 
@@ -104,7 +104,7 @@ async function saveFile(contents: JSON) {
     }
 
     await writeTextFile("config.json", JSON.stringify(contents), {
-      dir: BaseDirectory.AppConfig
+      dir: BaseDirectory.AppConfig,
     });
   } catch (err) {
     console.log(err);

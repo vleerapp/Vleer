@@ -175,19 +175,6 @@ import {
   Dir,
 } from "@tauri-apps/api/fs";
 
-const itunes = "https://itunes.apple.com/search?";
-/* import { getMatches } from '@tauri-apps/api/cli';
-
-const matches = await getMatches();
-if (matches.subcommand?.name === 'run') {
-  const args = matches.subcommand?.matches.args
-  if ('test' in args) {
-    console.log('%c--test was executed', 'color: green');
-  }
-} else {
-  const args = matches.args
-} */
-
 appWindow.onResized(async () => {
   var isma = await appWindow.isMaximized();
   if (isma) {
@@ -419,5 +406,4 @@ function get(term, country = "CH", limit = 50, explicit = true) {
       return songList;
     });
 }
-
 </script>
