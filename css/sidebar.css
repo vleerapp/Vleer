@@ -7,8 +7,11 @@
   height: calc(100% - 44px);
   margin: 22px;
   border-radius: 12px;
-  transition: .2s;
   overflow: visible;
+}
+
+.animation {
+  transition: 0.2s;
 }
 
 .minimizeSidebar {
@@ -16,7 +19,6 @@
   top: 37px;
   right: 0px;
   transform: translate(-50%, -50%);
-  transition: scale .2s;
   border-radius: 100px;
   cursor: pointer;
   background-image: var(--arrow);

@@ -52,6 +52,7 @@ async function selectAvatar() {
   });
 
   avatarPath = String(selectedAvatar);
+  saveFile();
 }
 
 async function saveFile() {
