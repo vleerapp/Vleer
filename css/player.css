@@ -21,16 +21,16 @@
   height: 100px;
   overflow: hidden;
   left: 350px;
-  bottom: 22px;
+  bottom: 40px;
   display: grid;
-  right: 30px;
+  right: 40px;
   grid-template-columns: 250px auto 250px;
   transition: 0.2s;
   z-index: 5;
   filter: drop-shadow(0px 0px 10px var(--sidebar));
 }
 
-#__nuxt > div:has(.minimized) #player {
+#__nuxt>div:has(.minimized) #player {
   left: 130px;
 }
 
@@ -97,7 +97,9 @@
   background-color: var(--search);
 }
 
-#player .name.empty::before, #player .artist.empty::before, #player .song-img.empty::before {
+#player .name.empty::before,
+#player .artist.empty::before,
+#player .song-img.empty::before {
   content: "";
   position: absolute;
   top: 0;
@@ -112,6 +114,7 @@
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -130,7 +133,7 @@
   align-self: flex-end;
 }
 
-#player .progress-controlls > * {
+#player .progress-controlls>* {
   border-radius: 100%;
   width: 47px;
   padding: 7px;
@@ -143,7 +146,7 @@
 #player .progressbar {
   width: 100%;
   display: grid;
-  grid-template-columns: 70px auto  70px;
+  grid-template-columns: 70px auto 70px;
   place-items: center;
   align-self: flex-start;
   margin-top: 2px;
@@ -152,7 +155,7 @@
   font-weight: 300;
 }
 
-#player .progressbar > .bar {
+#player .progressbar>.bar {
   width: 100%;
   height: 16px;
   padding: 5px;
@@ -160,7 +163,7 @@
   position: relative;
 }
 
-#player .progressbar > .bar > .bar-bg {
+#player .progressbar>.bar>.bar-bg {
   height: 6px;
   width: 100%;
   background-color: var(--dtx);
@@ -170,7 +173,7 @@
   border-radius: 10px;
 }
 
-#player .progressbar > .bar > .bar-filled {
+#player .progressbar>.bar>.bar-filled {
   position: absolute;
   top: 5px;
   left: 0;
@@ -182,13 +185,13 @@
 #player .sound-controlls {
   width: 100%;
   display: grid;
-  grid-template-columns: 50px auto  50px;
+  grid-template-columns: 50px auto 50px;
   place-items: center;
   color: var(--dtx);
   padding-right: 15px;
 }
 
-#player .sound-controlls > .bar {
+#player .sound-controlls>.bar {
   width: 100%;
   height: 16px;
   padding: 5px;
@@ -196,7 +199,7 @@
   position: relative;
 }
 
-#player .sound-controlls > .bar > .bar-bg {
+#player .sound-controlls>.bar>.bar-bg {
   height: 6px;
   width: 100%;
   background-color: var(--dtx);
@@ -206,7 +209,7 @@
   border-radius: 10px;
 }
 
-#player .sound-controlls > .bar > .bar-filled {
+#player .sound-controlls>.bar>.bar-filled {
   position: absolute;
   top: 5px;
   left: 0;
@@ -225,7 +228,15 @@
 }
 
 @keyframes click {
-  0% {scale: 1;}
-  50% {scale: .8;}
-  100% {scale: 1;}
+  0% {
+    scale: 1;
+  }
+
+  50% {
+    scale: .8;
+  }
+
+  100% {
+    scale: 1;
+  }
 }
