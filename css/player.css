@@ -107,7 +107,7 @@
   width: 200%;
   height: 100%;
   background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
-  animation: loaderGlint 1s ease-in-out infinite;
+  animation: loaderGlint 2s ease-in-out infinite;
 }
 
 @keyframes loaderGlint {
