@@ -184,21 +184,25 @@ import {
   readTextFile,
 } from "@tauri-apps/api/fs";
 
-if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
-  await createDir("", {
-    dir: BaseDirectory.AppConfig,
-    recursive: true,
-  });
-}
 
-if (!(await exists("config.json", { dir: BaseDirectory.AppConfig }))) {
-  await writeTextFile("config.json", "{}", {
-    dir: BaseDirectory.AppConfig,
-  });
+async function checkForDefaultFilesInAppData() {
+  if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
+    await createDir("", {
+      dir: BaseDirectory.AppConfig,
+      recursive: true,
+    });
+  }
+  
+  if (!(await exists("config.json", { dir: BaseDirectory.AppConfig }))) {
+    await writeTextFile("config.json", "{}", {
+      dir: BaseDirectory.AppConfig,
+    });
+  }
 }
 
 export default {
   async mounted() {
+    await checkForDefaultFilesInAppData()
     var isma = await appWindow.isMaximized();
     if (isma) {
       document.getElementById("app").style.borderRadius = "0";
