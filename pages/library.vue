@@ -1,11 +1,6 @@
 <template>
   <NuxtLayout name="page">
-    <a
-      class="gotoTop"
-      style="opacity: 0; pointer-events: none"
-      id="gotoTop"
-      href="#top"
-    ></a>
+    <a class="gotoTop" style="opacity: 0; pointer-events: none" id="gotoTop" href="#top"></a>
     <div id="top"></div>
     <h1 class="page-title">Library</h1>
     <ul class="musicList" id="ul"></ul>
@@ -68,9 +63,8 @@ export default {
       <li class="musicItem">
         <div class="libaryCover">
           <img class="searchResultCover2" src="${item.coverURL}" />
-          <div class="searchResultPlay2" audio="${
-            item.originalName + ".mp3"
-          }"></div>
+          <div class="searchResultPlay2" audio="${item.originalName + ".mp3"
+        }"></div>
         </div>
         <div class="searchResultName2">${item.name}</div>
         <div class="searchResultArtist2">${item.artist}</div>
@@ -143,7 +137,7 @@ async function playAudio(path) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   grid-gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 70px;
 }
 
 .musicItem {
