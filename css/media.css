@@ -50,11 +50,8 @@
   }
 
   .tab_icon {
-    margin-left: 0;
-  }
-
-  .tab_icon {
-    width: 100%;
+    height: 30px;
+    width: 30px;
   }
 
   .minimizeSidebar {
@@ -110,11 +107,8 @@
   }
 
   .minimized .tab_icon {
-    width: 100%;
-  }
-
-  .minimized .tab_icon {
-    margin-left: 0;
+    height: 30px;
+    width: 30px;
   }
 
   .contentMinimized {
