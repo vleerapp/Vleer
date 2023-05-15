@@ -36,6 +36,10 @@
     left: 152px;
     width: calc(100% - 250px);
   }
+
+  .bg {
+    left: 130px;
+  }
 }
 </style>
 
