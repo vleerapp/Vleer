@@ -46,7 +46,7 @@
   background: #1e1d23;
   width: 40px;
   height: 40px;
-  margin-left: 8px;
+  margin-left: 48px;
   border-radius: 100px;
   display: grid;
   place-items: center;
@@ -139,4 +139,5 @@
   border-radius: 100px;
   cursor: pointer;
   transition: .3s;
+  position: fixed;
 }
