@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar animation" id="sidebar" :class="minimized ? 'minimized' : ''">
     <div class="minibar">
-      <img id="avatar-img" src="empty.png" />
+      <img id="avatar-img" src="/empty.png" />
       <nuxt-link class="settings" to="/settings">
         <img src="/svg/linear/setting-2.svg" width="18" height="18" />
       </nuxt-link>
