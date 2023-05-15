@@ -135,4 +135,11 @@
     width: calc(100% - 166px) !important;
     left: 144px !important;
   }
+
+  .minimized .settings {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    margin: 0;
+  }
 }

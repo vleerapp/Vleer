@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: row;
   margin-top: 18px;
-  margin-left: 10px;
+  margin-left: 18px;
 }
 
 .settings {
@@ -46,8 +46,8 @@
   background: #1e1d23;
   width: 40px;
   height: 40px;
-  border-radius: 100px;
   margin-left: 8px;
+  border-radius: 100px;
   display: grid;
   place-items: center;
 }
@@ -130,4 +130,12 @@
 
 .router-link-active.router-link-exact-active.tab-link>.library_icon {
   --img: url('/svg/bold/video-square.svg') !important;
+}
+
+#avatar-img {
+  height: 40px;
+  width: 40px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: .3s;
 }
