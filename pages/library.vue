@@ -127,11 +127,6 @@ async function playAudio(path) {
 <style>
 @import "~/css/style.css";
 
-.page-title {
-  margin-bottom: 20px;
-  margin-top: 10px;
-}
-
 .musicList {
   max-width: 1500px;
   display: grid;

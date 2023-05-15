@@ -43,7 +43,7 @@
   top: 40px;
   left: 0;
   right: 20px;
-  height: 80px;
+  height: 70px;
   z-index: 2;
   background: linear-gradient(180deg, rgba(22, 21, 26, 1) 0%, rgba(22, 21, 26, 1) 60%, rgba(22, 21, 26, 0) 100%);
 }
