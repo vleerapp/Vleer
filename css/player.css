@@ -50,7 +50,7 @@
 #player .song-img {
   width: 80px;
   height: 80px;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   background-color: var(--search);
   background: var(--bgsrc) no-repeat;
