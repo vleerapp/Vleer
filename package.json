@@ -13,12 +13,11 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.2.3",
-    "nuxt": "^3.4.1"
+    "nuxt": "^3.5.0"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.4.15",
     "@tauri-apps/api": "^1.2.0",
-    "@vue/composition-api": "^1.7.1",
     "nuxi": "^3.4.1",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra"
   }

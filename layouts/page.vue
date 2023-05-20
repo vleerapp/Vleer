@@ -4,11 +4,11 @@
     <search />
     <slot />
   </div>
+  <div class="bg"></div>
   <player />
 </template>
 
 <style>
-
 .sidebar {
   position: fixed;
 }
@@ -21,10 +21,24 @@
   padding-bottom: 100px;
 }
 
+.bg {
+  width: 100%;
+  height: 140px;
+  position: fixed;
+  background-color: var(--bg);
+  bottom: 0;
+  left: 350px;
+  z-index: 4;
+}
+
 @media screen and (max-width: 1200px) {
   .content {
     left: 152px;
     width: calc(100% - 250px);
+  }
+
+  .bg {
+    left: 130px;
   }
 }
 </style>

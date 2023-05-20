@@ -22,7 +22,8 @@ body {
 
 .page-title {
   color: var(--tx);
-  font-size: 46px;
+  font-size: 38px;
   z-index: 0;
   position: relative;
+  margin-bottom: 10px;
 }

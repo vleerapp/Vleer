@@ -199,7 +199,7 @@ body {
 }
 </style>
 
-<script>
+<script lang="ts">
 import { appWindow } from "@tauri-apps/api/window";
 import {
   copyFile,
@@ -266,14 +266,30 @@ export default {
   },
 };
 
-appWindow.onResized(async () => {
-  var isma = await appWindow.isMaximized();
-  if (isma) {
-    document.getElementById("app").style.borderRadius = "0";
+function checkIfWindows() {
+  const isWindows = window.__TAURI__.tauri.is_windows();
+  console.log(isWindows); // true if the user is on a Windows machine
+
+  // Perform actions based on the user's operating system
+  if (isWindows) {
+    // Windows-specific logic
+    return true;
   } else {
-    document.getElementById("app").style.borderRadius = "6px";
+    // Logic for other operating systems
+    return false;
   }
-});
+}
+
+// if (checkIfWindows()) {
+//   appWindow.onResized(async () => {
+//     var isma = await appWindow.isMaximized();
+//     if (isma) {
+//       document.getElementById("app").style.borderRadius = "0";
+//     } else {
+//       document.getElementById("app").style.borderRadius = "6px";
+//     }
+//   });
+// }
 
 document.body.addEventListener("scroll", () => {
   if (document.body.scrollTop < 800) {

@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: row;
   margin-top: 18px;
-  margin-left: 10px;
+  margin-left: 18px;
 }
 
 .settings {
@@ -46,8 +46,8 @@
   background: #1e1d23;
   width: 40px;
   height: 40px;
+  margin-left: 48px;
   border-radius: 100px;
-  margin-left: 8px;
   display: grid;
   place-items: center;
 }
@@ -90,17 +90,18 @@
   display: flex;
   align-items: center;
   font-size: 18px;
-  margin-left: 21px;
+  margin-left: 69px;
 }
 
 .tab_icon {
-  margin-left: 18px;
+  margin-left: 15px;
   background-image: var(--img);
   background-size: 28px;
   background-position: 50% 50%;
   background-repeat: no-repeat;
   height: 30px;
   width: 30px;
+  position: fixed;
 }
 
 .tab_text {
@@ -130,4 +131,13 @@
 
 .router-link-active.router-link-exact-active.tab-link>.library_icon {
   --img: url('/svg/bold/video-square.svg') !important;
+}
+
+#avatar-img {
+  height: 40px;
+  width: 40px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: .3s;
+  position: fixed;
 }

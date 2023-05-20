@@ -4,6 +4,7 @@
     <slot />
   </div>
   <div class="bg"></div>
+  <player />
 </template>
 
 <style scoped>
@@ -13,6 +14,15 @@ body {
 
 .sidebar {
   position: fixed;
+}
+
+.bg {
+  width: 100%;
+  height: 200px;
+  position: fixed;
+  background-color: var(--bg);
+  bottom: 0;
+  left: 350px;
 }
 
 .content {
