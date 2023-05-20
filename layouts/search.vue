@@ -1,6 +1,6 @@
 <template>
   <sidebar />
-  <div id="content" class="content">
+  <div id="content" class="content animation" :class="minimized ? 'contentMinimized' : ''">
     <slot />
   </div>
   <div class="bg"></div>
@@ -28,3 +28,18 @@ body {
   }
 }
 </style>
+
+<script setup lang="ts">
+import {
+  BaseDirectory,
+  readTextFile,
+} from "@tauri-apps/api/fs";
+
+var contents = await readTextFile("config.json", {
+  dir: BaseDirectory.AppConfig,
+});
+
+var config = JSON.parse(contents);
+
+var minimized = config.miniSidebar;
+</script>

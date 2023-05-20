@@ -8,30 +8,56 @@
   <div id="app"></div>
   <audio id="media"></audio>
   <div id="overlay">
-    <div class="allowDrop" style="
+    <div
+      class="allowDrop"
+      style="
         color: var(--succeed);
         place-items: center;
         font-size: 20px;
         font-weight: bold;
         padding: 10px;
-      ">
-      <svg id="svg1" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none"
-        stroke="#66ff66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      "
+    >
+      <svg
+        id="svg1"
+        xmlns="http://www.w3.org/2000/svg"
+        width="100"
+        height="100"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#66ff66"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         <polyline points="7 10 12 15 17 10"></polyline>
         <line x1="12" y1="15" x2="12" y2="3"></line>
       </svg>
       <div>Import</div>
     </div>
-    <div class="deniDrop" style="
+    <div
+      class="deniDrop"
+      style="
         color: var(--fail);
         place-items: center;
         font-size: 20px;
         font-weight: bold;
         padding: 10px;
-      ">
-      <svg id="svg2" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none"
-        stroke="#ff6666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      "
+    >
+      <svg
+        id="svg2"
+        xmlns="http://www.w3.org/2000/svg"
+        width="100"
+        height="100"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#ff6666"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -132,19 +158,19 @@ body {
   display: none;
 }
 
-#overlay>.allowDrop {
+#overlay > .allowDrop {
   display: grid;
 }
 
-#overlay>.deniDrop {
+#overlay > .deniDrop {
   display: none;
 }
 
-#overlay.red>.allowDrop {
+#overlay.red > .allowDrop {
   display: none;
 }
 
-#overlay.red>.deniDrop {
+#overlay.red > .deniDrop {
   display: grid;
 }
 
@@ -184,7 +210,6 @@ import {
   readTextFile,
 } from "@tauri-apps/api/fs";
 
-
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
     await createDir("", {
@@ -192,7 +217,7 @@ async function checkForDefaultFilesInAppData() {
       recursive: true,
     });
   }
-  
+
   if (!(await exists("config.json", { dir: BaseDirectory.AppConfig }))) {
     await writeTextFile("config.json", "{}", {
       dir: BaseDirectory.AppConfig,
@@ -200,16 +225,44 @@ async function checkForDefaultFilesInAppData() {
   }
 }
 
+function playpause() {
+  var source = document.getElementById("media");
+  let imgsrc = document.getElementById("pauseplay");
+  imgsrc.classList.add("clickAnimation");
+  console.log(source.paused);
+  window.setTimeout(function () {
+    if (source.paused) {
+      imgsrc.src = "/svg/bold/pause.svg";
+      source.play();
+    } else {
+      imgsrc.src = "/svg/bold/play.svg";
+      source.pause();
+    }
+  }, 150);
+  window.setTimeout(function () {
+    imgsrc.classList.remove("clickAnimation");
+  }, 400);
+}
+
 export default {
   async mounted() {
-    await checkForDefaultFilesInAppData()
+    await checkForDefaultFilesInAppData();
     var isma = await appWindow.isMaximized();
     if (isma) {
       document.getElementById("app").style.borderRadius = "0";
-    }
-    else {
+    } else {
       document.getElementById("app").style.borderRadius = "6px";
     }
+
+    window.addEventListener("keydown", function (event) {
+      if (
+        event.code === "Space" &&
+        !document.getElementById("searchBar").activeElement
+      ) {
+        event.preventDefault();
+        playpause();
+      }
+    });
   },
 };
 
@@ -320,7 +373,7 @@ async function checkForDefaultFiles() {
     });
   }
   if (!(await exists("savedMusic/_all.json", { dir: BaseDirectory.Audio }))) {
-    var all = { "all": [], "counter": 0 };
+    var all = { all: [], counter: 0 };
     await writeTextFile(`savedMusic/_all.json`, JSON.stringify(all), {
       dir: BaseDirectory.Audio,
     });

@@ -64,8 +64,9 @@ function playpause() {
   var source = document.getElementById("media");
   let imgsrc = document.getElementById("pauseplay");
   imgsrc.classList.add("clickAnimation");
+  console.log(source.paused)
   window.setTimeout(function () {
-    if (imgsrc.src == "http://localhost:3000/svg/bold/play.svg") {
+    if (source.paused) {
       imgsrc.src = "/svg/bold/pause.svg";
       source.play();
     } else {
@@ -102,15 +103,10 @@ export default {
         back();
       });
 
-    document.addEventListener("keydown", function (event) {
-      if (event.keyCode === 32) {
-        event.preventDefault();
-        var pauseplay = document.getElementById("pauseplay");
-        pauseplay.click();
-      }
-    });
-
     var audio = document.getElementById("media");
+
+    audio.hasAttribute("svolume") ? audio.volume = media.getAttribute("svolume") : audio.volume = 0.3;
+    console.log(audio.volume)
 
     var progressBarFill = document.getElementById("progressbar");
     var progressTime = document.getElementById("progress-time");
@@ -200,8 +196,6 @@ export default {
       ".sound-controlls > .bar > .bar-filled"
     );
 
-    audio.volume = 0.3;
-
     var isDraggingAudio = false;
     var dragAudioX = 0;
 
@@ -231,6 +225,7 @@ export default {
           100;
         AudioBarFill.style.width = progress + "%";
         audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
     });
 
@@ -242,7 +237,8 @@ export default {
             AudioBar.clientWidth) *
           100;
         AudioBarFill.style.width = progress + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.5;
+        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
     });
   },

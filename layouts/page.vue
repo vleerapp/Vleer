@@ -39,7 +39,7 @@ var contents = await readTextFile("config.json", {
   dir: BaseDirectory.AppConfig,
 });
 
-contents = JSON.parse(contents);
+var config = JSON.parse(contents);
 
-var minimized = contents.miniSidebar;
+var minimized = config.miniSidebar;
 </script>

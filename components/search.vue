@@ -1,5 +1,5 @@
 <template>
-  <input type="text" class="search" placeholder="Search" @input="handleInputChange" />
+  <input id="searchBar" type="text" class="search" placeholder="Search" @input="handleInputChange" />
 </template>
 
 <script>
