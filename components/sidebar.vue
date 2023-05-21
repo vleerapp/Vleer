@@ -57,25 +57,11 @@ var contents = await readTextFile("config.json", {
 });
 
 var parsedContents = JSON.parse(contents) as Contents;
-
-async function setAvatar() {
-  /* console.log("asd")
-  const avatar = document.createElement("source");
-  const img = document.getElementById("avatar-img");
-  avatar.type = "image";
-  avatar.src = JSON.stringify(parsedContents["avatarPath"]);
-  if (img != null) {
-    img.innerHTML = "";
-    img.appendChild(avatar);
-  } */
-
-  const img = document.getElementById("avatar-img");
-  img?.style.borderImageSource("waradu.png")
-  console.log("asda")
-
-}
-
 contents = JSON.parse(contents);
+
+var image = document.getElementById("tab");
+console.log(image);
+// image.src = "waradu.png"
 
 var minimized = contents["miniSidebar"];
 
@@ -117,7 +103,6 @@ async function saveFile(contents: JSON) {
   }
 }
 
-setAvatar()
 </script>
 
 <style>
