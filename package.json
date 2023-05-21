@@ -18,6 +18,8 @@
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.4.15",
     "@tauri-apps/api": "^1.2.0",
+    "axios": "^1.4.0",
+    "node-fetch": "^2.6.1",
     "nuxi": "^3.4.1",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra"
   }
