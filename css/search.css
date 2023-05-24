@@ -15,6 +15,7 @@
   border-radius: 16px;
   margin-bottom: 10px;
   padding: 8px;
+  display: block;
 }
 
 .searchResult {
