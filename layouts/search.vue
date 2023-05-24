@@ -3,7 +3,7 @@
   <div id="content" class="content animation" :class="minimized ? 'contentMinimized' : ''">
     <slot />
   </div>
-  <div class="bg"></div>
+  <div class="bg-player"></div>
   <player />
 </template>
 
@@ -16,9 +16,9 @@ body {
   position: fixed;
 }
 
-.bg {
+.bg-player {
   width: 100%;
-  height: 200px;
+  height: 140px;
   position: fixed;
   background-color: var(--bg);
   bottom: 0;
