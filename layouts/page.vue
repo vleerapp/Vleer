@@ -18,7 +18,7 @@
   top: 100px;
   left: 372px;
   width: calc(100% - 450px);
-  padding-bottom: 100px;
+  padding-bottom: 150px;
 }
 
 .bg-player {
