@@ -218,19 +218,22 @@ export default {
   },
   methods: {
     search() { },
-    playMusic(query) {
-      async function main(query) {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBJ-mQ4fiKtnkMrEZBpCuzlXzIqvtmTsGc&type=video&part=snippet&q=${query}`;
+    async playMusic(query) {
+      const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBJ-mQ4fiKtnkMrEZBpCuzlXzIqvtmTsGc&type=video&part=snippet&q=${query}`;
+      const response = await fetch(url);
+      var data = await response.json();
 
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data.items[0]);
+      data = data.items[0];
 
-        return data;
-      }
-
-      main(query);
-    },
+      this.searchResults = [
+        {
+          name: data.snippet.title,
+          artist: data.snippet.channelTitle,
+          videoId: data.id.videoId,
+          coverURL: data.snippet.thumbnails.high.url,
+        },
+      ];
+    }
   },
 };
 </script>

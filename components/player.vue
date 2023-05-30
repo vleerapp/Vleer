@@ -1,12 +1,7 @@
 <template>
   <div id="player" class="player">
     <div class="song-info">
-      <div
-        style="--bgsrc: url('/empty.png')"
-        class="song-img empty"
-        border="none"
-        id="img"
-      ></div>
+      <div style="--bgsrc: url('/empty.png')" class="song-img empty" border="none" id="img"></div>
       <div class="text-info">
         <div class="name empty" id="name"></div>
         <div class="artist empty" id="artist"></div>
@@ -106,7 +101,7 @@ export default {
     var audio = document.getElementById("media");
 
     audio.hasAttribute("svolume") ? audio.volume = media.getAttribute("svolume") : audio.volume = 0.3;
-    console.log(audio.volume)
+    // console.log(audio.volume)
 
     var progressBarFill = document.getElementById("progressbar");
     var progressTime = document.getElementById("progress-time");
