@@ -1,36 +1,20 @@
 <template>
   <NuxtLayout name="search">
-    <input
-      type="text"
-      v-model="searchQuery"
-      ref="searchInput"
-      class="search"
-      placeholder="Search"
-    />
+    <input type="text" v-model="searchQuery" ref="searchInput" class="search" placeholder="Search" />
     <div style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
     </div>
-    <a
-      class="gotoTop"
-      style="opacity: 0; pointer-events: none"
-      id="gotoTop"
-      href="#top"
-    ></a>
+    <a class="gotoTop" style="opacity: 0; pointer-events: none" id="gotoTop" href="#top"></a>
     <div id="top"></div>
     <ul class="searchResultList">
-      <li
-        class="searchResults"
-        :class="
-          (index === 0 ? 'bigResult' : '') +
-          (searchQuery === 'flip' ? ' flip' : '') +
-          (searchQuery === 'waradu' ? ' gradient' : '') +
-          (searchQuery === 'resize' ? ' resize' : ' noresize') +
-          (searchQuery === 'float' ? ' float' : '') +
-          (searchQuery === 'white' ? ' white' : '')
-        "
-        v-for="(result, index) in searchResults"
-        :key="index"
-      >
+      <li class="searchResults" :class="
+        (index === 0 ? 'bigResult' : '') +
+        (searchQuery === 'flip' ? ' flip' : '') +
+        (searchQuery === 'waradu' ? ' gradient' : '') +
+        (searchQuery === 'resize' ? ' resize' : ' noresize') +
+        (searchQuery === 'float' ? ' float' : '') +
+        (searchQuery === 'white' ? ' white' : '')
+      " v-for="(result, index) in searchResults" :key="index">
         <div class="searchResult">
           <img class="searchResultCover" :src="result.coverURL" />
           <div class="searchResultName">{{ result.name }}</div>
@@ -53,7 +37,7 @@ class Song {
     if ("results" in json) {
       try {
         json = json["results"][0];
-      } catch {}
+      } catch { }
     }
     this.kind = json["kind"];
     this.artistName = json["artistName"];
@@ -135,7 +119,7 @@ class Song {
     return get(this.trackName, country, limit, explicit);
   }
 
-  videoURL() {}
+  videoURL() { }
 }
 
 function resizeImage(url, size) {
@@ -150,9 +134,8 @@ var oldTerm = "";
 function get(term, country = "CH", limit = 50, explicit = true) {
   term = term.replace(/\s+/g, "+");
 
-  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
-    explicit ? "Yes" : "No"
-  }&attribute=genreIndex`;
+  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
+    }&attribute=genreIndex`;
 
   return fetch(apiUrl)
     .then((response) => response.json())
@@ -190,7 +173,6 @@ export default {
   },
   computed: {
     formattedSearchQuery() {
-
       get(this.searchQuery).then((songList) => {
         this.searchResults = [];
         songList.forEach((item, index) => {
@@ -235,7 +217,7 @@ export default {
     },
   },
   methods: {
-    search() {},
+    search() { },
     playMusic(query) {
       async function main(query) {
         const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBJ-mQ4fiKtnkMrEZBpCuzlXzIqvtmTsGc&type=video&part=snippet&q=${query}`;
@@ -248,13 +230,9 @@ export default {
       }
 
       main(query);
-    }
+    },
   },
 };
-function topFunction() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
 </script>
 
 <style>
