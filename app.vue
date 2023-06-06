@@ -8,56 +8,30 @@
   <div id="app"></div>
   <audio id="media"></audio>
   <div id="overlay">
-    <div
-      class="allowDrop"
-      style="
-        color: var(--succeed);
-        place-items: center;
-        font-size: 20px;
-        font-weight: bold;
-        padding: 10px;
-      "
-    >
-      <svg
-        id="svg1"
-        xmlns="http://www.w3.org/2000/svg"
-        width="100"
-        height="100"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#66ff66"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+    <div class="allowDrop" style="
+                                                    color: var(--succeed);
+                                                    place-items: center;
+                                                    font-size: 20px;
+                                                    font-weight: bold;
+                                                    padding: 10px;
+                                                  ">
+      <svg id="svg1" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none"
+        stroke="#66ff66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         <polyline points="7 10 12 15 17 10"></polyline>
         <line x1="12" y1="15" x2="12" y2="3"></line>
       </svg>
       <div>Import</div>
     </div>
-    <div
-      class="deniDrop"
-      style="
-        color: var(--fail);
-        place-items: center;
-        font-size: 20px;
-        font-weight: bold;
-        padding: 10px;
-      "
-    >
-      <svg
-        id="svg2"
-        xmlns="http://www.w3.org/2000/svg"
-        width="100"
-        height="100"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#ff6666"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+    <div class="deniDrop" style="
+                                                    color: var(--fail);
+                                                    place-items: center;
+                                                    font-size: 20px;
+                                                    font-weight: bold;
+                                                    padding: 10px;
+                                                  ">
+      <svg id="svg2" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none"
+        stroke="#ff6666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -158,19 +132,19 @@ body {
   display: none;
 }
 
-#overlay > .allowDrop {
+#overlay>.allowDrop {
   display: grid;
 }
 
-#overlay > .deniDrop {
+#overlay>.deniDrop {
   display: none;
 }
 
-#overlay.red > .allowDrop {
+#overlay.red>.allowDrop {
   display: none;
 }
 
-#overlay.red > .deniDrop {
+#overlay.red>.deniDrop {
   display: grid;
 }
 
@@ -199,7 +173,7 @@ body {
 }
 </style>
 
-<script lang="ts">
+<script>
 import { appWindow } from "@tauri-apps/api/window";
 import {
   copyFile,
@@ -209,6 +183,7 @@ import {
   writeTextFile,
   readTextFile,
 } from "@tauri-apps/api/fs";
+import { invoke } from "@tauri-apps/api"
 
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
@@ -334,6 +309,7 @@ appWindow.onFileDropEvent(async (event) => {
     var songNames = [];
     var index = 0;
     for (const item of event.payload.paths) {
+
       var musicName = item.split("\\");
       musicName = musicName[musicName.length - 1];
       if (
@@ -342,11 +318,15 @@ appWindow.onFileDropEvent(async (event) => {
         continue;
       }
 
+      const musicmetadata = await invoke("get_metadata", { source: item });
+
       await copyFile(item, `savedMusic/${musicName}`, {
         dir: BaseDirectory.Audio,
       });
 
       songNames.push(musicName);
+
+      const { source, title, artist, album, album_art, duration } = musicmetadata;
 
       const currentDate = new Date();
       const year = currentDate.getFullYear();
@@ -358,13 +338,14 @@ appWindow.onFileDropEvent(async (event) => {
       const formattedDate = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 
       var musicData = {
-        trackName: `${musicName.slice(0, -4)}`,
-        artistName: "",
-        imageURL: "",
+        trackName: title,
+        artistName: artist,
+        album,
+        imageURL: album_art,
         index: index,
         added: formattedDate,
-        trackTimeMillis: "",
-        audioFile: musicName,
+        trackTimeMillis: duration,
+        audioFile: `${musicName.slice(0, -4)}`,
         playlist: "",
       };
 

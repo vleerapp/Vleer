@@ -52,8 +52,8 @@
   height: 80px;
   border-radius: 16px;
   overflow: hidden;
-  background-color: var(--search);
-  background: var(--bgsrc) no-repeat;
+  /* background-color: var(--search); */
+  background-image: var(--bgsrc);
   background-size: 80px;
   position: relative;
 }
