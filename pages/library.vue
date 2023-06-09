@@ -50,6 +50,7 @@ export default {
               : music.artistName.slice(0, 20) + "..."
             : music.artistName,
         originalName: music.trackName,
+        audioFile: music.audioFile
       };
       searchResults.push(music);
     });
@@ -63,7 +64,7 @@ export default {
       <li class="musicItem">
         <div class="libaryCover">
           <img class="searchResultCover2" src="${item.coverURL}" />
-          <div class="searchResultPlay2" audio="${item.originalName + ".mp3"
+          <div class="searchResultPlay2" audio="${item.audioFile + ".mp3"
         }"></div>
         </div>
         <div class="searchResultName2">${item.name}</div>

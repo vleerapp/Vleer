@@ -1,7 +1,8 @@
 <template>
   <div id="player" class="player">
     <div class="song-info">
-      <div style="--bgsrc: url('/empty.png')" class="song-img empty" border="none" id="img"></div>
+      <div style="--bgsrc: url('/empty.png')" class="song-img empty" border="none" id="img">
+      </div>
       <div class="text-info">
         <div class="name empty" id="name"></div>
         <div class="artist empty" id="artist"></div>
@@ -39,11 +40,19 @@ document.addEventListener("customPlayAudio", function (event) {
 });
 
 function chageNowPlaying(img, name, artist) {
-  document.getElementById("img").style.setProperty("--bgsrc", `url(${img})`);
+  document.getElementById("img").style.setProperty("--bgsrc", `url('${img}')`);
   document.getElementById("name").innerHTML = name;
   document.getElementById("artist").innerHTML = artist;
   document.getElementById("pauseplay").src = "/svg/bold/pause.svg";
   toogleEmpty(true)
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: name,
+    artist: artist,
+    artwork: [{ src: img }]
+  })
+
+  navigator.mediaSession.setActionHandler("nexttrack", chageNowPlaying);
+  navigator.mediaSession.setActionHandler("previoustrack", back);
 }
 
 function toogleEmpty(alwaysRemove = false) {

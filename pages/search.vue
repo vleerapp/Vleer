@@ -133,7 +133,7 @@ function resizeImage(url, size) {
 
 var oldTerm = "";
 
-function get(term, country = "CH", limit = 50, explicit = true) {
+async function get(term, country = "CH", limit = 50, explicit = true) {
   term = term.replace(/\s+/g, "+");
 
   const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
@@ -262,7 +262,6 @@ export default {
       var data = await response.json();
 
       data = data.items[0];
-
       this.searchResults = [
         {
           name: data.snippet.title,
