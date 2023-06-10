@@ -12,6 +12,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxt/devtools": "^0.5.5",
     "@tauri-apps/cli": "^1.2.3",
     "nuxt": "^3.5.3"
   },
