@@ -9,12 +9,12 @@
   <audio id="media"></audio>
   <div id="overlay">
     <div class="allowDrop" style="
-                                                    color: var(--succeed);
-                                                    place-items: center;
-                                                    font-size: 20px;
-                                                    font-weight: bold;
-                                                    padding: 10px;
-                                                  ">
+                                                      color: var(--succeed);
+                                                      place-items: center;
+                                                      font-size: 20px;
+                                                      font-weight: bold;
+                                                      padding: 10px;
+                                                    ">
       <svg id="svg1" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none"
         stroke="#66ff66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -24,12 +24,12 @@
       <div>Import</div>
     </div>
     <div class="deniDrop" style="
-                                                    color: var(--fail);
-                                                    place-items: center;
-                                                    font-size: 20px;
-                                                    font-weight: bold;
-                                                    padding: 10px;
-                                                  ">
+                                                      color: var(--fail);
+                                                      place-items: center;
+                                                      font-size: 20px;
+                                                      font-weight: bold;
+                                                      padding: 10px;
+                                                    ">
       <svg id="svg2" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none"
         stroke="#ff6666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
