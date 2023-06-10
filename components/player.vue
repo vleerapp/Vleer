@@ -51,7 +51,7 @@ function chageNowPlaying(img, name, artist) {
     artwork: [{ src: img }]
   })
 
-  navigator.mediaSession.setActionHandler("nexttrack", chageNowPlaying);
+  navigator.mediaSession.setActionHandler("nexttrack", chageNowPlaying); // should change changeNowPlaying to actual (next) function when available
   navigator.mediaSession.setActionHandler("previoustrack", back);
 }
 
