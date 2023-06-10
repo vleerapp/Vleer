@@ -30,6 +30,8 @@
 </template>
 
 <script>
+// const ytdl = require('ytdl-core');
+
 const itunes = "https://itunes.apple.com/search?";
 
 class Song {
@@ -149,6 +151,42 @@ async function get(term, country = "CH", limit = 50, explicit = true) {
     });
 }
 
+async function playAudio(path) {
+  const assetUrl = path;
+
+  const audio = document.getElementById("media");
+  audio.innerHTML = "";
+  const source = document.createElement("source");
+  source.type = "audio/mp3"; // ODER AU video/mp4 wännds nid schafsch zu mp3 konventiere
+  source.src = assetUrl;
+  audio.appendChild(source);
+  audio.load();
+  audio.play();
+}
+
+async function downloadVideoAsMP3(videoUrl) {
+  try {
+    const info = await ytdl.getInfo(videoUrl);
+    const audioFormat = ytdl.chooseFormat(info.formats, { filter: 'audioonly' });
+
+    // Provide a filename for the downloaded MP3 file
+    const filename = 'audio.mp3';
+
+    // Start the download
+    ytdl(videoUrl, { format: audioFormat })
+      .pipe(fs.createWriteStream(filename))
+      .on('finish', () => {
+        console.log('Download completed!');
+      })
+      .on('error', (error) => {
+        console.error('Download failed:', error);
+      });
+  } catch (error) {
+    console.error('Failed to download the video:', error);
+  }
+}
+
+
 export default {
   data() {
     console;
@@ -232,7 +270,22 @@ export default {
           coverURL: data.snippet.thumbnails.high.url,
         },
       ];
-    }
+
+      console.log(videoId)
+
+      downloadVideoAsMP3(videoId)
+
+      const audioPlayed = new CustomEvent("customPlayAudio", {
+        bubbles: true,
+        cancelable: true,
+        detail: {
+          image: music.imageURL, // replce natürli mit de richtige sache
+          name: music.trackName,
+          artist: music.artistName,
+        },
+      });
+      document.dispatchEvent(audioPlayed);
+    },
   },
 };
 </script>

@@ -3,3 +3,5 @@ node_modules
 .nuxt
 .vscode
 node_modules
+*.DS_Store
+.gitignore
