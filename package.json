@@ -20,7 +20,7 @@
     "@jridgewell/sourcemap-codec": "^1.4.15",
     "@tauri-apps/api": "^1.3.0",
     "axios": "^1.4.0",
-    "node-fetch": "^2.6.11",
+    "node-fetch": "^3.3.1",
     "nuxi": "^3.5.3",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra",
     "ytdl-core": "^4.11.4"
