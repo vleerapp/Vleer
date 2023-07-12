@@ -62,7 +62,8 @@
           "$APPCONFIG",
           "$AUDIO/*",
           "$AUDIO/savedMusic/*",
-          "$AUDIO/savedMusic/*.mp3"
+          "$AUDIO/savedMusic/*.mp3",
+          "$MUSIC/*"
         ]
       },
       "protocol": {

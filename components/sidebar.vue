@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar animation" id="sidebar" :class="minimized ? 'minimized' : ''">
     <div class="minibar">
-      <img id="avatar-img" src="" alt="/empty.png" />
+      <img id="avatar-img" src="/empty.png" alt="avatar" />
       <nuxt-link class="settings" to="/settings">
         <img src="/svg/linear/setting-2.svg" width="18" height="18" />
       </nuxt-link>
@@ -44,9 +44,8 @@ import {
   BaseDirectory,
   exists,
   readTextFile,
+  writeBinaryFile,
 } from "@tauri-apps/api/fs";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { audioDir, join } from "@tauri-apps/api/path";
 
 interface Contents {
   avatarPath: String;
@@ -96,6 +95,33 @@ async function saveFile(contents: JSON) {
     });
   } catch (err) {
     console.log(err);
+  }
+}
+</script>
+
+<script lang="ts">
+interface Contents {
+  avatarPath: String;
+}
+
+var contents = await readTextFile("config.json", {
+  dir: BaseDirectory.AppConfig,
+});
+
+var parsedContents = JSON.parse(contents) as Contents;
+contents = JSON.parse(contents);
+
+console.log(contents["avatarPath"])
+
+// const sourcePath = "/Users/pandadev/Pictures/Logos/PandaDEV logo.png";
+// const destinationPath = BaseDirectory.AppConfig + "/PandaDEV logo.png";
+
+// await writeBinaryFile(destinationPath, await fetch(sourcePath).then(response => response.blob()));
+
+export default {
+  mounted() {
+    var image = document.getElementById("avatar-img");
+    image.src = "imageSrc";
   }
 }
 </script>
