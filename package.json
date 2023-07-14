@@ -23,6 +23,6 @@
     "node-fetch": "^3.3.1",
     "nuxi": "^3.6.2",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra",
-    "ytdl-core": "^4.11.4"
+    "ytdl-core": "^4.11.5"
   }
 }
