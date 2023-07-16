@@ -113,15 +113,38 @@ contents = JSON.parse(contents);
 
 console.log(contents["avatarPath"])
 
-// const sourcePath = "/Users/pandadev/Pictures/Logos/PandaDEV logo.png";
-// const destinationPath = BaseDirectory.AppConfig + "/PandaDEV logo.png";
+const sourcePath = contents["avatarPath"];
+const destinationPath = BaseDirectory.AppConfig + "/avatar.png";
 
 // await writeBinaryFile(destinationPath, await fetch(sourcePath).then(response => response.blob()));
+
+async function copyFile(source, destination) {
+  try {
+    const response = await fetch('http://localhost:3001/api/copy-avatar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ source, destination }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data.message);
+    } else {
+      console.error('Error copying file:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error copying file:', error);
+  }
+}
+
+copyFile(sourcePath, destinationPath)
 
 export default {
   mounted() {
     var image = document.getElementById("avatar-img");
-    image.src = "imageSrc";
+    image.src = "/server/21/avatar.png";
   }
 }
 </script>
