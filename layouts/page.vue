@@ -4,7 +4,7 @@
     <search />
     <slot />
   </div>
-  <div class="bg"></div>
+  <div class="bg-player"></div>
   <player />
 </template>
 
@@ -18,10 +18,10 @@
   top: 100px;
   left: 372px;
   width: calc(100% - 450px);
-  padding-bottom: 100px;
+  padding-bottom: 150px;
 }
 
-.bg {
+.bg-player {
   width: 100%;
   height: 140px;
   position: fixed;

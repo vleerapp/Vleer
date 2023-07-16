@@ -1,36 +1,20 @@
 <template>
   <NuxtLayout name="search">
-    <input
-      type="text"
-      v-model="searchQuery"
-      ref="searchInput"
-      class="search"
-      placeholder="Search"
-    />
+    <input type="text" v-model="searchQuery" ref="searchInput" class="search" placeholder="Search" />
     <div style="display: none">
       Search Results for "{{ formattedSearchQuery }}"
     </div>
-    <a
-      class="gotoTop"
-      style="opacity: 0; pointer-events: none"
-      id="gotoTop"
-      href="#top"
-    ></a>
+    <a class="gotoTop" style="opacity: 0; pointer-events: none" id="gotoTop" href="#top"></a>
     <div id="top"></div>
     <ul class="searchResultList">
-      <li
-        class="searchResults"
-        :class="
-          (index === 0 ? 'bigResult' : '') +
-          (searchQuery === 'flip' ? ' flip' : '') +
-          (searchQuery === 'waradu' ? ' gradient' : '') +
-          (searchQuery === 'resize' ? ' resize' : ' noresize') +
-          (searchQuery === 'float' ? ' float' : '') +
-          (searchQuery === 'white' ? ' white' : '')
-        "
-        v-for="(result, index) in searchResults"
-        :key="index"
-      >
+      <li class="searchResults" :class="
+        (index === 0 ? 'bigResult' : '') +
+        (searchQuery === 'flip' ? ' flip' : '') +
+        (searchQuery === 'waradu' ? ' gradient' : '') +
+        (searchQuery === 'resize' ? ' resize' : ' noresize') +
+        (searchQuery === 'float' ? ' float' : '') +
+        (searchQuery === 'white' ? ' white' : '')
+      " v-for="(result, index) in searchResults" :key="index">
         <div class="searchResult">
           <img class="searchResultCover" :src="result.coverURL" />
           <div class="searchResultName">{{ result.name }}</div>
@@ -46,6 +30,8 @@
 </template>
 
 <script>
+// const ytdl = require('ytdl-core');
+
 const itunes = "https://itunes.apple.com/search?";
 
 class Song {
@@ -53,7 +39,7 @@ class Song {
     if ("results" in json) {
       try {
         json = json["results"][0];
-      } catch {}
+      } catch { }
     }
     this.kind = json["kind"];
     this.artistName = json["artistName"];
@@ -135,7 +121,7 @@ class Song {
     return get(this.trackName, country, limit, explicit);
   }
 
-  videoURL() {}
+  videoURL() { }
 }
 
 function resizeImage(url, size) {
@@ -147,12 +133,11 @@ function resizeImage(url, size) {
 
 var oldTerm = "";
 
-function get(term, country = "CH", limit = 50, explicit = true) {
+async function get(term, country = "CH", limit = 50, explicit = true) {
   term = term.replace(/\s+/g, "+");
 
-  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${
-    explicit ? "Yes" : "No"
-  }&attribute=genreIndex`;
+  const apiUrl = `${itunes}term=${term}&media=music&entity=song&country=${country}&limit=${limit}&explicit=${explicit ? "Yes" : "No"
+    }&attribute=genreIndex`;
 
   return fetch(apiUrl)
     .then((response) => response.json())
@@ -165,6 +150,42 @@ function get(term, country = "CH", limit = 50, explicit = true) {
       return songList;
     });
 }
+
+async function playAudio(path) {
+  const assetUrl = path;
+
+  const audio = document.getElementById("media");
+  audio.innerHTML = "";
+  const source = document.createElement("source");
+  source.type = "audio/mp3"; // ODER AU video/mp4 wännds nid schafsch zu mp3 konventiere
+  source.src = assetUrl;
+  audio.appendChild(source);
+  audio.load();
+  audio.play();
+}
+
+async function downloadVideoAsMP3(videoUrl) {
+  try {
+    const info = await ytdl.getInfo(videoUrl);
+    const audioFormat = ytdl.chooseFormat(info.formats, { filter: 'audioonly' });
+
+    // Provide a filename for the downloaded MP3 file
+    const filename = 'audio.mp3';
+
+    // Start the download
+    ytdl(videoUrl, { format: audioFormat })
+      .pipe(fs.createWriteStream(filename))
+      .on('finish', () => {
+        console.log('Download completed!');
+      })
+      .on('error', (error) => {
+        console.error('Download failed:', error);
+      });
+  } catch (error) {
+    console.error('Failed to download the video:', error);
+  }
+}
+
 
 export default {
   data() {
@@ -190,7 +211,6 @@ export default {
   },
   computed: {
     formattedSearchQuery() {
-
       get(this.searchQuery).then((songList) => {
         this.searchResults = [];
         songList.forEach((item, index) => {
@@ -235,26 +255,39 @@ export default {
     },
   },
   methods: {
-    search() {},
-    playMusic(query) {
-      async function main(query) {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBJ-mQ4fiKtnkMrEZBpCuzlXzIqvtmTsGc&type=video&part=snippet&q=${query}`;
+    search() { },
+    async playMusic(query) {
+      const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBJ-mQ4fiKtnkMrEZBpCuzlXzIqvtmTsGc&type=video&part=snippet&q=${query}`;
+      const response = await fetch(url);
+      var data = await response.json();
 
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data.items[0]);
+      data = data.items[0];
+      this.searchResults = [
+        {
+          name: data.snippet.title,
+          artist: data.snippet.channelTitle,
+          videoId: data.id.videoId,
+          coverURL: data.snippet.thumbnails.high.url,
+        },
+      ];
 
-        return data;
-      }
+      console.log(videoId)
 
-      main(query);
-    }
+      downloadVideoAsMP3(videoId)
+
+      const audioPlayed = new CustomEvent("customPlayAudio", {
+        bubbles: true,
+        cancelable: true,
+        detail: {
+          image: music.imageURL, // replce natürli mit de richtige sache
+          name: music.trackName,
+          artist: music.artistName,
+        },
+      });
+      document.dispatchEvent(audioPlayed);
+    },
   },
 };
-function topFunction() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
 </script>
 
 <style>

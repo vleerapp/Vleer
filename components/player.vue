@@ -1,12 +1,8 @@
 <template>
   <div id="player" class="player">
     <div class="song-info">
-      <div
-        style="--bgsrc: url('/empty.png')"
-        class="song-img empty"
-        border="none"
-        id="img"
-      ></div>
+      <div style="--bgsrc: url('/empty.png')" class="song-img empty" border="none" id="img">
+      </div>
       <div class="text-info">
         <div class="name empty" id="name"></div>
         <div class="artist empty" id="artist"></div>
@@ -44,11 +40,19 @@ document.addEventListener("customPlayAudio", function (event) {
 });
 
 function chageNowPlaying(img, name, artist) {
-  document.getElementById("img").style.setProperty("--bgsrc", `url(${img})`);
+  document.getElementById("img").style.setProperty("--bgsrc", `url('${img}')`);
   document.getElementById("name").innerHTML = name;
   document.getElementById("artist").innerHTML = artist;
   document.getElementById("pauseplay").src = "/svg/bold/pause.svg";
   toogleEmpty(true)
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: name,
+    artist: artist,
+    artwork: [{ src: img }]
+  })
+
+  navigator.mediaSession.setActionHandler("nexttrack", chageNowPlaying); // should change changeNowPlaying to actual (next) function when available
+  navigator.mediaSession.setActionHandler("previoustrack", back);
 }
 
 function toogleEmpty(alwaysRemove = false) {
@@ -106,7 +110,7 @@ export default {
     var audio = document.getElementById("media");
 
     audio.hasAttribute("svolume") ? audio.volume = media.getAttribute("svolume") : audio.volume = 0.3;
-    console.log(audio.volume)
+    // console.log(audio.volume)
 
     var progressBarFill = document.getElementById("progressbar");
     var progressTime = document.getElementById("progress-time");
