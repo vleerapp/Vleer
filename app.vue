@@ -184,6 +184,7 @@ import {
   readTextFile,
 } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api";
+import { platform } from '@tauri-apps/api/os';
 
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
@@ -238,31 +239,22 @@ export default {
         playpause();
       }
     });
-
-    function checkIfWindows() {
-      const isWindows = window.__TAURI__.tauri.is_windows();
-      console.log(isWindows);
-
-      if (isWindows) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    if (checkIfWindows()) {
-      appWindow.onResized(async () => {
-        console.log(appWindow.isMaximized())
-        var isma = await appWindow.isMaximized();
-        if (isma) {
-          document.getElementById("app").style.borderRadius = "0";
-        } else {
-          document.getElementById("app").style.borderRadius = "6px";
-        }
-      });
-    }
   },
 };
+
+const platformName = await platform();
+console.log(platformName)
+
+if (platformName == "win32" || platformName == "win64") {
+  appWindow.onResized(async () => {
+    var isma = await appWindow.isMaximized();
+    if (isma) {
+      document.getElementById("app").style.borderRadius = "0";
+    } else {
+      document.getElementById("app").style.borderRadius = "6px";
+    }
+  });
+}
 
 document.body.addEventListener("scroll", () => {
   if (document.body.scrollTop < 800) {
