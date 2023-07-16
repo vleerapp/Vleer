@@ -238,33 +238,31 @@ export default {
         playpause();
       }
     });
+
+    function checkIfWindows() {
+      const isWindows = window.__TAURI__.tauri.is_windows();
+      console.log(isWindows);
+
+      if (isWindows) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    if (checkIfWindows()) {
+      appWindow.onResized(async () => {
+        console.log(appWindow.isMaximized())
+        var isma = await appWindow.isMaximized();
+        if (isma) {
+          document.getElementById("app").style.borderRadius = "0";
+        } else {
+          document.getElementById("app").style.borderRadius = "6px";
+        }
+      });
+    }
   },
 };
-
-function checkIfWindows() {
-  const isWindows = window.__TAURI__.tauri.is_windows();
-  console.log(isWindows); // true if the user is on a Windows machine
-
-  // Perform actions based on the user's operating system
-  if (isWindows) {
-    // Windows-specific logic
-    return true;
-  } else {
-    // Logic for other operating systems
-    return false;
-  }
-}
-
-// if (checkIfWindows()) {
-//   appWindow.onResized(async () => {
-//     var isma = await appWindow.isMaximized();
-//     if (isma) {
-//       document.getElementById("app").style.borderRadius = "0";
-//     } else {
-//       document.getElementById("app").style.borderRadius = "6px";
-//     }
-//   });
-// }
 
 document.body.addEventListener("scroll", () => {
   if (document.body.scrollTop < 800) {

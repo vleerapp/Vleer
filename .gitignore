@@ -8,3 +8,4 @@ node_modules
 .output/
 dist
 .gitignore
+src-tauri/Cargo.toml
