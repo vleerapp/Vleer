@@ -48,14 +48,15 @@ async function selectAvatar() {
     filters: [{
       name: "Image",
       extensions: ["png", "jpeg", "jpeg"]
-    }]
+    }],
   });
 
-  await copyFile(selectedAvatar, "avatar.png", {
+  if (typeof selectedAvatar === "string") await copyFile(selectedAvatar, "avatar.png", {
     dir: BaseDirectory.AppConfig,
   });
 
   avatarPath = String(selectedAvatar);
+  var image = document.getElementById("avatar-img")! as HTMLImageElement;
   saveFile();
 }
 

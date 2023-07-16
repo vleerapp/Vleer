@@ -242,8 +242,9 @@ export default {
   },
 };
 
-const platformName = await platform();
-console.log(platformName)
+// Uncommenting this will give top level await error on build
+// const platformName = await platform();
+// console.log(platformName)
 
 if (platformName == "win32" || platformName == "win64") {
   appWindow.onResized(async () => {
