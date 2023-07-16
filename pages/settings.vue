@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { writeTextFile, BaseDirectory, createDir, exists, readTextFile } from "@tauri-apps/api/fs";
+import { writeTextFile, BaseDirectory, createDir, exists, readTextFile, copyFile } from "@tauri-apps/api/fs";
 import { ref } from "vue";
 import { open } from '@tauri-apps/api/dialog';
 
@@ -49,6 +49,10 @@ async function selectAvatar() {
       name: "Image",
       extensions: ["png", "jpeg", "jpeg"]
     }]
+  });
+
+  await copyFile(selectedAvatar, "avatar.png", {
+    dir: BaseDirectory.AppConfig,
   });
 
   avatarPath = String(selectedAvatar);

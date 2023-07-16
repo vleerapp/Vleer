@@ -44,7 +44,7 @@ import {
   BaseDirectory,
   exists,
   readTextFile,
-  writeBinaryFile,
+  copyFile,
 } from "@tauri-apps/api/fs";
 
 interface Contents {
@@ -100,6 +100,8 @@ async function saveFile(contents: JSON) {
 </script>
 
 <script lang="ts">
+import { appConfigDir } from '@tauri-apps/api/path';
+
 interface Contents {
   avatarPath: String;
 }
@@ -111,40 +113,16 @@ var contents = await readTextFile("config.json", {
 var parsedContents = JSON.parse(contents) as Contents;
 contents = JSON.parse(contents);
 
-console.log(contents["avatarPath"])
-
 const sourcePath = contents["avatarPath"];
-const destinationPath = BaseDirectory.AppConfig + "/avatar.png";
+const appConfigDirPath = await appConfigDir();
 
-// await writeBinaryFile(destinationPath, await fetch(sourcePath).then(response => response.blob()));
-
-async function copyFile(source, destination) {
-  try {
-    const response = await fetch('http://localhost:3001/api/copy-avatar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ source, destination }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data.message);
-    } else {
-      console.error('Error copying file:', response.statusText);
-    }
-  } catch (error) {
-    console.error('Error copying file:', error);
-  }
-}
-
-copyFile(sourcePath, destinationPath)
+console.log(appConfigDirPath)
+console.log(contents["avatarPath"])
 
 export default {
   mounted() {
     var image = document.getElementById("avatar-img");
-    image.src = "/server/21/avatar.png";
+    image.src = contents["avatarPath"];
   }
 }
 </script>
