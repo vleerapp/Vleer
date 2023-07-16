@@ -14,14 +14,14 @@
   "devDependencies": {
     "@nuxt/devtools": "^0.6.7",
     "@tauri-apps/cli": "^1.4.0",
-    "nuxt": "^3.6.2"
+    "nuxt": "^3.6.3"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.4.15",
     "@tauri-apps/api": "^1.4.0",
     "axios": "^1.4.0",
     "node-fetch": "^3.3.1",
-    "nuxi": "^3.6.2",
+    "nuxi": "^3.6.3",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra",
     "ytdl-core": "^4.11.5"
   }
