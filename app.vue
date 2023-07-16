@@ -242,20 +242,17 @@ export default {
   },
 };
 
-// Uncommenting this will give top level await error on build
-// const platformName = await platform();
-// console.log(platformName)
-
-if (platformName == "win32" || platformName == "win64") {
-  appWindow.onResized(async () => {
+appWindow.onResized(async () => {
+  const platformName = await platform();
+  if (platformName == "win32" || platformName == "win64") {
     var isma = await appWindow.isMaximized();
     if (isma) {
       document.getElementById("app").style.borderRadius = "0";
     } else {
       document.getElementById("app").style.borderRadius = "6px";
     }
-  });
-}
+  }
+});
 
 document.body.addEventListener("scroll", () => {
   if (document.body.scrollTop < 800) {
