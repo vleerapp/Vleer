@@ -56,7 +56,6 @@ async function selectAvatar() {
   });
 
   avatarPath = String(selectedAvatar);
-  var image = document.getElementById("avatar-img")! as HTMLImageElement;
   saveFile();
 }
 
