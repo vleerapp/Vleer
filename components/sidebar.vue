@@ -54,8 +54,13 @@ interface Contents {
   miniSidebar: boolean;
 }
 
-var minimized = false;
+var contents = await readTextFile('config.json', {
+  dir: BaseDirectory.AppConfig,
+});
 
+var parsedContents = <Contents>JSON.parse(contents);
+
+var minimized = parsedContents["miniSidebar"];
 
 onMounted(async () => {
   const appConfigDirPath = await appConfigDir();
@@ -69,7 +74,6 @@ onMounted(async () => {
   });
 
   var parsedContents = <Contents>JSON.parse(contents);
-  minimized = parsedContents["miniSidebar"];
 })
 
 async function toggleSidebar() {
@@ -87,7 +91,7 @@ async function toggleSidebar() {
 
     var parsedContents = <Contents>JSON.parse(contents);
 
-    minimized = parsedContents["miniSidebar"];
+    var minimized = parsedContents["miniSidebar"];
 
     parsedContents["miniSidebar"] = element.classList.contains("minimized");
 
