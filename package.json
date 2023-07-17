@@ -22,7 +22,6 @@
     "axios": "^1.4.0",
     "node-fetch": "^3.3.1",
     "nuxi": "^3.6.3",
-    "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra",
-    "ytdl-core": "^4.11.5"
+    "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra"
   }
 }
