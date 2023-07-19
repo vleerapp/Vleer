@@ -69,7 +69,9 @@
       "protocol": {
         "all": true,
         "asset": true,
-        "assetScope": ["/**/*"]
+        "assetScope": [
+          "$AUDIO/savedMusic/*.mp3"
+        ]
       },
       "all": true
     },
