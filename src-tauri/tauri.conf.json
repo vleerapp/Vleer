@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "music-player",
+    "productName": "zexon",
     "version": "0.1.0"
   },
   "tauri": {
@@ -57,7 +57,7 @@
         "renameFile": true,
         "exists": true,
         "scope": [
-          "$AUDIO/music-player/*",
+          "$AUDIO/zexon/*",
           "$APPCONFIG/*",
           "$APPCONFIG",
           "$AUDIO/*",
@@ -88,7 +88,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": ".music-player",
+      "identifier": ".zexon",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -117,7 +117,7 @@
         "fullscreen": false,
         "height": 720,
         "resizable": true,
-        "title": "Music Player",
+        "title": "Zexon",
         "width": 1280,
         "minWidth": 1000,
         "minHeight": 600,
