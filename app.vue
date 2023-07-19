@@ -173,7 +173,7 @@ body {
 }
 </style>
 
-<script>
+<script setup>
 import { appWindow } from "@tauri-apps/api/window";
 import {
   copyFile,
@@ -187,6 +187,7 @@ import { invoke } from "@tauri-apps/api";
 import { platform } from '@tauri-apps/api/os';
 
 async function checkForDefaultFilesInAppData() {
+  console.log("create")
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
     await createDir("", {
       dir: BaseDirectory.AppConfig,
@@ -220,27 +221,26 @@ function playpause() {
   }, 400);
 }
 
-export default {
-  async mounted() {
-    await checkForDefaultFilesInAppData();
-    var isma = await appWindow.isMaximized();
-    if (isma) {
-      document.getElementById("app").style.borderRadius = "0";
-    } else {
-      document.getElementById("app").style.borderRadius = "6px";
-    }
+await checkForDefaultFilesInAppData();
 
-    window.addEventListener("keydown", function (event) {
-      if (
-        event.code === "Space" &&
-        !document.getElementById("searchBar").activeElement
-      ) {
-        event.preventDefault();
-        playpause();
-      }
-    });
-  },
-};
+onMounted(async () => {
+  var isma = await appWindow.isMaximized();
+  if (isma) {
+    document.getElementById("app").style.borderRadius = "0";
+  } else {
+    document.getElementById("app").style.borderRadius = "6px";
+  }
+
+  window.addEventListener("keydown", function (event) {
+    if (
+      event.code === "Space" &&
+      !document.getElementById("searchBar").activeElement
+    ) {
+      event.preventDefault();
+      playpause();
+    }
+  });
+})
 
 appWindow.onResized(async () => {
   const platformName = await platform();
