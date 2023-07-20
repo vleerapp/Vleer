@@ -173,7 +173,7 @@ body {
 }
 </style>
 
-<script>
+<script setup>
 import { appWindow } from "@tauri-apps/api/window";
 import {
   copyFile,
@@ -220,41 +220,38 @@ function playpause() {
   }, 400);
 }
 
-export default {
-  async mounted() {
-    await checkForDefaultFilesInAppData();
-    var isma = await appWindow.isMaximized();
-    if (isma) {
-      document.getElementById("app").style.borderRadius = "0";
-    } else {
-      document.getElementById("app").style.borderRadius = "6px";
-    }
+await checkForDefaultFilesInAppData();
 
-    window.addEventListener("keydown", function (event) {
-      if (
-        event.code === "Space" &&
-        !document.getElementById("searchBar").activeElement
-      ) {
-        event.preventDefault();
-        playpause();
-      }
-    });
-  },
-};
+onMounted(async () => {
+  var isma = await appWindow.isMaximized();
+  if (isma) {
+    document.getElementById("app").style.borderRadius = "0";
+  } else {
+    document.getElementById("app").style.borderRadius = "6px";
+  }
 
-const platformName = await platform();
-console.log(platformName)
-
-if (platformName == "win32" || platformName == "win64") {
-  appWindow.onResized(async () => {
-    var isma = await appWindow.isMaximized();
-    if (isma) {
-      document.getElementById("app").style.borderRadius = "0";
-    } else {
-      document.getElementById("app").style.borderRadius = "6px";
+  window.addEventListener("keydown", function (event) {
+    if (
+      event.code === "Space" &&
+      !document.getElementById("searchBar").activeElement
+    ) {
+      event.preventDefault();
+      playpause();
     }
   });
-}
+})
+
+appWindow.onResized(async () => {
+  const platformName = await platform();
+  if (platformName == "win32" || platformName == "win64") {
+    var isma = await appWindow.isMaximized();
+    if (isma) {
+      document.getElementById("app").style.borderRadius = "0";
+    } else {
+      document.getElementById("app").style.borderRadius = "6px";
+    }
+  }
+});
 
 document.body.addEventListener("scroll", () => {
   if (document.body.scrollTop < 800) {

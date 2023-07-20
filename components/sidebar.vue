@@ -46,19 +46,35 @@ import {
   readTextFile,
   copyFile,
 } from "@tauri-apps/api/fs";
+import { appConfigDir } from '@tauri-apps/api/path';
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 interface Contents {
-  avatarPath: String;
+  avatarPath: string;
+  miniSidebar: boolean;
 }
 
-var contents = await readTextFile("config.json", {
+var contents = await readTextFile('config.json', {
   dir: BaseDirectory.AppConfig,
 });
 
-var parsedContents = JSON.parse(contents) as Contents;
-contents = JSON.parse(contents);
+var parsedContents = <Contents>JSON.parse(contents);
 
-var minimized = contents["miniSidebar"];
+var minimized = parsedContents["miniSidebar"];
+
+onMounted(async () => {
+  const appConfigDirPath = await appConfigDir();
+
+  console.log(appConfigDirPath);
+  var image = document.getElementById("avatar-img")! as HTMLImageElement;
+  image.src = convertFileSrc(appConfigDirPath + "avatar.png");
+
+  var contents = await readTextFile('config.json', {
+    dir: BaseDirectory.AppConfig,
+  });
+
+  var parsedContents = <Contents>JSON.parse(contents);
+})
 
 async function toggleSidebar() {
   var element = document.getElementById("sidebar");
@@ -73,11 +89,13 @@ async function toggleSidebar() {
       dir: BaseDirectory.AppConfig,
     });
 
-    var parsedContents = JSON.parse(contents);
+    var parsedContents = <Contents>JSON.parse(contents);
+
+    var minimized = parsedContents["miniSidebar"];
 
     parsedContents["miniSidebar"] = element.classList.contains("minimized");
 
-    await saveFile(parsedContents);
+    await saveFile(JSON.parse(JSON.stringify(parsedContents)));
   }
 }
 
@@ -100,31 +118,6 @@ async function saveFile(contents: JSON) {
 </script>
 
 <script lang="ts">
-import { appConfigDir } from '@tauri-apps/api/path';
-
-interface Contents {
-  avatarPath: String;
-}
-
-var contents = await readTextFile("config.json", {
-  dir: BaseDirectory.AppConfig,
-});
-
-var parsedContents = JSON.parse(contents) as Contents;
-contents = JSON.parse(contents);
-
-const sourcePath = contents["avatarPath"];
-const appConfigDirPath = await appConfigDir();
-
-console.log(appConfigDirPath)
-console.log(contents["avatarPath"])
-
-export default {
-  mounted() {
-    var image = document.getElementById("avatar-img");
-    image.src = contents["avatarPath"];
-  }
-}
 </script>
 
 <style>

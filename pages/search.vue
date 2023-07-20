@@ -30,8 +30,6 @@
 </template>
 
 <script>
-// const ytdl = require('ytdl-core');
-
 const itunes = "https://itunes.apple.com/search?";
 
 class Song {
@@ -259,21 +257,12 @@ export default {
     async playMusic(query) {
       const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBJ-mQ4fiKtnkMrEZBpCuzlXzIqvtmTsGc&type=video&part=snippet&q=${query}`;
       const response = await fetch(url);
-      var data = await response.json();
+      const data = await response.json();
 
-      data = data.items[0];
-      this.searchResults = [
-        {
-          name: data.snippet.title,
-          artist: data.snippet.channelTitle,
-          videoId: data.id.videoId,
-          coverURL: data.snippet.thumbnails.high.url,
-        },
-      ];
+      const videoId = data.items[0].id.videoId;
+      console.log(videoId);
 
-      console.log(videoId)
-
-      downloadVideoAsMP3(videoId)
+      downloadVideoAsMP3(videoId);
 
       const audioPlayed = new CustomEvent("customPlayAudio", {
         bubbles: true,
@@ -285,8 +274,8 @@ export default {
         },
       });
       document.dispatchEvent(audioPlayed);
-    },
-  },
+    }
+  }
 };
 </script>
 
