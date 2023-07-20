@@ -187,7 +187,6 @@ import { invoke } from "@tauri-apps/api";
 import { platform } from '@tauri-apps/api/os';
 
 async function checkForDefaultFilesInAppData() {
-  console.log("create")
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
     await createDir("", {
       dir: BaseDirectory.AppConfig,
