@@ -3,7 +3,7 @@ Free and opensource Music App as replacement for Spotify, Apple Music, etc.
 
 **IMPORTANT: This project is in the early development stage**
 
-If you have an idea for a name please join our ![discord](https://discord.gg/PEX37vvWyU)!
+If you have an idea for a name please join our [discord](https://discord.gg/PEX37vvWyU)!
 
 ### In the meanwhile here are some Concept arts
 ![Desktop Home](https://user-images.githubusercontent.com/70103896/221834084-8e917ffe-4efb-4760-9591-b170ccc8f7a7.png)

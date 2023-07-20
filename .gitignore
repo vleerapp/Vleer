@@ -9,3 +9,5 @@ node_modules
 dist
 .gitignore
 src-tauri/Cargo.toml
+yarn.lock
+.gitignore
