@@ -5,11 +5,11 @@
   
   <br>
 
-  <a href="https://twitter.com/zexonapp">
+  <a href="https://twitter.com/zexonapp" target="_blank">
     <img height="60px" alt="Follow X Banner" src="https://i.imgur.com/gsGciyb.png">ㅤ
   </a>
   
-  <a href="https://discord.gg/aX9T49je">
+  <a href="https://discord.gg/aX9T49je" target="_blank">
     <img height="60px" alt="Join Discord Banner" src="https://i.imgur.com/CulBkiI.png">
   </a>
 </div>
