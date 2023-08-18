@@ -12,7 +12,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^0.6.7",
+    "@nuxt/devtools": "^0.8.0",
     "@tauri-apps/cli": "^1.4.0",
     "nuxt": "^3.6.5"
   },
@@ -20,7 +20,7 @@
     "@jridgewell/sourcemap-codec": "^1.4.15",
     "@tauri-apps/api": "^1.4.0",
     "axios": "^1.4.0",
-    "node-fetch": "^3.3.1",
+    "node-fetch": "^3.3.2",
     "nuxi": "^3.6.5",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra"
   }
