@@ -1,9 +1,7 @@
 <template>
   <div>
-    <NuxtLayout>
-      <titlebar />
-      <NuxtPage />
-    </NuxtLayout>
+    <titlebar />
+    <NuxtPage />
   </div>
   <div id="app"></div>
   <audio id="media"></audio>
