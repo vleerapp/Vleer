@@ -9,7 +9,7 @@
 
 <script>
 import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
-import { audioDir, join } from "@tauri-apps/api/path";
+import { audioDir, join, appConfigDir } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export default {
