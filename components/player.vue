@@ -166,6 +166,7 @@ export default {
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
+        if (progress > 100) progress = 100
         progressBarFill.style.width = progress + "%";
         dragX = event.clientX - progressBar.getBoundingClientRect().left;
       }
@@ -214,7 +215,8 @@ export default {
           ((event.clientX - AudioBar.getBoundingClientRect().left) /
             AudioBar.clientWidth) *
           100;
-        AudioBarFill.style.width = progress + "%";
+        if (progress > 100) progress = 100
+        AudioBarFill.style.width = Math.floor(progress) + "%";
         audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
         dragAudioX = event.clientX - AudioBar.getBoundingClientRect().left;
       }
@@ -227,7 +229,8 @@ export default {
           ((event.clientX - AudioBar.getBoundingClientRect().left) /
             AudioBar.clientWidth) *
           100;
-        AudioBarFill.style.width = progress + "%";
+        if (progress > 100) progress = 100
+        AudioBarFill.style.width = Math.floor(progress) + "%";
         audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
         audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
@@ -240,7 +243,8 @@ export default {
           ((event.clientX - AudioBar.getBoundingClientRect().left) /
             AudioBar.clientWidth) *
           100;
-        AudioBarFill.style.width = progress + "%";
+        if (progress > 100) progress = 100
+        AudioBarFill.style.width = Math.floor(progress) + "%";
         audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
         audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }

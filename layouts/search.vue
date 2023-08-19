@@ -17,12 +17,13 @@ body {
 }
 
 .bg-player {
-  width: 100%;
   height: 140px;
   position: fixed;
   background-color: var(--bg);
   bottom: 0;
+  border-radius: 12px;
   left: 350px;
+  right: 10px;
 }
 
 .content {
