@@ -30,6 +30,9 @@
 </template>
 
 <script>
+// import ytdl from 'ytdl-core';
+// import fs from 'fs';
+
 const itunes = "https://itunes.apple.com/search?";
 
 class Song {
@@ -162,27 +165,27 @@ async function playAudio(path) {
   audio.play();
 }
 
-async function downloadVideoAsMP3(videoUrl) {
-  try {
-    const info = await ytdl.getInfo(videoUrl);
-    const audioFormat = ytdl.chooseFormat(info.formats, { filter: 'audioonly' });
+// async function downloadVideoAsMP3(videoUrl) {
+//   try {
+//     const info = await ytdl.getInfo(videoUrl);
+//     const audioFormat = ytdl.chooseFormat(info.formats, { filter: 'audioonly' });
 
-    // Provide a filename for the downloaded MP3 file
-    const filename = 'audio.mp3';
+//     // Provide a filename for the downloaded MP3 file
+//     const filename = 'audio.mp3';
 
-    // Start the download
-    ytdl(videoUrl, { format: audioFormat })
-      .pipe(fs.createWriteStream(filename))
-      .on('finish', () => {
-        console.log('Download completed!');
-      })
-      .on('error', (error) => {
-        console.error('Download failed:', error);
-      });
-  } catch (error) {
-    console.error('Failed to download the video:', error);
-  }
-}
+//     // Start the download
+//     ytdl(videoUrl, { format: audioFormat })
+//       .pipe(fs.createWriteStream(filename))
+//       .on('finish', () => {
+//         console.log('Download completed!');
+//       })
+//       .on('error', (error) => {
+//         console.error('Download failed:', error);
+//       });
+//   } catch (error) {
+//     console.error('Failed to download the video:', error);
+//   }
+// }
 
 
 export default {
