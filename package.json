@@ -2,11 +2,11 @@
   "name": "vleer",
   "private": true,
   "scripts": {
-    "nuxt": "nuxt",
+    "nuxt": "nuxt dev",
     "tauri": "tauri",
     "nuxi": "nuxi",
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "tauri dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

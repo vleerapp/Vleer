@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
     "beforeBuildCommand": "pnpm generate",
-    "beforeDevCommand": "pnpm dev",
+    "beforeDevCommand": "pnpm nuxt",
     "devPath": "http://localhost:3000",
     "distDir": "../.output/public",
     "withGlobalTauri": true
