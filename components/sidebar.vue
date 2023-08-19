@@ -44,6 +44,7 @@ import {
   BaseDirectory,
   exists,
   readTextFile,
+  readBinaryFile,
   copyFile,
 } from "@tauri-apps/api/fs";
 import { appConfigDir } from '@tauri-apps/api/path';
@@ -62,18 +63,26 @@ var parsedContents = <Contents>JSON.parse(contents);
 
 var minimized = parsedContents["miniSidebar"];
 
+async function loadImage() {
+  try {
+    const image = document.getElementById("avatar-img") as HTMLImageElement;
+
+    const img_src = await readBinaryFile('avatar.png', { dir: BaseDirectory.AppConfig });
+
+    const binaryData = new Uint8Array(img_src);
+
+    const blob = new Blob([binaryData], { type: 'image/png' });
+
+    const imageUrl = URL.createObjectURL(blob);
+
+    image.src = imageUrl;
+  } catch (error) {
+    console.error("Error loading image:", error);
+  }
+}
+
 onMounted(async () => {
-  const appConfigDirPath = await appConfigDir();
-
-  console.log(appConfigDirPath);
-  var image = document.getElementById("avatar-img")! as HTMLImageElement;
-  image.src = convertFileSrc(appConfigDirPath + "avatar.png");
-
-  var contents = await readTextFile('config.json', {
-    dir: BaseDirectory.AppConfig,
-  });
-
-  var parsedContents = <Contents>JSON.parse(contents);
+  loadImage();
 })
 
 async function toggleSidebar() {
