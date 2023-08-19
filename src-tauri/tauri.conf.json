@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Zexon",
+    "productName": "Vleer",
     "version": "0.1.0"
   },
   "tauri": {
@@ -57,8 +57,10 @@
         "renameFile": true,
         "exists": true,
         "scope": [
-          "$AUDIO/zexon/*",
+          "$AUDIO/vleer/*",
           "$APPCONFIG/*",
+          "$APPCONFIG/.vleer/*",
+          "$APPCONFIG/.vleer/avatar.png",
           "$APPCONFIG",
           "$AUDIO/*",
           "$AUDIO/savedMusic/*",
@@ -88,7 +90,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": ".Zexon",
+      "identifier": ".vleer",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -117,7 +119,7 @@
         "fullscreen": false,
         "height": 720,
         "resizable": true,
-        "title": "Zexon",
+        "title": "Vleer",
         "width": 1280,
         "minWidth": 1000,
         "minHeight": 600,
