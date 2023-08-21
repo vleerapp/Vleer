@@ -1,7 +1,8 @@
 <div align="center">
   <img width="200" alt="Zexon Logo" src="https://github.com/vleer-app/.github/assets/70103896/034e576d-215f-4d26-a166-f397264ec270">
   <h1>Vleer</h1>
-  <p>This is a free and Open Source music app aimed to replace paid services like Spotify, Apple Music etc. this app is<br>planned to release with a dekstop as well as a IPhone version.</p>
+  <p>A redefined way of how we interact with music introduces you to Vleer, an app crafted<br>
+    entirely around you. We've prioritized your needs, simplifying every part of the user experience. <br> Whether you're at your PC or on your Phone.</p>
 
   <br>
 
