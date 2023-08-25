@@ -263,7 +263,6 @@ export default {
       const data = await response.json();
 
       const videoId = data.items[0].id.videoId;
-      console.log(videoId);
 
       downloadVideoAsMP3(videoId);
 

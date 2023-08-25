@@ -35,47 +35,24 @@
 </template>
 
 <script>
-document.addEventListener("customPlayAudio", function (event) {
-  chageNowPlaying(event.detail.image, event.detail.name, event.detail.artist);
+import { MusicHandler } from '/musicHandler'
+
+const musicHandler = MusicHandler.getInstance();
+
+musicHandler.onPlayEvent(async () => {
+  var info = await musicHandler.getInfo()
 });
 
-function chageNowPlaying(img, name, artist) {
-  document.getElementById("img").style.setProperty("--bgsrc", `url('${img}')`);
-  document.getElementById("name").innerHTML = name;
-  document.getElementById("artist").innerHTML = artist;
-  document.getElementById("pauseplay").src = "/svg/bold/pause.svg";
-  toogleEmpty(true)
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: name,
-    artist: artist,
-    artwork: [{ src: img }]
-  })
-
-  navigator.mediaSession.setActionHandler("nexttrack", chageNowPlaying); // should change changeNowPlaying to actual (next) function when available
-  navigator.mediaSession.setActionHandler("previoustrack", back);
-}
-
-function toogleEmpty(alwaysRemove = false) {
-  var name = document.getElementById("name")
-  var artist = document.getElementById("artist")
-  var img = document.getElementById("img")
-  name.classList.contains("empty") || alwaysRemove ? name.classList.remove("empty") : name.classList.add("empty")
-  artist.classList.contains("empty") || alwaysRemove ? artist.classList.remove("empty") : artist.classList.add("empty")
-  img.classList.contains("empty") || alwaysRemove ? img.classList.remove("empty") : img.classList.add("empty")
-}
-
 function playpause() {
-  var source = document.getElementById("media");
   let imgsrc = document.getElementById("pauseplay");
   imgsrc.classList.add("clickAnimation");
-  console.log(source.paused)
   window.setTimeout(function () {
-    if (source.paused) {
+    if (musicHandler.audio.paused) {
       imgsrc.src = "/svg/bold/pause.svg";
-      source.play();
+      musicHandler.play();
     } else {
       imgsrc.src = "/svg/bold/play.svg";
-      source.pause();
+      musicHandler.pause();
     }
   }, 150);
   window.setTimeout(function () {
@@ -97,20 +74,19 @@ export default {
   async mounted() {
     document
       .getElementById("pauseplay")
-      .addEventListener("click", function (event) {
+      .addEventListener("click", () => {
         playpause();
       });
 
     document
       .getElementById("back")
-      .addEventListener("click", function (event) {
+      .addEventListener("click", () => {
         back();
       });
 
     var audio = document.getElementById("media");
 
     audio.hasAttribute("svolume") ? audio.volume = media.getAttribute("svolume") : audio.volume = 0.3;
-    // console.log(audio.volume)
 
     var progressBarFill = document.getElementById("progressbar");
     var progressTime = document.getElementById("progress-time");
@@ -122,12 +98,7 @@ export default {
       return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
     }
 
-    function stop() {
-      document.getElementById("pauseplay").src = "/svg/bold/play.svg";
-    }
-
     audio.addEventListener("timeupdate", updateProgressBar);
-    audio.addEventListener("ended", stop);
 
     function updateProgressBar() {
       if (isDragging) {

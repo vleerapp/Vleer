@@ -182,7 +182,16 @@ import {
   readTextFile,
 } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api";
-import { platform } from '@tauri-apps/api/os';
+import { MusicHandler } from '/musicHandler'
+/* import { registerAll } from '@tauri-apps/api/globalShortcut';
+
+await registerAll(['Alt+Shift+P'], (shortcut) => {
+  console.log(`Shortcut ${shortcut} triggered`);
+});
+ */
+
+var musicHandler = MusicHandler.getInstance();
+musicHandler.volume(0.01);
 
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
@@ -203,7 +212,6 @@ function playpause() {
   var source = document.getElementById("media");
   let imgsrc = document.getElementById("pauseplay");
   imgsrc.classList.add("clickAnimation");
-  console.log(source.paused);
   window.setTimeout(function () {
     if (source.paused) {
       imgsrc.src = "/svg/bold/pause.svg";
@@ -240,14 +248,16 @@ onMounted(async () => {
 })
 
 appWindow.onResized(async () => {
-  const platformName = await platform();
-  if (platformName == "win32" || platformName == "win64") {
+  try {
     var isma = await appWindow.isMaximized();
     if (isma) {
       document.getElementById("app").style.borderRadius = "0";
     } else {
       document.getElementById("app").style.borderRadius = "6px";
     }
+  }
+  catch (e) {
+    console.log("Error, while trying to remove border radius on maximize: "+e);
   }
 });
 
