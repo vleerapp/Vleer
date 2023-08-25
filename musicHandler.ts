@@ -15,6 +15,8 @@ export class MusicHandler {
   public audio: any;
   public history: Array<string>;
   public playNext: Array<string>;
+  public isDragging: boolean;
+  public dragX: number;
 
   private src = "";
 
@@ -82,20 +84,61 @@ export class MusicHandler {
     this.audio.play();
   }
 
-  getLenght() {
-    return this.audio.duration;
-  }
-
   pauseplay() {
-    this.audio.paused != this.audio.paused;
+    let imgsrc = document.getElementById("pauseplay");
+    var audioEle = this.audio
+    imgsrc.classList.add("clickAnimation");
+    window.setTimeout(function () {
+      if (audioEle.paused) {
+        imgsrc.src = "/svg/bold/pause.svg";
+        audioEle.play();
+      } else {
+        imgsrc.src = "/svg/bold/play.svg";
+        audioEle.pause();
+      }
+    }, 150);
+    window.setTimeout(function () {
+      imgsrc.classList.remove("clickAnimation");
+    }, 400);
   }
 
   onAudioEnded() {
+    // @ts-ignore
     document.getElementById("pauseplay").src = "/svg/bold/play.svg";
   }
 
   onAudioTimeUpdate() {
-    document.getElementById("pauseplay").src = "/svg/bold/play.svg";
+    this.updateProgressBar();
+  }
+
+  formatTime(timeInSeconds: number) {
+    var minutes = Math.floor(timeInSeconds / 60);
+    var seconds = Math.floor(timeInSeconds % 60);
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  }
+
+  updateProgressBar() {
+    var progressBarFill = document.getElementById("progressbar");
+    var progressTime = document.getElementById("progress-time");
+    var timeLeft = document.getElementById("time-left");
+    var progressBar = document.querySelector(".progressbar > .bar");
+
+    if (this.isDragging) {
+      progressBarFill.style.transition = "width 0.0s linear";
+      var progress = (this.dragX / progressBar.clientWidth) * 100;
+      progressBarFill.style.width = progress + "%";
+      this.audio.currentTime = (this.dragX / progressBar.clientWidth) * this.audio.duration;
+      progressTime.innerHTML = this.formatTime(this.audio.currentTime);
+    } else {
+    var progress = (this.audio.currentTime / this.audio.duration) * 100;
+      progressBarFill.style.width = progress + "%";
+      progressBarFill.style.transition = "width 0.1s linear";
+      timeLeft.innerHTML =
+        this.formatTime(this.audio.duration) == "NaN:NaN"
+          ? "0:00"
+          : this.formatTime(this.audio.duration);
+      progressTime.innerHTML = this.formatTime(this.audio.currentTime);
+    }
   }
 
   async createAssetUrl(file: string) {
@@ -135,6 +178,7 @@ export class MusicHandler {
     document.getElementById("img").style.setProperty("--bgsrc", `url('${musicInfo.imageURL}')`);
     document.getElementById("name").innerHTML = musicInfo.trackName;
     document.getElementById("artist").innerHTML = musicInfo.artistName;
+    // @ts-ignore
     document.getElementById("pauseplay").src = "/svg/bold/pause.svg";
   }
 }

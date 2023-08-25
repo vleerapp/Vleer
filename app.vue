@@ -183,15 +183,9 @@ import {
 } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api";
 import { MusicHandler } from '/musicHandler'
-/* import { registerAll } from '@tauri-apps/api/globalShortcut';
-
-await registerAll(['Alt+Shift+P'], (shortcut) => {
-  console.log(`Shortcut ${shortcut} triggered`);
-});
- */
 
 var musicHandler = MusicHandler.getInstance();
-musicHandler.volume(0.01);
+musicHandler.volume(0.1);
 
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
@@ -208,32 +202,19 @@ async function checkForDefaultFilesInAppData() {
   }
 }
 
-function playpause() {
-  var source = document.getElementById("media");
-  let imgsrc = document.getElementById("pauseplay");
-  imgsrc.classList.add("clickAnimation");
-  window.setTimeout(function () {
-    if (source.paused) {
-      imgsrc.src = "/svg/bold/pause.svg";
-      source.play();
-    } else {
-      imgsrc.src = "/svg/bold/play.svg";
-      source.pause();
-    }
-  }, 150);
-  window.setTimeout(function () {
-    imgsrc.classList.remove("clickAnimation");
-  }, 400);
-}
-
 await checkForDefaultFilesInAppData();
 
 onMounted(async () => {
-  var isma = await appWindow.isMaximized();
-  if (isma) {
-    document.getElementById("app").style.borderRadius = "0";
-  } else {
-    document.getElementById("app").style.borderRadius = "6px";
+  try {
+    var isma = await appWindow.isMaximized();
+    if (isma) {
+      document.getElementById("app").style.borderRadius = "0";
+    } else {
+      document.getElementById("app").style.borderRadius = "6px";
+    }
+  }
+  catch (e) {
+    console.log("Error, while trying to remove border radius on maximize: "+e);
   }
 
   window.addEventListener("keydown", function (event) {
@@ -242,7 +223,7 @@ onMounted(async () => {
       !document.getElementById("searchBar").activeElement
     ) {
       event.preventDefault();
-      playpause();
+      musicHandler.pauseplay();
     }
   });
 })

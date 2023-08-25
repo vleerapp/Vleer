@@ -75,7 +75,7 @@ export default {
     document
       .getElementById("pauseplay")
       .addEventListener("click", () => {
-        playpause();
+        musicHandler.pauseplay();
       });
 
     document
@@ -84,86 +84,49 @@ export default {
         back();
       });
 
-    var audio = document.getElementById("media");
-
-    audio.hasAttribute("svolume") ? audio.volume = media.getAttribute("svolume") : audio.volume = 0.3;
-
-    var progressBarFill = document.getElementById("progressbar");
-    var progressTime = document.getElementById("progress-time");
-    var timeLeft = document.getElementById("time-left");
-
-    function formatTime(timeInSeconds) {
-      var minutes = Math.floor(timeInSeconds / 60);
-      var seconds = Math.floor(timeInSeconds % 60);
-      return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-    }
-
-    audio.addEventListener("timeupdate", updateProgressBar);
-
-    function updateProgressBar() {
-      if (isDragging) {
-        progressBarFill.style.transition = "width 0.0s linear";
-        var progress = (dragX / progressBar.clientWidth) * 100;
-        progressBarFill.style.width = progress + "%";
-        audio.currentTime = (dragX / progressBar.clientWidth) * audio.duration;
-      } else {
-        var progress = (audio.currentTime / audio.duration) * 100;
-        progressBarFill.style.width = progress + "%";
-        progressBarFill.style.transition = "width 0.1s linear";
-        timeLeft.innerHTML =
-          formatTime(audio.duration) == "NaN:NaN"
-            ? "0:00"
-            : formatTime(audio.duration);
-        progressTime.innerHTML = formatTime(audio.currentTime);
-      }
-    }
-
-    var isDragging = false;
-    var dragX = 0;
-
     var progressBar = document.querySelector(".progressbar > .bar");
     var progressBarFill = document.querySelector(
       ".progressbar > .bar >.bar-filled"
     );
 
     progressBar.addEventListener("mousedown", function (event) {
-      isDragging = true;
-      dragX = event.offsetX;
+      musicHandler.isDragging = true;
+      musicHandler.dragX = event.offsetX;
     });
 
     progressBar.addEventListener("mousemove", function (event) {
-      if (isDragging) {
+      if (musicHandler.isDragging) {
         var progress =
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
         if (progress > 100) progress = 100
         progressBarFill.style.width = progress + "%";
-        dragX = event.clientX - progressBar.getBoundingClientRect().left;
+        musicHandler.dragX = event.clientX - progressBar.getBoundingClientRect().left;
       }
     });
 
     progressBar.addEventListener("mouseup", function (event) {
-      if (isDragging) {
-        isDragging = false;
+      if (musicHandler.isDragging) {
+        musicHandler.isDragging = false;
         var progress =
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
         progressBarFill.style.width = progress + "%";
-        audio.currentTime = (dragX / progressBar.clientWidth) * audio.duration;
+        musicHandler.audio.currentTime = (musicHandler.dragX / progressBar.clientWidth) * musicHandler.audio.duration;
       }
     });
 
     progressBar.addEventListener("mouseleave", function (event) {
-      if (isDragging) {
-        isDragging = false;
+      if (musicHandler.isDragging) {
+        musicHandler.isDragging = false;
         var progress =
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
         progressBarFill.style.width = progress + "%";
-        audio.currentTime = (dragX / progressBar.clientWidth) * audio.duration;
+        musicHandler.audio.currentTime = (musicHandler.dragX / progressBar.clientWidth) * musicHandler.audio.duration;
       }
     });
 
@@ -188,7 +151,7 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
         dragAudioX = event.clientX - AudioBar.getBoundingClientRect().left;
       }
     });
@@ -202,7 +165,7 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
         audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
     });
@@ -216,7 +179,7 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
         audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
     });
