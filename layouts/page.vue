@@ -30,6 +30,7 @@
   left: 350px;
   right: 10px;
   z-index: 4;
+  transition: 0.2s;
 }
 
 @media screen and (max-width: 1200px) {
@@ -40,6 +41,11 @@
 
   .bg {
     left: 130px;
+  }
+
+  .bg-player {
+    transition: 0.2s;
+    left: 124px !important;
   }
 }
 </style>
