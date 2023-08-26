@@ -95,7 +95,7 @@ body {
   position: fixed;
   height: 100vh;
   width: 100vw;
-  border-radius: 10px;
+  border-radius: 10px !important;
   z-index: -1;
 }
 
