@@ -9,8 +9,9 @@
 
 <script>
 import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
-import { audioDir, join, appConfigDir } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { MusicHandler } from '/musicHandler'
+
+var musicHandler = MusicHandler.getInstance();
 
 export default {
   async mounted() {
@@ -79,49 +80,15 @@ export default {
     elements.forEach(async (item) => {
       item.addEventListener("click", async () => {
         playAudio(item.getAttribute("audio"));
-
-        var music = await readTextFile(`savedMusic/${item.getAttribute("audio")}.json`, {
-          dir: BaseDirectory.Audio,
-        });
-        music = JSON.parse(music);
-        if (music.imageURL == "") {
-          music.imageURL = "/unknown.png";
-        }
-        if (music.trackName == "") {
-          music.trackName = "Unknown Name";
-        }
-        if (music.artistName == "") {
-          music.artistName = "Unknown Artist";
-        }
-
-        const audioPlayed = new CustomEvent("customPlayAudio", {
-          bubbles: true,
-          cancelable: true,
-          detail: {
-            image: music.imageURL,
-            name: music.trackName,
-            artist: music.artistName,
-          },
-        });
-        document.dispatchEvent(audioPlayed);
       });
     });
   },
 };
 
 async function playAudio(path) {
-  const audioDirPath = await audioDir();
-  const filePath = await join(audioDirPath, `savedMusic/${path}`);
-  const assetUrl = convertFileSrc(filePath);
-
-  const audio = document.getElementById("media");
-  audio.innerHTML = "";
-  const source = document.createElement("source");
-  source.type = "audio/mp3";
-  source.src = assetUrl;
-  audio.appendChild(source);
-  audio.load();
-  audio.play();
+  musicHandler.pause()
+  await musicHandler.setTrack(path)
+  musicHandler.playAudio()
 }
 </script>
 
@@ -152,6 +119,7 @@ async function playAudio(path) {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
   display: grid;
+  place-items: center;
 }
 
 .searchResultCover2 {

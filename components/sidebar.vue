@@ -76,9 +76,7 @@ async function loadImage() {
     const imageUrl = URL.createObjectURL(blob);
 
     image.src = imageUrl;
-  } catch (error) {
-    console.error("Error loading image:", error);
-  }
+  } catch {}
 }
 
 onMounted(async () => {

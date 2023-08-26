@@ -35,47 +35,24 @@
 </template>
 
 <script>
-document.addEventListener("customPlayAudio", function (event) {
-  chageNowPlaying(event.detail.image, event.detail.name, event.detail.artist);
+import { MusicHandler } from '/musicHandler'
+
+const musicHandler = MusicHandler.getInstance();
+
+musicHandler.onPlayEvent(async () => {
+  var info = await musicHandler.getInfo()
 });
 
-function chageNowPlaying(img, name, artist) {
-  document.getElementById("img").style.setProperty("--bgsrc", `url('${img}')`);
-  document.getElementById("name").innerHTML = name;
-  document.getElementById("artist").innerHTML = artist;
-  document.getElementById("pauseplay").src = "/svg/bold/pause.svg";
-  toogleEmpty(true)
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: name,
-    artist: artist,
-    artwork: [{ src: img }]
-  })
-
-  navigator.mediaSession.setActionHandler("nexttrack", chageNowPlaying); // should change changeNowPlaying to actual (next) function when available
-  navigator.mediaSession.setActionHandler("previoustrack", back);
-}
-
-function toogleEmpty(alwaysRemove = false) {
-  var name = document.getElementById("name")
-  var artist = document.getElementById("artist")
-  var img = document.getElementById("img")
-  name.classList.contains("empty") || alwaysRemove ? name.classList.remove("empty") : name.classList.add("empty")
-  artist.classList.contains("empty") || alwaysRemove ? artist.classList.remove("empty") : artist.classList.add("empty")
-  img.classList.contains("empty") || alwaysRemove ? img.classList.remove("empty") : img.classList.add("empty")
-}
-
 function playpause() {
-  var source = document.getElementById("media");
   let imgsrc = document.getElementById("pauseplay");
   imgsrc.classList.add("clickAnimation");
-  console.log(source.paused)
   window.setTimeout(function () {
-    if (source.paused) {
+    if (musicHandler.audio.paused) {
       imgsrc.src = "/svg/bold/pause.svg";
-      source.play();
+      musicHandler.play();
     } else {
       imgsrc.src = "/svg/bold/play.svg";
-      source.pause();
+      musicHandler.pause();
     }
   }, 150);
   window.setTimeout(function () {
@@ -97,58 +74,15 @@ export default {
   async mounted() {
     document
       .getElementById("pauseplay")
-      .addEventListener("click", function (event) {
-        playpause();
+      .addEventListener("click", () => {
+        musicHandler.pauseplay();
       });
 
     document
       .getElementById("back")
-      .addEventListener("click", function (event) {
+      .addEventListener("click", () => {
         back();
       });
-
-    var audio = document.getElementById("media");
-
-    audio.hasAttribute("svolume") ? audio.volume = media.getAttribute("svolume") : audio.volume = 0.3;
-    // console.log(audio.volume)
-
-    var progressBarFill = document.getElementById("progressbar");
-    var progressTime = document.getElementById("progress-time");
-    var timeLeft = document.getElementById("time-left");
-
-    function formatTime(timeInSeconds) {
-      var minutes = Math.floor(timeInSeconds / 60);
-      var seconds = Math.floor(timeInSeconds % 60);
-      return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-    }
-
-    function stop() {
-      document.getElementById("pauseplay").src = "/svg/bold/play.svg";
-    }
-
-    audio.addEventListener("timeupdate", updateProgressBar);
-    audio.addEventListener("ended", stop);
-
-    function updateProgressBar() {
-      if (isDragging) {
-        progressBarFill.style.transition = "width 0.0s linear";
-        var progress = (dragX / progressBar.clientWidth) * 100;
-        progressBarFill.style.width = progress + "%";
-        audio.currentTime = (dragX / progressBar.clientWidth) * audio.duration;
-      } else {
-        var progress = (audio.currentTime / audio.duration) * 100;
-        progressBarFill.style.width = progress + "%";
-        progressBarFill.style.transition = "width 0.1s linear";
-        timeLeft.innerHTML =
-          formatTime(audio.duration) == "NaN:NaN"
-            ? "0:00"
-            : formatTime(audio.duration);
-        progressTime.innerHTML = formatTime(audio.currentTime);
-      }
-    }
-
-    var isDragging = false;
-    var dragX = 0;
 
     var progressBar = document.querySelector(".progressbar > .bar");
     var progressBarFill = document.querySelector(
@@ -156,43 +90,43 @@ export default {
     );
 
     progressBar.addEventListener("mousedown", function (event) {
-      isDragging = true;
-      dragX = event.offsetX;
+      musicHandler.isDragging = true;
+      musicHandler.dragX = event.offsetX;
     });
 
     progressBar.addEventListener("mousemove", function (event) {
-      if (isDragging) {
+      if (musicHandler.isDragging) {
         var progress =
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
         if (progress > 100) progress = 100
         progressBarFill.style.width = progress + "%";
-        dragX = event.clientX - progressBar.getBoundingClientRect().left;
+        musicHandler.dragX = event.clientX - progressBar.getBoundingClientRect().left;
       }
     });
 
     progressBar.addEventListener("mouseup", function (event) {
-      if (isDragging) {
-        isDragging = false;
+      if (musicHandler.isDragging) {
+        musicHandler.isDragging = false;
         var progress =
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
         progressBarFill.style.width = progress + "%";
-        audio.currentTime = (dragX / progressBar.clientWidth) * audio.duration;
+        musicHandler.audio.currentTime = (musicHandler.dragX / progressBar.clientWidth) * musicHandler.audio.duration;
       }
     });
 
     progressBar.addEventListener("mouseleave", function (event) {
-      if (isDragging) {
-        isDragging = false;
+      if (musicHandler.isDragging) {
+        musicHandler.isDragging = false;
         var progress =
           ((event.clientX - progressBar.getBoundingClientRect().left) /
             progressBar.clientWidth) *
           100;
         progressBarFill.style.width = progress + "%";
-        audio.currentTime = (dragX / progressBar.clientWidth) * audio.duration;
+        musicHandler.audio.currentTime = (musicHandler.dragX / progressBar.clientWidth) * musicHandler.audio.duration;
       }
     });
 
@@ -217,7 +151,7 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
         dragAudioX = event.clientX - AudioBar.getBoundingClientRect().left;
       }
     });
@@ -231,7 +165,7 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
         audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
     });
@@ -245,7 +179,7 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        audio.volume = (dragAudioX / AudioBar.clientWidth) * 0.3;
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
         audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
       }
     });
