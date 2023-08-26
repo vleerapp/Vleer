@@ -36,6 +36,21 @@ export class MusicHandler {
     this.audio = new Audio();
     this.audio.addEventListener('ended', this.onAudioEnded.bind(this));
     this.audio.addEventListener('timeupdate', this.onAudioTimeUpdate.bind(this));
+    /* this.audio.addEventListener('volumechange', this.volumeChange.bind(this)); */
+  }
+
+  async volumeChange() {
+    var contents = await readTextFile("config.json", {
+      dir: BaseDirectory.AppConfig,
+    });
+
+    var parsedContents = JSON.parse(contents);
+
+    parsedContents["volume"] = this.audio.volume;
+
+    await writeTextFile("config.json", JSON.stringify(parsedContents), {
+      dir: BaseDirectory.AppConfig
+    });
   }
 
   static getInstance(): MusicHandler {
@@ -64,7 +79,7 @@ export class MusicHandler {
     this.updatePlayer()
   }
 
-  volume(volume: number) {
+  async volume(volume: number) {
     this.audio.volume = volume;
   }
 
@@ -77,10 +92,14 @@ export class MusicHandler {
   }
 
   pause() {
+    let imgsrc = document.getElementById("pauseplay");
+    imgsrc.src = "/svg/bold/play.svg";
     this.audio.pause();
   }
 
   play() {
+    let imgsrc = document.getElementById("pauseplay");
+    imgsrc.src = "/svg/bold/pause.svg";
     this.audio.play();
   }
 

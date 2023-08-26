@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
 import { MusicHandler } from '/musicHandler'
 
 const musicHandler = MusicHandler.getInstance();
@@ -42,23 +43,6 @@ const musicHandler = MusicHandler.getInstance();
 musicHandler.onPlayEvent(async () => {
   var info = await musicHandler.getInfo()
 });
-
-function playpause() {
-  let imgsrc = document.getElementById("pauseplay");
-  imgsrc.classList.add("clickAnimation");
-  window.setTimeout(function () {
-    if (musicHandler.audio.paused) {
-      imgsrc.src = "/svg/bold/pause.svg";
-      musicHandler.play();
-    } else {
-      imgsrc.src = "/svg/bold/play.svg";
-      musicHandler.pause();
-    }
-  }, 150);
-  window.setTimeout(function () {
-    imgsrc.classList.remove("clickAnimation");
-  }, 400);
-}
 
 function back() {
   var source = document.getElementById("media");
@@ -92,6 +76,7 @@ export default {
     progressBar.addEventListener("mousedown", function (event) {
       musicHandler.isDragging = true;
       musicHandler.dragX = event.offsetX;
+      musicHandler.pause()
     });
 
     progressBar.addEventListener("mousemove", function (event) {
@@ -115,6 +100,7 @@ export default {
           100;
         progressBarFill.style.width = progress + "%";
         musicHandler.audio.currentTime = (musicHandler.dragX / progressBar.clientWidth) * musicHandler.audio.duration;
+        musicHandler.play()
       }
     });
 
@@ -127,6 +113,7 @@ export default {
           100;
         progressBarFill.style.width = progress + "%";
         musicHandler.audio.currentTime = (musicHandler.dragX / progressBar.clientWidth) * musicHandler.audio.duration;
+        musicHandler.play()
       }
     });
 
@@ -134,6 +121,14 @@ export default {
     var AudioBarFill = document.querySelector(
       ".sound-controlls > .bar > .bar-filled"
     );
+
+    var contents = await readTextFile("config.json", {
+      dir: BaseDirectory.AppConfig,
+    });
+
+    var parsedContents = JSON.parse(contents);
+
+    AudioBarFill.style.width = (parsedContents["volume"] * 200).toString() + "%"
 
     var isDraggingAudio = false;
     var dragAudioX = 0;
@@ -151,12 +146,12 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.5);
         dragAudioX = event.clientX - AudioBar.getBoundingClientRect().left;
       }
     });
 
-    AudioBar.addEventListener("mouseup", function (event) {
+    AudioBar.addEventListener("mouseup", async function (event) {
       if (isDraggingAudio) {
         isDraggingAudio = false;
         var progress =
@@ -165,12 +160,12 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
-        audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.5);
+        await musicHandler.volumeChange()
       }
     });
 
-    AudioBar.addEventListener("mouseleave", function (event) {
+    AudioBar.addEventListener("mouseleave", async function (event) {
       if (isDraggingAudio) {
         isDraggingAudio = false;
         var progress =
@@ -179,8 +174,8 @@ export default {
           100;
         if (progress > 100) progress = 100
         AudioBarFill.style.width = Math.floor(progress) + "%";
-        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.3);
-        audio.setAttribute("svolume", (dragAudioX / AudioBar.clientWidth) * 0.3)
+        musicHandler.volume((dragAudioX / AudioBar.clientWidth) * 0.5);
+        await musicHandler.volumeChange()
       }
     });
   },

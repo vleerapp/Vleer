@@ -183,9 +183,17 @@ import {
 } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api";
 import { MusicHandler } from '/musicHandler'
+import { platform } from '@tauri-apps/api/os';
+const platformName = await platform();
+
+var contents = await readTextFile("config.json", {
+  dir: BaseDirectory.AppConfig,
+});
+
+var parsedContents = JSON.parse(contents);
 
 var musicHandler = MusicHandler.getInstance();
-musicHandler.volume(0.1);
+musicHandler.volume(parsedContents["volume"]);
 
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
@@ -228,19 +236,21 @@ onMounted(async () => {
   });
 })
 
-appWindow.onResized(async () => {
-  try {
-    var isma = await appWindow.isMaximized();
-    if (isma) {
-      document.getElementById("app").style.borderRadius = "0";
-    } else {
-      document.getElementById("app").style.borderRadius = "6px";
+if (platformName == "win32"|| platformName == "win64") {
+  appWindow.onResized(async () => {
+    try {
+      var isma = await appWindow.isMaximized();
+      if (isma) {
+        document.getElementById("app").style.borderRadius = "0";
+      } else {
+        document.getElementById("app").style.borderRadius = "6px";
+      }
     }
-  }
-  catch (e) {
-    console.log("Error, while trying to remove border radius on maximize: "+e);
-  }
-});
+    catch (e) {
+      console.log("Error, while trying to remove border radius on maximize: "+e);
+    }
+  });
+}
 
 document.body.addEventListener("scroll", () => {
   if (document.body.scrollTop < 800) {
