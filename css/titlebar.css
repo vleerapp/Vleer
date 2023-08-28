@@ -8,7 +8,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  border-radius: 10px 10px 0px 0px;
+  border-radius: 24px 24px 0px 0px;
   background-color: var(--bg);
   z-index: 3;
 }
@@ -45,5 +45,5 @@
   right: 20px;
   height: 70px;
   z-index: 2;
-  background: linear-gradient(180deg, rgba(22, 21, 26, 1) 0%, rgba(22, 21, 26, 1) 60%, rgba(22, 21, 26, 0) 100%);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 60%, #00000000 100%);
 }

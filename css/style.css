@@ -23,7 +23,7 @@ body {
 .page-title {
   color: var(--tx);
   font-size: 38px;
-  z-index: 0;
+  z-index: 2;
   position: relative;
   margin-bottom: 10px;
 }

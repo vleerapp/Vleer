@@ -1,39 +1,34 @@
 <template>
   <div class="sidebar animation" id="sidebar" :class="minimized ? 'minimized' : ''">
     <div class="minibar">
-      <img id="avatar-img" src="/empty.png" alt="avatar" />
-      <nuxt-link class="settings" to="/settings">
-        <img src="/svg/linear/setting-2.svg" width="18" height="18" />
+      <!-- <img id="avatar-img" src="/empty.png" alt="avatar" /> -->
+      <nuxt-link to="/settings">
+        <img src="/svg/linear/settings.svg" />
       </nuxt-link>
+      <img src="/svg/linear/sidebar-minimze.svg">
     </div>
     <div id="sidenav_tabs">
       <div class="tab">
         <nuxt-link to="/" class="tab-link">
-          <div style="--img: url('/svg/linear/home-2.svg')" class="tab_icon home_icon"></div>
+          <div style="--img: url(/svg/linear/home.svg)" class="tab_icon home_icon"></div>
           <span class="tab_text">Home</span>
         </nuxt-link>
       </div>
       <div class="tab">
-        <nuxt-link to="/songs" class="tab-link">
-          <div style="--img: url('/svg/linear/music.svg')" class="tab_icon songs_icon"></div>
-          <span class="tab_text">Songs</span>
-        </nuxt-link>
-      </div>
-      <div class="tab">
-        <nuxt-link to="/playlists" class="tab-link">
-          <div style="--img: url('/svg/linear/note.svg')" class="tab_icon playlists_icon"></div>
-          <span class="tab_text">Playlists</span>
-        </nuxt-link>
-      </div>
-      <div class="tab">
         <nuxt-link to="/library" class="tab-link">
-          <div style="--img: url(/svg/linear/video-square.svg)" class="tab_icon library_icon"></div>
+          <div style="--img: url(/svg/linear/library.svg)" class="tab_icon library_icon"></div>
           <span class="tab_text">Library</span>
         </nuxt-link>
       </div>
+      <div class="tab">
+        <nuxt-link to="/search" class="tab-link">
+          <div style="--img: url(/svg/linear/search.svg)" class="tab_icon search_icon"></div>
+          <span class="tab_text">Search</span>
+        </nuxt-link>
+      </div>
     </div>
-    <div id="minimizer" style="--arrow: url('/svg/linear/arrow-close.svg')" v-on:click="toggleSidebar"
-      class="minimizeSidebar animation" :class="minimized ? 'mini' : ''" alt=""></div>
+    <!-- <div id="minimizer" style="--arrow: url('/svg/linear/arrow-close.svg')" v-on:click="toggleSidebar"
+      class="minimizeSidebar animation" :class="minimized ? 'mini' : ''" alt=""></div> -->
   </div>
 </template>
 
@@ -76,7 +71,7 @@ async function loadImage() {
     const imageUrl = URL.createObjectURL(blob);
 
     image.src = imageUrl;
-  } catch {}
+  } catch { }
 }
 
 onMounted(async () => {

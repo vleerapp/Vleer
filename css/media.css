@@ -41,12 +41,7 @@
   }
 
   .sidebar {
-    position: fixed;
-    background-color: var(--sidebar);
     width: 80px;
-    height: calc(100% - 44px);
-    margin: 22px;
-    border-radius: 12px;
   }
 
   .tab_icon {
@@ -125,11 +120,7 @@
 
   .minimized {
     position: fixed;
-    background-color: var(--sidebar);
     width: 80px;
-    height: calc(100% - 44px);
-    margin: 22px;
-    border-radius: 12px;
   }
 
   .minimized+#main-page {

@@ -28,9 +28,9 @@ body {
 
 .content {
   position: absolute;
-  left: 372px;
+  left: 348px;
+  top: 32px;
   transition: .2s;
-  top: 110px;
 }
 
 @media screen and (max-width: 1200px) {

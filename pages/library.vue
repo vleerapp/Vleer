@@ -165,7 +165,7 @@ async function playAudio(path) {
 
 .searchResultArtist2 {
   grid-row: 3 / 4;
-  color: var(--dtx);
+  color: var(--unselected);
   align-self: flex-start;
 }
 </style>

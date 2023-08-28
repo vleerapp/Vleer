@@ -4,9 +4,9 @@
   position: absolute;
   background-color: var(--sidebar);
   width: 300px;
-  height: calc(100% - 44px);
-  margin: 22px;
-  border-radius: 12px;
+  height: calc(100% - 32px);
+  margin: 16px;
+  border-radius: 14px;
   overflow: visible;
 }
 
@@ -37,19 +37,8 @@
 .minibar {
   display: flex;
   flex-direction: row;
-  margin-top: 18px;
-  margin-left: 18px;
-}
-
-.settings {
-  border: 1px solid rgba(64, 62, 68, 0.24);
-  background: #1e1d23;
-  width: 40px;
-  height: 40px;
-  margin-left: 48px;
-  border-radius: 100px;
-  display: grid;
-  place-items: center;
+  margin: 16px;
+  justify-content: space-between;
 }
 
 .settings:hover {
@@ -60,57 +49,51 @@
   position: absolute;
   width: 100%;
   top: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .tab {
-  height: 60px;
+  height: 52px;
   padding-inline: 0px;
-  margin-inline: 10px;
+  margin-inline: 16px;
   cursor: pointer;
 }
 
-.tab:not(:last-child) {
-  margin-bottom: 8px;
-}
-
 .tab:hover {
-  background-color: var(--search);
-  margin-inline: 10px;
-  border-radius: 18px;
+  background-color: var(--selected);
+  border-radius: 14px;
 }
 
 .tab-link {
   place-items: center;
   height: 100%;
   display: flex;
-  width: 100%;
+  gap: 16px;
+  align-items: center;
+  overflow: hidden;
+  padding-inline: 14px;
 }
 
 .tab_text {
   display: flex;
-  align-items: center;
-  font-size: 18px;
-  margin-left: 69px;
+  font-size: 16px;
+  color: var(--unselected);
 }
 
 .tab_icon {
-  margin-left: 15px;
   background-image: var(--img);
   background-size: 28px;
   background-position: 50% 50%;
   background-repeat: no-repeat;
-  height: 30px;
-  width: 30px;
-  position: fixed;
-}
-
-.tab_text {
-  color: var(--dtx);
+  height: 24px;
+  width: 24px;
 }
 
 .tab:has(.router-link-active.router-link-exact-active.tab-link) {
-  background-color: #1e1d23;
-  border-radius: 18px;
+  background-color: var(--selected);
+  border-radius: 14px;
 }
 
 .router-link-active.router-link-exact-active.tab-link>.tab_text {
@@ -118,19 +101,15 @@
 }
 
 .router-link-active.router-link-exact-active.tab-link>.home_icon {
-  --img: url('/svg/bold/home-2.svg') !important;
-}
-
-.router-link-active.router-link-exact-active.tab-link>.songs_icon {
-  --img: url('/svg/bold/music.svg') !important;
-}
-
-.router-link-active.router-link-exact-active.tab-link>.playlists_icon {
-  --img: url('/svg/bold/note.svg') !important;
+  --img: url('/svg/bold/home-full.svg') !important;
 }
 
 .router-link-active.router-link-exact-active.tab-link>.library_icon {
-  --img: url('/svg/bold/video-square.svg') !important;
+  --img: url('/svg/bold/library-full.svg') !important;
+}
+
+.router-link-active.router-link-exact-active.tab-link>.search_icon {
+  --img: url('/svg/bold/search-full.svg') !important;
 }
 
 #avatar-img {

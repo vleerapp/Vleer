@@ -1,7 +1,6 @@
 <template>
   <sidebar />
   <div id="content" class="content animation" :class="minimized ? 'contentMinimized' : ''">
-    <search />
     <slot />
   </div>
   <div class="bg-player"></div>
@@ -15,8 +14,8 @@
 
 .content {
   position: absolute;
-  top: 100px;
-  left: 372px;
+  top: 32px;
+  left: 348px;
   width: calc(100% - 450px);
   padding-bottom: 150px;
 }

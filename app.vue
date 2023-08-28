@@ -41,7 +41,22 @@
 <style>
 :root {
   /*=======COLORS===========*/
-  --bg: #16151a;
+  --bg: #000000;
+  --sidebar: #0F0E14;
+  --selected: #1B1A26;
+  --accent: #7b00ff;
+  --accenth: #6c00e0;
+  --element: #1c1b21;
+  --elementh: #232229;
+  --tx: #ffffff;
+  --unselected: #8D8A9C;
+  --search: #1e1d23;
+  --border: #26252b;
+  --fail: #ff6666;
+  --succeed: #66ff66;
+
+  /* backup */
+  /* --bg: #16151a;
   --sidebar: #19181d;
   --accent: #7b00ff;
   --accenth: #6c00e0;
@@ -52,7 +67,7 @@
   --search: #1e1d23;
   --border: #26252b;
   --fail: #ff6666;
-  --succeed: #66ff66;
+  --succeed: #66ff66; */
 }
 
 @font-face {
@@ -69,6 +84,10 @@ body {
   overflow-x: hidden;
   background-color: transparent !important;
   position: relative;
+}
+
+html{
+  overflow: hidden !important;
 }
 
 ::-webkit-scrollbar {
@@ -91,11 +110,12 @@ body {
 }
 
 #app {
+  overflow: hidden !important;
   background-color: var(--bg);
   position: fixed;
   height: 100vh;
   width: 100vw;
-  border-radius: 10px !important;
+  border-radius: 24px !important;
   z-index: -1;
 }
 
@@ -107,7 +127,7 @@ body {
   position: fixed;
   height: 100vh;
   width: 100vw;
-  border-radius: 6px;
+  border-radius: 24px;
   z-index: 10;
   border: 5px solid var(--overlayColor);
   display: grid;
