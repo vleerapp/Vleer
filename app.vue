@@ -4,6 +4,7 @@
     <NuxtPage />
   </div>
   <div id="app"></div>
+  <div id="app-border"></div>
   <audio id="media"></audio>
   <div id="overlay">
     <div class="allowDrop" style="
@@ -41,8 +42,8 @@
 <style>
 :root {
   /*=======COLORS===========*/
-  --bg: #000000;
-  --sidebar: #0F0E14;
+  --bg: #0d0c12;
+  --sidebar: #121118;
   --selected: #1B1A26;
   --accent: #7b00ff;
   --accenth: #6c00e0;
@@ -118,6 +119,16 @@ html{
   border-radius: 24px !important;
   z-index: -1;
 }
+
+/* #app-border{
+  border: 1px solid #1e1e1e;
+  z-index: 100000;
+  overflow: hidden !important;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  border-radius: 24px !important;
+} */
 
 #overlay {
   --overlayColor: var(--succeed);

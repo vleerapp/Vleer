@@ -12,16 +12,16 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^0.8.2",
+    "@nuxt/devtools": "^0.8.3",
     "@tauri-apps/cli": "^1.4.0",
-    "nuxt": "^3.7.0"
+    "nuxt": "^3.7.1"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.4.15",
     "@tauri-apps/api": "^1.4.0",
     "axios": "^1.5.0",
     "node-fetch": "^3.3.2",
-    "nuxi": "^3.7.2",
+    "nuxi": "^3.8.3",
     "tauri-plugin-fs-extra-api": "github:tauri-apps/tauri-plugin-fs-extra",
     "ytdl-core": "^4.11.5"
   }
