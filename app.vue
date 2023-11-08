@@ -217,15 +217,6 @@ import { MusicHandler } from '/musicHandler'
 import { platform } from '@tauri-apps/api/os';
 const platformName = await platform();
 
-var contents = await readTextFile("config.json", {
-  dir: BaseDirectory.AppConfig,
-});
-
-var parsedContents = JSON.parse(contents);
-
-var musicHandler = MusicHandler.getInstance();
-musicHandler.volume(parsedContents["volume"]);
-
 async function checkForDefaultFilesInAppData() {
   if (!(await exists("", { dir: BaseDirectory.AppConfig }))) {
     await createDir("", {
@@ -242,6 +233,15 @@ async function checkForDefaultFilesInAppData() {
 }
 
 await checkForDefaultFilesInAppData();
+
+var contents = await readTextFile("config.json", {
+  dir: BaseDirectory.AppConfig,
+});
+
+var parsedContents = JSON.parse(contents);
+
+var musicHandler = MusicHandler.getInstance();
+musicHandler.volume(parsedContents["volume"]);
 
 onMounted(async () => {
   try {
