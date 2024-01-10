@@ -1,0 +1,34 @@
+{
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      ".nuxt": true,
+      "node_modules": true,
+      ".gitignore": true,
+      ".npmrc": true,
+      "README.md": true,
+      "pnpm-lock.yaml": true,
+      "tsconfig.json": true,
+      ".vscode": true,
+      ".output": true,
+      "dist": true
+    },
+    "hide-files.files": [
+      ".nuxt",
+      "node_modules",
+      ".gitignore",
+      ".npmrc",
+      "README.md",
+      "pnpm-lock.yaml",
+      "tsconfig.json",
+      ".vscode",
+      ".output",
+      "dist"
+    ],
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false
+}

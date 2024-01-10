@@ -1,13 +1,25 @@
-pnpm-lock.yaml
-node_modules
+# Nuxt dev/build outputs
+.output
+.data
 .nuxt
-.vscode
-node_modules
-*.DS_Store
-.gitignore
-.output/
+.nitro
+.cache
 dist
-.gitignore
-src-tauri/Cargo.toml
-yarn.lock
-.gitignore
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+pnpm-lock.yaml

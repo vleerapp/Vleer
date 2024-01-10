@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <g id="sidebar-left">
-    <path d="M16.4775 6.75C16.4775 3 14.9775 1.5 11.2275 1.5L6.72748 1.5C2.97748 1.5 1.47748 3 1.47748 6.75L1.47748 11.25C1.47748 15 2.97748 16.5 6.72748 16.5L11.2275 16.5C14.9775 16.5 16.4775 15 16.4775 11.25L16.4775 6.75Z" id="Vector" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M5.97748 1.5L5.97748 16.5" id="Vector" fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M11.2275 7.07996L9.3075 8.99996L11.2275 10.92" id="Vector" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M18 0L18 18L0 18L0 0L18 0Z" id="Vector" fill="none" fill-rule="evenodd" stroke="none" />
-  </g>
-</svg>

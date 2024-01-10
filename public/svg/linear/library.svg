@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <g id="Library-Icon">
-    <path d="M21.27 19.3C21.12 20.83 21 22 18.29 22L5.71001 22C3.00001 22 2.88001 20.83 2.73001 19.3L2.33001 14.3C2.25001 13.47 2.51001 12.7 2.98001 12.11C2.99001 12.1 2.99001 12.1 3.00001 12.09C3.55001 11.42 4.38001 11 5.31001 11L18.69 11C19.62 11 20.44 11.42 20.98 12.07C20.99 12.08 21 12.09 21 12.1C21.49 12.69 21.76 13.46 21.67 14.3L21.27 19.3Z" id="Vector" fill="none" stroke="#8D8A9C" stroke-width="1.5" />
-    <path d="M3.5 11.43L3.5 6.28003C3.5 2.88003 4.35 2.03003 7.75 2.03003L9.02 2.03003C10.29 2.03003 10.58 2.41003 11.06 3.05003L12.33 4.75003C12.65 5.17003 12.84 5.43003 13.69 5.43003L16.24 5.43003C19.64 5.43003 20.49 6.28003 20.49 9.68003L20.49 11.47" id="Vector" fill="none" stroke="#8D8A9C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M9.42993 17L14.5699 17" id="Vector" fill="none" fill-rule="evenodd" stroke="#8D8A9C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M0 24L0 0L24 0L24 24L0 24Z" id="Vector" fill="none" fill-rule="evenodd" stroke="none" />
-  </g>
-</svg>

@@ -1,11 +1,10 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "pnpm generate",
-    "beforeDevCommand": "pnpm nuxt",
+    "beforeBuildCommand": "pnpm nuxt generate",
+    "beforeDevCommand": "pnpm nuxt dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../.output/public",
-    "withGlobalTauri": true
+    "distDir": "../dist"
   },
   "package": {
     "productName": "Vleer",
@@ -13,67 +12,7 @@
   },
   "tauri": {
     "allowlist": {
-      "window": {
-        "all": true,
-        "create": true,
-        "center": true,
-        "requestUserAttention": true,
-        "setResizable": true,
-        "setTitle": true,
-        "maximize": true,
-        "unmaximize": true,
-        "minimize": true,
-        "unminimize": true,
-        "show": true,
-        "hide": true,
-        "close": true,
-        "setDecorations": true,
-        "setAlwaysOnTop": true,
-        "setSize": true,
-        "setMinSize": true,
-        "setMaxSize": true,
-        "setPosition": true,
-        "setFullscreen": true,
-        "setFocus": true,
-        "setIcon": true,
-        "setSkipTaskbar": true,
-        "setCursorGrab": true,
-        "setCursorVisible": true,
-        "setCursorIcon": true,
-        "setCursorPosition": true,
-        "setIgnoreCursorEvents": true,
-        "startDragging": true,
-        "print": true
-      },
-      "fs": {
-        "all": true,
-        "readFile": true,
-        "writeFile": true,
-        "readDir": true,
-        "copyFile": true,
-        "createDir": true,
-        "removeDir": true,
-        "removeFile": true,
-        "renameFile": true,
-        "exists": true,
-        "scope": [
-          "$AUDIO/vleer/*",
-          "$APPCONFIG/*",
-          "$APPCONFIG/.vleer/*",
-          "$APPCONFIG/.vleer/avatar.png",
-          "$APPCONFIG",
-          "$AUDIO/*",
-          "$AUDIO/savedMusic/*",
-          "$AUDIO/savedMusic/*.mp3",
-          "$MUSIC/*"
-        ]
-      },
-      "protocol": {
-        "all": true,
-        "asset": true,
-        "assetScope": ["$AUDIO/savedMusic/*.mp3"]
-      },
-      "all": true
+      "all": false
     },
     "bundle": {
       "active": true,
@@ -90,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": ".vleer",
+      "identifier": "app.vleer",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -109,7 +48,7 @@
       }
     },
     "security": {
-      "csp": "https://asset.localhost"
+      "csp": null
     },
     "updater": {
       "active": false
@@ -117,18 +56,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 720,
+        "height": 600,
         "resizable": true,
         "title": "Vleer",
-        "width": 1280,
-        "minWidth": 1000,
-        "minHeight": 600,
-        "decorations": false,
-        "transparent": true,
-        "maximized": false,
-        "center": true
+        "width": 800
       }
-    ],
-    "macOSPrivateApi": true
+    ]
   }
 }

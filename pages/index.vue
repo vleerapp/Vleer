@@ -1,9 +1,21 @@
 <template>
-  <NuxtLayout name="page">
-    <h1 class="page-title">Home</h1>
-  </NuxtLayout>
+  <div>
+    <input v-model="videoUrl" type="text" placeholder="Enter YouTube URL" />
+    <button @click="downloadAudio">Download</button>
+  </div>
 </template>
 
-<style>
-@import '~/css/style.css';
-</style>
+<script>
+export default {
+  data() {
+    return {
+      videoUrl: ""
+    }
+  },
+  methods: {
+    downloadAudio() {
+      window.location.href = `/api/download?url=${encodeURIComponent(this.videoUrl)}`;
+    },
+  },
+};
+</script>

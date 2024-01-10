@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <g id="Search-Icon">
-    <path d="M10.8536 17.7078C7.06834 17.7078 3.99976 14.6392 3.99976 10.8539C3.99976 7.06859 7.06834 4 10.8536 4C14.6389 4 17.7075 7.06859 17.7075 10.8539C17.7075 14.6392 14.6389 17.7078 10.8536 17.7078Z" id="Vector" fill="none" fill-rule="evenodd" stroke="#8D8A9C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M19.6999 19.7L15.9999 16" id="Vector" fill="none" fill-rule="evenodd" stroke="#8D8A9C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M24 0L24 24L0 24L0 0L24 0Z" id="Vector" fill="none" fill-rule="evenodd" stroke="none" />
-  </g>
-</svg>
