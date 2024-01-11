@@ -15,7 +15,11 @@
       "tsconfig.json": true,
       ".vscode": true,
       ".output": true,
-      "dist": true
+      "dist": true,
+      "bun.lockb": true,
+      "generate": true,
+      "dev": true,
+      "build": true
     },
     "hide-files.files": [
       ".nuxt",
