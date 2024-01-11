@@ -1,9 +1,9 @@
 {
   "build": {
     "beforeDevCommand": "pnpm nuxt dev",
-    "beforeBuildCommand": "pnpm nuxt build",
+    "beforeBuildCommand": "pnpm nuxt generate",
     "devPath": "http://localhost:3000",
-    "distDir": "../.output/public",
+    "distDir": "../dist",
     "withGlobalTauri": true
   },
   "package": {
