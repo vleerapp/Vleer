@@ -67,6 +67,7 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "discord-rpc-client",
+ "lazy_static",
  "serde_json",
  "tauri",
  "tauri-build",
