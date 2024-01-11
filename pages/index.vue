@@ -23,7 +23,6 @@
 
 <script setup>
 import { ref } from "vue";
-import DiscordRPC from '../DiscordRPC'
 
 const searchTerm = ref("");
 const searchResults = ref([]);
@@ -50,13 +49,6 @@ const searchSongs = async () => {
     }));
   }
 };
-
-DiscordRPC.start();
-DiscordRPC.queueActivity({
-  details: "On page",
-  state: "test",
-  image: "mp2",
-});
 </script>
 
 <style scoped>

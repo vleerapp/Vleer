@@ -10,12 +10,14 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.9",
+    "@tauri-apps/api": "^2.0.0-alpha.13",
     "nuxt": "^3.9.0",
-    "vue": "^3.4.6",
+    "vue": "^3.4.10",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "@tauri-apps/cli": "^2.0.0-alpha.20",
+    "axios": "^1.6.5",
     "fluent-ffmpeg": "^2.1.2",
     "ytdl-core": "^4.11.5"
   }
