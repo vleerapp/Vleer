@@ -23,11 +23,21 @@
 
 <script setup>
 import { ref } from "vue";
+import DiscordRPC from "../lib/DiscordRPC";
 
 const searchTerm = ref("");
 const searchResults = ref([]);
 
 const searchSongs = async () => {
+  await DiscordRPC.update(
+    "Playing", // state
+    "Searching...", // details
+    "logo", // largeImage
+    "Vleer", // largeImageText
+    "search", // smallImage
+    "Search" // smallImageText
+  );
+
   if (searchTerm.value.trim() === "") {
     searchResults.value = [];
     return;
