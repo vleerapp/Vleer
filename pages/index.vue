@@ -3,60 +3,103 @@
     <input
       type="text"
       v-model="searchTerm"
-      @keyup.enter="searchSongs"
+      @keyup.enter="searchSongs()"
+      :disabled="isLoading"
       placeholder="Search for songs"
     />
     <ul v-if="searchResults.length > 0">
       <li
         v-for="(song, index) in searchResults"
-        :key="song.videoId"
+        :key="song.trackId"
         :class="{ 'first-result': index === 0 }"
       >
-        <a :href="song.watchUrl" target="_blank">
-          <img :src="song.thumbnail" :alt="song.title" class="cover-image" />
-          <div>{{ song.title }}</div>
+        <a @click.prevent="handleSongClick(song)" :href="song.youtubeLink || 'javascript:void(0);'" target="_blank">
+          <img :src="song.artworkUrl100" alt="Cover image" />
+          <div>{{ song.trackName }}</div>
+          <div>{{ song.artistName }}</div>
         </a>
       </li>
     </ul>
+    <input
+      type="text"
+      v-model="url"
+      @keyup.enter="downloadSong"
+      placeholder="Yt url"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
 import DiscordRPC from "../lib/DiscordRPC";
+import Search from "../lib/Search";
+import Download from "../lib/Download";
+import axios from 'axios';
 
 const searchTerm = ref("");
 const searchResults = ref([]);
+const isLoading = ref(false);
+const url = ref("");
 
 const searchSongs = async () => {
   await DiscordRPC.update(
-    "Playing", // state
-    "Searching...", // details
-    "logo", // largeImage
-    "Vleer", // largeImageText
-    "search", // smallImage
-    "Search" // smallImageText
+    "Playing",
+    "Searching...",
+    "logo",
+    "Vleer",
+    "search",
+    "Search"
   );
 
-  if (searchTerm.value.trim() === "") {
+  isLoading.value = true;
+
+  if (searchTerm === "") {
     searchResults.value = [];
+    isLoading.value = false;
     return;
   }
 
-  const { data, error } = await useFetch("/api/search", {
-    params: {
-      term: searchTerm.value,
-    },
-  });
-
-  if (error.value) {
-    console.error("Failed to fetch search results:", error.value);
+  try {
+    const results = await Search.performSearch(searchTerm.value);
+    searchResults.value = results; // Corrected from searchResults.values to searchResults.value
+    console.log(searchResults);
+  } catch (error) {
+    console.error("An unexpected error occurred:", error);
     searchResults.value = [];
-  } else {
-    searchResults.value = data.value.map((item) => ({
-      ...item,
-      watchUrl: `https://www.youtube.com/watch?v=${item.videoId}`,
-    }));
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const fetchYoutubeLink = async (song) => {
+  if (!song.youtubeLink) {
+    try {
+      const response = await axios.get(`https://wireway.ch/api/musicAPI/search/?q=${encodeURIComponent(song.trackName + ' ' + song.artistName)}`);
+      if (response.data && response.data[0] && response.data[0].url) {
+        song.youtubeLink = response.data[0].url; // Assuming the API returns an array and the first object has a url property
+      }
+    } catch (error) {
+      console.error('Error fetching YouTube link:', error);
+    }
+  }
+};
+
+const handleSongClick = async (song) => {
+  if (!song.youtubeLink) {
+    await fetchYoutubeLink(song);
+  }
+  if (song.youtubeLink) {
+    window.open(song.youtubeLink, '_blank');
+  }
+};
+
+const downloadSong = async () => {
+  const output_path = "C:/Users/pandadev/Desktop/";
+  try {
+    const filePath = await Download.downloadVideoAsMp3(url.value, output_path);
+    console.log("Downloaded MP3 file path:", filePath);
+    // Handle the downloaded file path (e.g., show a notification or save dialog)
+  } catch (error) {
+    console.error("Error:", error);
   }
 };
 </script>

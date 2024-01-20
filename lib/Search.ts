@@ -1,7 +1,5 @@
 // lib/Search.ts
 
-import axios from 'axios';
-
 export default class Search {
   static async performSearch(searchTerm: string): Promise<any[]> {
     if (!searchTerm) {
@@ -9,24 +7,16 @@ export default class Search {
     }
 
     try {
-      const wirewaySearchResponse = await axios.get(`https://wireway.ch/api/musicAPI/search/?q=${searchTerm}`);
-      const searchResults = wirewaySearchResponse.data;
+      const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&limit=20`);
+      const data = await response.json();
+      const searchResults = data.results;
 
       if (!searchResults || searchResults.length === 0) {
         return [];
       }
 
-      // For each search result, fetch additional metadata
-      const metadataPromises = searchResults.map(result =>
-        axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(result.title)}`)
-      );
-
-      const metadataResponses = await Promise.all(metadataPromises);
-
-      // Extract the first result from each metadata response
-      const metadata = metadataResponses.map(response => response.data.results[0]);
-
-      return metadata;
+      // Return the first 20 results
+      return searchResults;
     } catch (error) {
       console.error('Failed to perform search:', error);
       throw error;
