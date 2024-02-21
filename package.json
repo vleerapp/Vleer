@@ -1,22 +1,21 @@
 {
   "name": "vleer",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "tauri build",
     "dev": "tauri dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
+    "generate": "pnpm nuxt generate",
+    "preview": "pnpm nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@tauri-apps/api": "^2.0.0-alpha.13",
+    "@tauri-apps/api": "2.0.0-beta.0",
     "nuxt": "^3.10.2",
     "vue": "^3.4.19",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.0.0-alpha.20",
+    "@tauri-apps/cli": "2.0.0-beta.1",
     "axios": "^1.6.7",
     "fluent-ffmpeg": "^2.1.2",
     "ytdl-core": "^4.11.5"
