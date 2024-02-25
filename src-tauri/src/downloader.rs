@@ -1,34 +1,25 @@
-use rusty_ytdl::{Video, VideoSearchOptions, VideoOptions, VideoQuality};
+use rusty_ytdl::Video;
+use std::path::PathBuf;
 
 #[tauri::command]
-pub async fn download(url: String) {
-  let video = Video::new(url.clone()).unwrap();
+pub async fn download(url: String, name: String) {
+    let video = Video::new(url.clone()).unwrap();
 
-  let stream = video.stream().await.unwrap();
+    let mut path = PathBuf::new();
+    match std::env::consts::OS {
+        "macos" | "linux" => {
+            let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
+            path.push(format!("/users/{}/Music/Vleer", username));
+        },
+        "windows" => {
+            let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
+            path.push(format!("C:\\Users\\{}\\Music\\Vleer", username));
+        },
+        _ => {}
+    }
+    path.push(&name);
 
-  while let Some(chunk) = stream.chunk().await.unwrap() {
-    println!("{:#?}", chunk);
-  }
+    println!("{}", &path.display());
 
-  let path = std::path::Path::new(r"test.mp3");
-
-  video.download(path).await.unwrap();
-
-  let video_options = VideoOptions {
-    quality: VideoQuality::Lowest,
-    filter: VideoSearchOptions::Audio,
-    ..Default::default()
-  };
-
-  let video = Video::new_with_options(url, video_options).unwrap();
-
-  let stream = video.stream().await.unwrap();
-
-  while let Some(chunk) = stream.chunk().await.unwrap() {
-    println!("{:#?}", chunk);
-  }
-
-  let path = std::path::Path::new(r"test.mp3");
-
-  video.download(path).await.unwrap();
+    video.download(&path).await.unwrap();
 }

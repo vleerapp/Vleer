@@ -4,7 +4,7 @@
   "identifier": "net.pandadev",
   "build": {
     "beforeDevCommand": "pnpm nuxt dev",
-    "beforeBuildCommand": "pnpm nuxt build",
+    "beforeBuildCommand": "pnpm nuxt generate",
     "devUrl": "http://localhost:3000",
     "frontendDist": "../dist"
   },

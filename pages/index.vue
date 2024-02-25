@@ -23,7 +23,7 @@
     <input
       type="text"
       v-model="url"
-      @keyup.enter="downloadSong"
+      @keyup.enter="downloadSong(url)"
       placeholder="Yt url"
     />
   </div>
@@ -60,8 +60,7 @@ const searchSongs = async () => {
 
   try {
     const results = await Search.performSearch(searchTerm.value);
-    searchResults.value = results; // Corrected from searchResults.values to searchResults.value
-    console.log(searchResults);
+    searchResults.value = results;
   } catch (error) {
     console.error("An unexpected error occurred:", error);
     searchResults.value = [];
@@ -74,8 +73,8 @@ const fetchYoutubeLink = async (song) => {
   if (!song.youtubeLink) {
     try {
       const response = await axios.get(`https://wireway.ch/api/musicAPI/search/?q=${encodeURIComponent(song.trackName + ' ' + song.artistName)}`);
-      if (response.data && response.data[0] && response.data[0].url) {
-        song.youtubeLink = response.data[0].url; // Assuming the API returns an array and the first object has a url property
+      if (response.data) {
+        song.youtubeLink = "https://youtube.com" + response.data.items[0].url;
       }
     } catch (error) {
       console.error('Error fetching YouTube link:', error);
@@ -88,16 +87,23 @@ const handleSongClick = async (song) => {
     await fetchYoutubeLink(song);
   }
   if (song.youtubeLink) {
-    window.open(song.youtubeLink, '_blank');
+    downloadSong(song.youtubeLink) 
   }
 };
 
-const downloadSong = async () => {
-  const output_path = "C:/Users/pandadev/Desktop/";
+const downloadSong = async (url) => {
   try {
-    const filePath = await Download.downloadVideoAsMp3(url.value, output_path);
-    console.log("Downloaded MP3 file path:", filePath);
-    // Handle the downloaded file path (e.g., show a notification or save dialog)
+    if (!url) {
+      console.error("URL is not defined.");
+      return;
+    }
+    const match = url.match(/(?:\/watch\?v=)([^&]+)/);
+    if (!match || match.length < 2) {
+      console.error("Invalid YouTube URL.");
+      return;
+    }
+    const videoId = match[1] + ".mp3";
+    await Download.downloadVideoAsMp3(url, videoId);
   } catch (error) {
     console.error("Error:", error);
   }
