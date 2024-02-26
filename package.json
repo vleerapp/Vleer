@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"@tauri-apps/api": "^2.0.0-alpha.13",
 		"nuxt": "^3.10.3",
-		"vue": "^3.4.19",
+		"vue": "^3.4.20",
 		"vue-router": "^4.3.0"
 	},
 	"dependencies": {
