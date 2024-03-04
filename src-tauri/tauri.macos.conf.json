@@ -12,16 +12,5 @@
         "decorations": true
       }
     ]
-  },
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32_macos.png",
-      "icons/128x128_macos.png",
-      "icons/128x128@2x_macos.png",
-      "icons/icon_macos.icns",
-      "icons/icon_macos.ico"
-    ]
   }
 }

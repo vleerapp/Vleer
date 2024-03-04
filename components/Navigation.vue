@@ -1,16 +1,12 @@
 <script setup>
 // import { appWindow } from '@tauri-apps/api/window'
-// import { invoke } from '@tauri-apps/api/tauri'
 
 const os = ref('')
 
-console.log("sadfgklsdhfgk")
-defineExpose({
-  initialize: async () => {
-    os.value = await invoke('plugin:utils|get_os')
-    if (os.value !== 'MacOS') appWindow.setDecorations(native_decorations)
-  }
-})
+console.log("test")
+
+os.value = await window.__TAURI__.core.invoke('plugin:utils|get_os')
+if (os.value !== 'MacOS') appWindow.setDecorations(native_decorations)
 </script>
 
 <template>
@@ -50,7 +46,7 @@ defineExpose({
     stroke: #bdbdbd;
   }
 
-  .button{
+  .button {
     background: none;
     border: none;
     outline: none;
@@ -60,7 +56,7 @@ defineExpose({
     place-items: center;
   }
 
-  .button:hover{
+  .button:hover {
     background-color: #ffffff24;
   }
 }
