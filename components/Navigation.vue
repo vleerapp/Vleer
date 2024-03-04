@@ -1,12 +1,13 @@
 <script setup>
-import { getCurrent } from "@tauri-apps/api/window";
+import { onMounted } from 'vue';
 
-const os = ref('')
+onMounted(async () => {
+  if (await window.__TAURI__.core.invoke('get_os') == 'MacOS') {
+    const controls = document.getElementById("window-controls")
+    controls.style.display = "none";
+  }
+})
 
-os.value = await window.__TAURI__.core.invoke('get_os')
-if (os.value == 'MacOS') {
-  document.getElementById("window-controls").style.display = "false";
-}
 </script>
 
 <template>
