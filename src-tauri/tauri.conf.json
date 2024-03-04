@@ -1,6 +1,6 @@
 {
   "productName": "Vleer",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "identifier": "net.pandadev",
   "build": {
     "beforeDevCommand": "pnpm nuxt dev",
@@ -11,11 +11,14 @@
   "app": {
     "windows": [
       {
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
         "fullscreen": false,
+        "height": 720,
         "resizable": true,
         "title": "Vleer",
         "width": 1270,
-        "height": 720
+        "decorations": false
       }
     ],
     "security": {
