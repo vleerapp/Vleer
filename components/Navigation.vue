@@ -16,13 +16,13 @@ onMounted(async () => {
     <div></div>
     <div class="window-controls" id="window-controls">
       <button class="button minimize" @click="async () => getCurrent().minimize()">
-        <img src="/minimize.svg" alt="">
+        <img src="/minimize.svg" alt="minimize">
       </button>
       <button class="button maximize" @click="async () => getCurrent().toggleMaximize()">
-        <img src="/maximize.svg" alt="">
+        <img src="/maximize.svg" alt="maximize">
       </button>
       <button class="button close" @click="() => getCurrent().close()">
-        <img src="/close.svg" alt="">
+        <img src="/close.svg" alt="close">
       </button>
     </div>
   </div>

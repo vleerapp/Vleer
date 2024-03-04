@@ -20,12 +20,6 @@
         </a>
       </li>
     </ul>
-    <input
-      type="text"
-      v-model="url"
-      @keyup.enter="downloadSong(url)"
-      placeholder="Yt url"
-    />
   </div>
 </template>
 
@@ -110,29 +104,43 @@ const downloadSong = async (url) => {
 };
 </script>
 
-<style scoped>
+<style>
+body {
+  background-color: black;
+  color: white !important;
+  font-family: Inter;
+  text-decoration: none !important;
+  font-size: 16px;
+}
+
+* {
+  font-family: Inter;
+  text-decoration: none !important;
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+}
+
 .cover-image {
-  width: 100px; /* Default thumbnail size */
+  width: 100px; 
   height: auto;
 }
 
 .first-result .cover-image {
-  width: 200px; /* Larger size for the first result */
+  width: 200px;
 }
 
 .first-result {
-  font-size: 1.2em; /* Larger text for the first result */
+  font-size: 1.2em; 
 }
 
 li {
-  list-style-type: none; /* Remove bullet points from list items */
-  margin-bottom: 10px; /* Add some space between list items */
+  list-style-type: none; 
+  margin-bottom: 10px;
 }
 
 a {
-  text-decoration: none; /* Optional: Removes underline from links */
-  color: inherit; /* Optional: Inherits text color from parent */
+  text-decoration: none; 
+  color: inherit; 
 }
-
-/* Add more styles as needed */
 </style>
