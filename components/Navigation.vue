@@ -1,22 +1,22 @@
 <script setup>
-// import { appWindow } from '@tauri-apps/api/window'
+import { getCurrent } from "@tauri-apps/api/window";
 
 const os = ref('')
 
-console.log("test")
-
-os.value = await window.__TAURI__.core.invoke('plugin:utils|get_os')
-if (os.value !== 'MacOS') appWindow.setDecorations(native_decorations)
+os.value = await window.__TAURI__.core.invoke('get_os')
+if (os.value == 'MacOS') {
+  document.getElementById("window-controls").style.display = "false";
+}
 </script>
 
 <template>
   <div data-tauri-drag-region class="navbar">
     <div></div>
-    <div class="window-controls">
-      <button class="button minimize" @click="() => appWindow.minimize()">
+    <div class="window-controls" id="window-controls">
+      <button class="button minimize" @click="async () => await window.__TAURI__.appWindow.minimize()">
         <img src="/minimize.svg" alt="">
       </button>
-      <button class="button maximize" @click="() => appWindow.toggleMaximize()">
+      <button class="button maximize" @click="async () => await window.__TAURI__.appWindow.toggleMaximize()">
         <img src="/maximize.svg" alt="">
       </button>
       <button class="button close" @click="() => TauriWindow.getCurrent().close()">

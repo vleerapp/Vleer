@@ -13,13 +13,11 @@
 		"@tauri-apps/api": "^2.0.0-alpha.13",
 		"nuxt": "^3.10.3",
 		"sass": "^1.71.1",
-		"vue": "^3.4.20",
-		"vue-router": "^4.3.0"
+		"vue": "^3.4.20"
 	},
 	"dependencies": {
 		"@tauri-apps/cli": "^2.0.0-alpha.20",
 		"axios": "^1.6.7",
-		"fluent-ffmpeg": "^2.1.2",
-		"ytdl-core": "^4.11.5"
+		"vue-router": "^4.3.0"
 	}
 }
