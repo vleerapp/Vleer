@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
+import { getCurrent } from "@tauri-apps/api/window";
 
 onMounted(async () => {
   if (await window.__TAURI__.core.invoke('get_os') == 'MacOS') {
@@ -14,13 +15,13 @@ onMounted(async () => {
   <div data-tauri-drag-region class="navbar">
     <div></div>
     <div class="window-controls" id="window-controls">
-      <button class="button minimize" @click="async () => await window.__TAURI__.appWindow.minimize()">
+      <button class="button minimize" @click="async () => getCurrent().minimize()">
         <img src="/minimize.svg" alt="">
       </button>
-      <button class="button maximize" @click="async () => await window.__TAURI__.appWindow.toggleMaximize()">
+      <button class="button maximize" @click="async () => getCurrent().toggleMaximize()">
         <img src="/maximize.svg" alt="">
       </button>
-      <button class="button close" @click="() => TauriWindow.getCurrent().close()">
+      <button class="button close" @click="() => getCurrent().close()">
         <img src="/close.svg" alt="">
       </button>
     </div>

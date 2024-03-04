@@ -15,6 +15,7 @@
     "tray:default",
     "window:allow-create",
     "window:allow-maximize",
+    "window:allow-toggle-maximize",
     "window:allow-unmaximize",
     "window:allow-minimize",
     "window:allow-unminimize",
