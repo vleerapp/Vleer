@@ -1,33 +1,86 @@
-use discord_rpc_client::Client;
-use discord_rpc_client::models::rich_presence::{Activity, ActivityAssets};
-use std::sync::Mutex;
-use lazy_static::lazy_static;
-use std::thread;
+use discord_rich_presence::{
+    activity::{Activity, Assets},
+    DiscordIpc, DiscordIpcClient,
+};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc, Mutex,
+};
+use tauri::{command, AppHandle, Manager};
 
-lazy_static! {
-    static ref DRPC_CLIENT: Mutex<Client> = Mutex::new(Client::new(1194990403963858984));
+pub struct DiscordRpc {
+    client: Arc<Mutex<DiscordIpcClient>>,
+    connected: AtomicBool,
 }
 
-pub fn initialize_rpc() {
-    let mut drpc = DRPC_CLIENT.lock().unwrap();
-    drpc.start();
+impl DiscordRpc {
+    pub fn new(client_id: &str) -> Self {
+        let mut client =
+            DiscordIpcClient::new(client_id).expect("Failed to create DiscordIpcClient");
+        let connected = client.connect().is_ok();
+
+        DiscordRpc {
+            client: Arc::new(Mutex::new(client)),
+            connected: AtomicBool::new(connected),
+        }
+    }
+
+    pub fn connect(&self) {
+        let mut client = self
+            .client
+            .lock()
+            .expect("Failed to lock client for connection");
+        if client.connect().is_ok() {
+            self.connected.store(true, Ordering::SeqCst);
+        }
+    }
+
+    pub fn disconnect(&self) {
+        if self.connected.load(Ordering::SeqCst) {
+            let mut client = self
+                .client
+                .lock()
+                .expect("Failed to lock client for disconnection");
+            let _ = client.close();
+            self.connected.store(false, Ordering::SeqCst);
+        }
+    }
+
+    pub fn update_activity(&self, details: &str, state: &str) {
+        if !self.connected.load(Ordering::SeqCst) {
+            return;
+        }
+
+        let activity = Activity::new().details(details).state(state).assets(
+            Assets::new()
+                .large_image("logo")
+                .large_text("Vleer")
+                .small_image("search")
+                .small_text("search"),
+        );
+
+        let mut client = self
+            .client
+            .lock()
+            .expect("Failed to lock client for activity update");
+        let _ = client.set_activity(activity);
+    }
 }
 
-#[tauri::command]
-pub fn update_activity(state: String, details: String, large_image: String, large_image_text: String, small_image: String, small_image_text: String) {
-    thread::spawn(move || {
-        let mut drpc = DRPC_CLIENT.lock().unwrap();
+#[command]
+pub async fn initialize_rpc(_app_handle: AppHandle) {
+    let rpc = DiscordRpc::new("1194990403963858984");
+    rpc.connect();
+}
 
-        let activity = Activity::new()
-            .state(state)
-            .details(details)
-            .assets(|_| ActivityAssets::new()
-                .large_image(large_image)
-                .large_text(large_image_text)
-                .small_image(small_image)
-                .small_text(small_image_text)
-            );
+#[command]
+pub async fn update_activity_rpc(app: tauri::AppHandle, details: String, state: String) {
+    let rpc = app.state::<DiscordRpc>();
+    rpc.update_activity(&details, &state);
+}
 
-        drpc.set_activity(|_| activity).expect("Failed to set activity");
-    });
+#[command]
+pub async fn disconnect_rpc(app: tauri::AppHandle) {
+    let rpc = app.state::<DiscordRpc>();
+    rpc.disconnect();
 }

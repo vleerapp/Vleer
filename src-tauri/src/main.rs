@@ -10,10 +10,11 @@ mod discord_rpc;
 mod downloader;
 mod music_handler;
 
-use serde::{Deserialize, Serialize};
-use tauri::command;
 use music_handler::MusicHandlerWrapper;
+use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
+use tauri::{command, Manager};
+use crate::discord_rpc::DiscordRpc;
 
 lazy_static! {
     static ref MUSIC_HANDLER: Arc<Mutex<MusicHandlerWrapper>> =
@@ -48,7 +49,7 @@ pub enum OS {
 #[command]
 fn play_music(path: String) {
     let handler = MUSIC_HANDLER.lock().unwrap();
-    handler.play(path).unwrap();
+    handler.play(path);
 }
 
 #[command]
@@ -70,23 +71,34 @@ fn resume_music() {
 }
 
 fn main() {
-    discord_rpc::initialize_rpc();
+    // discord_rpc::initialize_rpc();
     env_logger::init();
 
     let mut builder = tauri::Builder::default();
 
     builder = builder
         .invoke_handler(tauri::generate_handler![
-            discord_rpc::update_activity,
+            discord_rpc::initialize_rpc,
+            discord_rpc::update_activity_rpc, // Corrected command name
+            discord_rpc::disconnect_rpc,
             download_wrapper,
             get_os,
             play_music,
             stop_music,
             pause_music,
             resume_music
-        ]);
+        ])
+        .setup(|app| {
+            let app_handle = app.handle().clone();
+            let rpc = DiscordRpc::new("1194990403963858984");
+            app.manage(rpc); // Manage your DiscordRpc instance here
+            tauri::async_runtime::spawn(async move {
+                discord_rpc::initialize_rpc(app_handle).await;
+            });
+            Ok(())
+        });
 
-        builder
+    builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
