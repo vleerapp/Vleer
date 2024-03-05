@@ -1,5 +1,3 @@
-// lib/DiscordRPC.ts
-
 export default class DiscordRPC {
   static async update(state: string, details: string, largeImage: string, largeImageText: string, smallImage: string, smallImageText: string): Promise<void> {
     try {

@@ -55,7 +55,6 @@ pub async fn download(url: String, name: String) -> Result<()> {
     video.download(&path).await.unwrap();
 
     let mut tag = Tag::new();
-    // Use the first item from the ApiResponse
     if let Some(first_item) = api_response.items.first() {
         tag.set_artist(
             first_item
@@ -76,7 +75,7 @@ pub async fn download(url: String, name: String) -> Result<()> {
                 let mut content: Vec<u8> = Vec::new();
                 let body = response.bytes().await?;
                 content.extend_from_slice(&body);
-                let mime = "image/webp".to_string(); // Adjust based on actual MIME type if necessary
+                let mime = "image/webp".to_string();
                 tag.add_frame(id3::frame::Picture {
                     mime_type: mime,
                     picture_type: PictureType::CoverFront,

@@ -3,11 +3,22 @@
     windows_subsystem = "windows"
 )]
 
+#[macro_use]
+extern crate lazy_static;
+
 mod discord_rpc;
 mod downloader;
+mod music_handler;
 
+use serde::{Deserialize, Serialize};
 use tauri::command;
-use serde::{Serialize,Deserialize};
+use music_handler::MusicHandlerWrapper;
+use std::sync::{Arc, Mutex};
+
+lazy_static! {
+    static ref MUSIC_HANDLER: Arc<Mutex<MusicHandlerWrapper>> =
+        Arc::new(Mutex::new(MusicHandlerWrapper::new()));
+}
 
 #[command]
 async fn download_wrapper(url: String, name: String) -> Result<(), String> {
@@ -26,11 +37,36 @@ fn get_os() -> OS {
     let os = OS::MacOS;
     os
 }
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OS {
     Windows,
     Linux,
     MacOS,
+}
+
+#[command]
+fn play_music(path: String) {
+    let handler = MUSIC_HANDLER.lock().unwrap();
+    handler.play(path).unwrap();
+}
+
+#[command]
+fn stop_music() {
+    let handler = MUSIC_HANDLER.lock().unwrap();
+    handler.stop();
+}
+
+#[command]
+fn pause_music() {
+    let handler = MUSIC_HANDLER.lock().unwrap();
+    handler.pause();
+}
+
+#[command]
+fn resume_music() {
+    let handler = MUSIC_HANDLER.lock().unwrap();
+    handler.resume();
 }
 
 fn main() {
@@ -43,10 +79,14 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             download_wrapper,
-            get_os
+            get_os,
+            play_music,
+            stop_music,
+            pause_music,
+            resume_music
         ]);
 
-    builder
+        builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

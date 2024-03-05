@@ -1,5 +1,3 @@
-// src/discord_rpc.rs
-
 use discord_rpc_client::Client;
 use discord_rpc_client::models::rich_presence::{Activity, ActivityAssets};
 use std::sync::Mutex;
