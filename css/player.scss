@@ -5,7 +5,7 @@
   text-decoration: none;
   gap: 14px;
   font-size: 14px;
-  position: absolute;
+  position: fixed;
   bottom: 14px;
   width: calc(100vw - 32px);
   height: 96px;
@@ -19,6 +19,7 @@
     background-color: #121212;
     padding-inline: 3px;
     color: #535353;
+    user-select: none;
   }
 }
 

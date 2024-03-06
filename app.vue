@@ -5,7 +5,7 @@
   <Player />
   <div class="main">
     <p class="title">Main</p>
-    <NuxtPage class="page" />
+    <NuxtPage class="page"/>
   </div>
 </template>
 
@@ -34,7 +34,7 @@ body {
 
 ::-webkit-scrollbar {
   width: 3px;
-  background-color: #000;
+  background-color: #121212;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -49,20 +49,18 @@ a {
   text-decoration: none !important;
 }
 
-.page {
-  position: absolute;
-  top: 30px;
-  overflow-x: hidden;
-  padding: 14px;
+.page{
+  position: relative;
+  padding: 16px;
+  width: calc(100vw - 380px)
 }
 
 .main {
-  position: absolute;
+  position: fixed;
   top: 39px;
   left: 330px;
-  width: calc(100vw - 380px);
-  height: calc(100vh - 201px);
-  padding: 16px;
+  width: calc(100vw - 348px);
+  height: calc(100vh - 169px);
   border: 1px solid #535353;
 
   .title {
@@ -73,6 +71,7 @@ a {
     background-color: #121212;
     padding-inline: 3px;
     color: #535353;
+    user-select: none;
   }
 }
 

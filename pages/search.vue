@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
+    <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
       placeholder="Search for songs" />
     <ul v-if="searchResults.length > 0">
       <li v-for="(song, index) in searchResults" :key="song.trackId" :class="{ 'first-result': index === 0 }">
@@ -10,7 +10,7 @@
           <div>{{ song.artistName }}</div>
         </a>
       </li>
-    </ul> -->
+    </ul>
   </div>
 </template>
 

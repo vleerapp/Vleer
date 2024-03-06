@@ -38,6 +38,7 @@ onMounted(async () => {
   justify-content: space-between;
   background-color: #121212;
   z-index: 1000;
+  user-select: none;
 }
 
 .window-controls {

@@ -5,7 +5,7 @@
   text-decoration: none;
   gap: 14px;
   font-size: 14px;
-  position: absolute;
+  position: fixed;
   top: 39px;
   width: 242px;
   height: 48px;
@@ -13,6 +13,16 @@
   padding: 16px;
   padding-inline: 28px;
   border: 1px solid #535353;
+  
+  .title{
+    position: absolute;
+    top: -10px;
+    left: 4px;
+    background-color: #121212;
+    padding-inline: 3px;
+    color: #535353;
+    user-select: none;
+  }
 
   .link{
     display: flex;
@@ -21,6 +31,7 @@
     gap: 12px;
     transition: all .2s;
     color: #ABABAB;
+    user-select: none;
   }
 
   .svg-default {
@@ -50,14 +61,6 @@
     transition: all .2s;
   }
 
-  .title{
-    position: absolute;
-    top: -10px;
-    left: 4px;
-    background-color: #121212;
-    padding-inline: 3px;
-    color: #535353;
-  }
 }
 
 .nav:hover {
