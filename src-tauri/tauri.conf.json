@@ -14,10 +14,12 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "fullscreen": false,
-        "height": 720,
+        "height": 860,
         "resizable": true,
         "title": "Vleer",
-        "width": 1270,
+        "width": 1530,
+        "minHeight": 750,
+        "minWidth": 1000,
         "decorations": false
       }
     ],

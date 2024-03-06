@@ -77,8 +77,8 @@ fn main() {
 
     builder = builder
         .invoke_handler(tauri::generate_handler![
-            discord_rpc::update_activity_rpc,
-            discord_rpc::disconnect_rpc,
+            // discord_rpc::update_activity_rpc,
+            // discord_rpc::disconnect_rpc,
             download_wrapper,
             get_os,
             play_music,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
+    <!-- <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
       placeholder="Search for songs" />
     <ul v-if="searchResults.length > 0">
       <li v-for="(song, index) in searchResults" :key="song.trackId" :class="{ 'first-result': index === 0 }">
@@ -10,7 +10,7 @@
           <div>{{ song.artistName }}</div>
         </a>
       </li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 
@@ -26,14 +26,14 @@ const isLoading = ref(false);
 const url = ref("");
 
 const searchSongs = async () => {
-  await DiscordRPC.update(
-    searchTerm.value,
-    "Searching...",
-    "logo",
-    "Vleer",
-    "search",
-    "Search"
-  );
+  // await DiscordRPC.update(
+  //   searchTerm.value,
+  //   "Searching...",
+  //   "logo",
+  //   "Vleer",
+  //   "search",
+  //   "Search"
+  // );
 
   isLoading.value = true;
 
@@ -72,14 +72,14 @@ const handleSongClick = async (song) => {
     await fetchYoutubeLink(song);
   }
   if (song.youtubeLink) {
-    DiscordRPC.update(
-      " ",
-      "Downloading " + song.trackName,
-      "logo",
-      "Vleer",
-      "search",
-      "Search"
-    );
+    // DiscordRPC.update(
+    //   " ",
+    //   "Downloading " + song.trackName,
+    //   "logo",
+    //   "Vleer",
+    //   "search",
+    //   "Search"
+    // );
     downloadSong(song.youtubeLink)
   }
 };

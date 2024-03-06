@@ -6,9 +6,9 @@
   gap: 14px;
   font-size: 14px;
   position: absolute;
-  top: 40px;
-  width: 244px;
-  height: 50px;
+  top: 39px;
+  width: 242px;
+  height: 48px;
   left: 14px;
   padding: 16px;
   padding-inline: 28px;
@@ -19,6 +19,8 @@
     justify-content: left;
     align-items: center;
     gap: 12px;
+    transition: all .2s;
+    color: #ABABAB;
   }
 
   .svg-default {
@@ -45,6 +47,7 @@
 
   .link:hover, .link.router-link-active{
     color: white;
+    transition: all .2s;
   }
 
   .title{
@@ -55,4 +58,12 @@
     padding-inline: 3px;
     color: #535353;
   }
+}
+
+.nav:hover {
+  border: 1px solid #A058FF;
+}
+
+.nav:hover .title{
+  color: #A058FF;
 }
