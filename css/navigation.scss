@@ -1,0 +1,58 @@
+.nav{
+  display: flex;
+  flex-direction: column;
+  color: #ABABAB;
+  text-decoration: none;
+  gap: 14px;
+  font-size: 14px;
+  position: absolute;
+  top: 40px;
+  width: 244px;
+  height: 50px;
+  left: 14px;
+  padding: 16px;
+  padding-inline: 28px;
+  border: 1px solid #535353;
+
+  .link{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .svg-default {
+    height: 16px;
+    display: block;
+  }
+
+  .svg-active {
+    height: 16px;
+    display: none;
+  }
+
+  .router-link-active .svg-default {
+    display: none;
+  }
+
+  .router-link-active .svg-active {
+    display: block;
+  }
+
+  .link svg{
+    fill: currentColor;
+  }
+
+  .link:hover, .link.router-link-active{
+    color: white;
+  }
+
+  .title{
+    position: absolute;
+    top: -10px;
+    left: 4px;
+    background-color: #121212;
+    padding-inline: 3px;
+    color: #535353;
+  }
+}

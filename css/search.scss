@@ -1,0 +1,42 @@
+body {
+  background-color: #121212;
+  color: white !important;
+  font-family: DMMono;
+  text-decoration: none !important;
+}
+
+* {
+  font-family: DMMono;
+  text-decoration: none !important;
+  padding: 0;
+  margin: 0;
+}
+
+.cover-image {
+  width: 100px; 
+  height: auto;
+}
+
+.first-result .cover-image {
+  width: 200px;
+}
+
+.first-result {
+  font-size: 1.2em; 
+}
+
+li {
+  list-style-type: none; 
+  margin-bottom: 10px;
+}
+
+a {
+  text-decoration: none; 
+  color: inherit; 
+}
+
+.test{
+  width: 100px;
+  height: 100px;
+  background-color: red;
+}
