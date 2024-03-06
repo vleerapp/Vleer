@@ -6,7 +6,8 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc, Mutex,
 };
-use tauri::{command, AppHandle, Manager};
+use tauri::{command, Manager};
+
 
 pub struct DiscordRpc {
     client: Arc<Mutex<DiscordIpcClient>>,
@@ -25,14 +26,12 @@ impl DiscordRpc {
         }
     }
 
-    pub fn connect(&self) {
-        let mut client = self
-            .client
-            .lock()
-            .expect("Failed to lock client for connection");
-        if client.connect().is_ok() {
+    pub async fn connect(&self) -> Result<(), String> {
+        let mut client = self.client.lock().expect("Failed to lock client for connection");
+
+        client.connect().map_err(|e| e.to_string()).map(|_| {
             self.connected.store(true, Ordering::SeqCst);
-        }
+        })
     }
 
     pub fn disconnect(&self) {
@@ -68,9 +67,9 @@ impl DiscordRpc {
 }
 
 #[command]
-pub async fn initialize_rpc(_app_handle: AppHandle) {
+pub async fn initialize_rpc() -> Result<(), String> {
     let rpc = DiscordRpc::new("1194990403963858984");
-    rpc.connect();
+    rpc.connect().await
 }
 
 #[command]
