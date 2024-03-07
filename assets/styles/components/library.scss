@@ -10,17 +10,6 @@
   width: v.$sidebar-width;
   height: 100%;
   padding: 16px;
-  border: 1px solid #535353;
-
-  .title{
-    position: absolute;
-    top: -10px;
-    left: 4px;
-    background-color: v.$background;
-    padding-inline: 3px;
-    color: #535353;
-    user-select: none;
-  }
 
   .link{
     display: flex;
@@ -38,7 +27,7 @@
   }
 
   .link:hover, .link.router-link-active{
-    color: white;
+    color: v.$text-bright;
     transition: all .2s;
   }
 
@@ -65,12 +54,4 @@
       height: 32px;
     }
   }
-}
-
-.library:hover {
-  border: 1px solid #A058FF;
-}
-
-.library:hover .title{
-  color: #A058FF;
 }

@@ -42,7 +42,7 @@
   }
 
   .link:hover, .link.router-link-active {
-    color: white;
+    color: v.$text-bright;
     transition: all .2s;
   }
 }
