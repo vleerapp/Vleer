@@ -95,7 +95,7 @@ const downloadSong = async (url) => {
       console.error("Invalid YouTube URL.");
       return;
     }
-    const videoId = match[1] + ".mp3";
+    const videoId = match[1] + ".webm";
     await Download.downloadVideoAsMp3(url, videoId);
   } catch (error) {
     console.error("Error:", error);
