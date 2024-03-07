@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="search">
     <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
       placeholder="Search for songs" />
     <ul v-if="searchResults.length > 0">
@@ -104,5 +104,5 @@ const downloadSong = async (url) => {
 </script>
 
 <style lang="scss">
-@import '~/css/search.scss';
+@import '~/assets/styles/search.scss';
 </style>

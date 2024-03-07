@@ -1,6 +1,6 @@
 <template>
-  <div class="nav">
-    <p class="title">Pages</p>
+  <div class="nav element">
+    <p class="element-title">Pages</p>
     <NuxtLink class="link" to="/">
       <div class="svg-default">
         <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -55,5 +55,5 @@
 </template>
 
 <style lang="scss">
-@import '~/css/navigation.scss';
+@import '~/assets/styles/navigation.scss';
 </style>

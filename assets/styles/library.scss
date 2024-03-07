@@ -1,0 +1,6 @@
+@use 'variables' as v;
+
+.library {
+  height: 100%;
+  width: v.$sidebarwidth;
+}

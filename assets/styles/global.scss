@@ -1,0 +1,35 @@
+@use 'variables' as v;
+
+@font-face {
+  font-family: 'DMMono';
+  font-display: swap;
+  src: url("/DMMono.woff2") format("woff2");
+
+}
+
+* {
+  font-family: DMMono;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  background-color: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6b6b6b;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+  background: #6b6b6b;
+}
+
+html, body, #__nuxt {
+  background-color: #121212;
+  color: white;
+  width: 100%;
+  height: 100%;
+}

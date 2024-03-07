@@ -1,15 +1,15 @@
-body {
-  background-color: #121212;
-  color: white !important;
-  font-family: DMMono;
-  text-decoration: none !important;
-}
+@use 'variables' as v;
 
-* {
-  font-family: DMMono;
-  text-decoration: none !important;
-  padding: 0;
-  margin: 0;
+.search {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing;
+
+  input {
+    width: 200px;
+  }
 }
 
 .cover-image {

@@ -18,8 +18,8 @@
         "resizable": true,
         "title": "Vleer",
         "width": 1530,
-        "minHeight": 750,
-        "minWidth": 1000,
+        "minHeight": 400,
+        "minWidth": 600,
         "decorations": false
       }
     ],

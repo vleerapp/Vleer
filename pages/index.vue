@@ -4,5 +4,5 @@
 
 
 <style lang="scss">
-@import '~/css/index.scss';
+@import '~/assets/styles/index.scss';
 </style>

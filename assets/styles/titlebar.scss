@@ -1,0 +1,55 @@
+@use 'variables' as v;
+
+.titlebar {
+  width: 100%;
+  position: fixed;
+  top: 2px;
+  height: 28px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #121212;
+  z-index: 1000;
+  user-select: none;
+
+  .titlebar-text {
+    color: v.$muted;
+    font-size: 12px;
+    align-self: center;
+    padding-inline: v.$spacing;
+  }
+
+  .window-controls {
+    display: flex;
+    position: relative;
+    top: -2px;
+  
+    .button {
+      background: none;
+      border: none;
+      outline: none;
+      width: 42px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      img {
+        width: 10px;
+        height: 10px;
+      }
+  
+      &:hover {
+        background-color: #ffffff24;
+        
+        img {
+          filter: brightness(200%);
+        }
+      }
+  
+      &:last-child:hover {
+        background-color: #ff666680;
+      }
+    }
+  
+  }
+}
