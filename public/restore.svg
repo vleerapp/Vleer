@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <path d="M0 0L10 0L10 10L0 10L0 0Z" id="path_1" />
+    <path d="M2 0L10 0L10 8L7 8L7 3L2 3L2 0Z" id="path_1" />
+    <path d="M0 2L8 2L8 10L0 10L0 2Z" id="path_2" />
     <clipPath id="clip_1">
       <use xlink:href="#path_1" />
     </clipPath>
+    <clipPath id="clip_2">
+      <use xlink:href="#path_2" />
+    </clipPath>
   </defs>
-  <g id="maximize">
-    <g id="maximize">
+  <g id="restore">
+    <g id="Rectangle-5">
       <g clip-path="url(#clip_1)">
         <use xlink:href="#path_1" fill="none" stroke="#BDBDBD" stroke-width="2" />
+      </g>
+    </g>
+    <g id="Rectangle-4">
+      <g clip-path="url(#clip_2)">
+        <use xlink:href="#path_2" fill="none" stroke="#BDBDBD" stroke-width="2" />
       </g>
     </g>
   </g>

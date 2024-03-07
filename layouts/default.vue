@@ -2,11 +2,11 @@
   <div class="default-layout">
     <div class="content">
       <div class="sidebar">
-        <Navigation />
+        <Pages />
         <Library />
       </div>
       <div class="main element">
-        <p class="element-title">hey</p>
+        <p class="element-title">Main</p>
         <slot />
       </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="nav element">
+  <div class="pages element">
     <p class="element-title">Pages</p>
     <NuxtLink class="link" to="/">
       <div class="svg-default">
@@ -55,5 +55,5 @@
 </template>
 
 <style lang="scss">
-@import '~/assets/styles/navigation.scss';
+@import '~/assets/styles/pages.scss';
 </style>

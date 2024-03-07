@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+<svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
   <g id="minimize">
-    <g fill="#bdbdbd" stroke="none" id="">
-      <path d="M14 5.59863L14 7L0 7L0 5.59863L14 5.59863Z" />
-    </g>
+    <path d="M0 0L10 0L10 10L0 10L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
+    <path d="M0 4L10 4L10 5L0 5L0 4Z" id="minimize" fill="#BDBDBD" fill-rule="evenodd" stroke="none" />
   </g>
 </svg>

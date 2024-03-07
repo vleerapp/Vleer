@@ -1,12 +1,13 @@
 @use 'variables' as v;
 
-.nav {
+.pages {
   display: flex;
   flex-direction: column;
   text-decoration: none;
   gap: 14px;
   font-size: 14px;
   width: v.$sidebarwidth;
+  padding-left: 28px !important;
 
   .link {
     display: flex;
