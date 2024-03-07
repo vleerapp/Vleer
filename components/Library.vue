@@ -12,7 +12,7 @@
       </svg>
       Your Library
     </p>
-    <div class="search">
+    <div class="search-container">
       <svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
         xmlns="http://www.w3.org/2000/svg">
         <g id="Search-icon">
@@ -29,5 +29,5 @@
 </template>
 
 <style lang="scss">
-@import '~/assets/styles/library.scss';
+@import '~/assets/styles/components/library.scss';
 </style>

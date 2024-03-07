@@ -1,14 +1,13 @@
-@use 'variables' as v;
+@use '~/assets/styles/variables' as v;
 
 .search {
-  height: 100%;
-  overflow: auto;
   display: flex;
   flex-direction: column;
   gap: v.$spacing;
 
   input {
     width: 200px;
+    position: fixed;
   }
 }
 
@@ -23,6 +22,10 @@
 
 .first-result {
   font-size: 1.2em; 
+}
+
+ul {
+  padding-top: 37px;
 }
 
 li {

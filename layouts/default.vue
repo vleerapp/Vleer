@@ -15,5 +15,5 @@
 </template>
 
 <style lang="scss">
-@use '~/assets/styles/default_layout';
+@use '~/assets/styles/layouts/default_layout';
 </style>

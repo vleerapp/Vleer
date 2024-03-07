@@ -1,7 +1,7 @@
-@use 'variables' as v;
+@use "~/assets/styles/variables" as v;
 
 .element {
-  border: 1px solid v.$muted;
+  border: 1px solid v.$foreground;
   position: relative;
   padding: v.$spacing;
 
@@ -10,18 +10,18 @@
     position: absolute;
     top: -10px;
     left: 4px;
-    background-color: #121212;
+    background-color: v.$background;
     padding-inline: 3px;
-    color: v.$muted;
+    color: v.$text-muted;
     user-select: none;
   }
- 
+
   &:hover {
-    border: 1px solid #A058FF;
+    border-color: v.$accent;
   }
-  
-  &:hover .element-title{
-    color: #A058FF;
+
+  &:hover .element-title {
+    color: v.$accent;
   }
 }
 
@@ -33,26 +33,31 @@
   display: flex;
   flex-direction: column;
   padding: v.$spacing;
-  padding-top: 35px;
+  padding-top: v.$titlebar-height + 5px;
   gap: v.$spacing;
 
   .content {
     display: flex;
     gap: v.$spacing;
     flex: auto;
+    height: calc(100vh - (v.$playersize + (v.$spacing * 2) + v.$titlebar-height + 5px));
 
     .sidebar {
       display: flex;
       flex-direction: column;
       gap: v.$spacing;
       height: 100%;
-      width: v.$sidebarwidth;
+      width: v.$sidebar-width;
     }
 
     .main {
       width: 100%;
       height: 100%;
-      height: calc(100vh - (v.$playersize + v.$spacing + 30px));
+
+      > div {
+        height: 100%;
+        overflow: auto;
+      }
     }
   }
 }

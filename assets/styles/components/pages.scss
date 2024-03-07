@@ -1,4 +1,4 @@
-@use 'variables' as v;
+@use '~/assets/styles/variables' as v;
 
 .pages {
   display: flex;
@@ -6,7 +6,7 @@
   text-decoration: none;
   gap: 14px;
   font-size: 14px;
-  width: v.$sidebarwidth;
+  width: v.$sidebar-width;
   padding-left: 28px !important;
 
   .link {
@@ -14,7 +14,7 @@
     align-items: center;
     gap: 12px;
     transition: all .2s;
-    color: #ABABAB;
+    color: v.$text;
     user-select: none;
     text-decoration: none;
   }

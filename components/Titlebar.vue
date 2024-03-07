@@ -22,7 +22,7 @@ onMounted(async () => {
 
 <template>
   <div data-tauri-drag-region class="titlebar">
-    <p class="titlebar-text">Vleer</p>
+    <p class="titlebar-text"></p>
     <div class="window-controls" id="window-controls">
       <button class="button minimize" @click="async () => getCurrent().minimize()">
         <img src="/minimize.svg" alt="minimize">
@@ -40,5 +40,5 @@ onMounted(async () => {
 
 
 <style lang="scss">
-@use '~/assets/styles/titlebar';
+@use '~/assets/styles/components/titlebar';
 </style>

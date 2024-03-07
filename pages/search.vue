@@ -104,5 +104,5 @@ const downloadSong = async (url) => {
 </script>
 
 <style lang="scss">
-@import '~/assets/styles/search.scss';
+@import '~/assets/styles/pages/search.scss';
 </style>

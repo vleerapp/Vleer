@@ -1,13 +1,13 @@
-@use 'variables' as v;
+@use '~/assets/styles/variables' as v;
 
 .library {
   display: flex;
   flex-direction: column;
-  color: #ABABAB;
+  color: v.$text;
   text-decoration: none;
   gap: 14px;
   font-size: 14px;
-  width: v.$sidebarwidth;
+  width: v.$sidebar-width;
   height: 100%;
   padding: 16px;
   border: 1px solid #535353;
@@ -16,7 +16,7 @@
     position: absolute;
     top: -10px;
     left: 4px;
-    background-color: #121212;
+    background-color: v.$background;
     padding-inline: 3px;
     color: #535353;
     user-select: none;
@@ -28,7 +28,7 @@
     align-items: center;
     gap: 12px;
     transition: all .2s;
-    color: #ABABAB;
+    color: v.$text;
     user-select: none;
     padding-left: 12px;
   }
@@ -42,7 +42,7 @@
     transition: all .2s;
   }
 
-  .search{
+  .search-container {
     width: 268px;
     height: 32px;
     background-color: #222222;

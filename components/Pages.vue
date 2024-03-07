@@ -55,5 +55,5 @@
 </template>
 
 <style lang="scss">
-@import '~/assets/styles/pages.scss';
+@import '~/assets/styles/components/pages.scss';
 </style>

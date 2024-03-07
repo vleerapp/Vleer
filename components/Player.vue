@@ -5,5 +5,5 @@
 </template>
 
 <style lang="scss">
-@import '~/assets/styles/player.scss';
+@import '~/assets/styles/components/player.scss';
 </style>

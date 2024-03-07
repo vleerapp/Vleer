@@ -1,0 +1,5 @@
+@use '~/assets/styles/variables' as v;
+
+.player {
+  height: v.$playersize;
+}

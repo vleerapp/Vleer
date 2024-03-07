@@ -1,17 +1,17 @@
-@use 'variables' as v;
+@use '~/assets/styles/variables' as v;
 
 .titlebar {
   width: 100%;
   position: fixed;
   top: 2px;
-  height: 28px;
+  height: v.$titlebar-height;
   display: flex;
   justify-content: space-between;
   z-index: 1000;
   user-select: none;
 
   .titlebar-text {
-    color: v.$muted;
+    color: v.$text-muted;
     font-size: 12px;
     align-self: center;
     padding-inline: v.$spacing;
@@ -38,7 +38,7 @@
       }
   
       &:hover {
-        background-color: #ffffff24;
+        background-color: v.$titlebar-button-hover;
         
         img {
           filter: brightness(200%);
@@ -46,7 +46,7 @@
       }
   
       &:last-child:hover {
-        background-color: #ff666680;
+        background-color: v.$titlebar-button-hover-red;
       }
     }
   
