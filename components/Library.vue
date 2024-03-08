@@ -6,8 +6,8 @@
         xmlns="http://www.w3.org/2000/svg">
         <g id="Icon">
           <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
-          <path d="M2 14L2 2L4 2L4 14L2 14ZM5 14L5 2L7 2L7 14L5 14ZM9 14L9 2L14 4.33691L14 14L9 14Z" id="Library"
-            fill-rule="evenodd" stroke="none" />
+          <path d="M2 14L2 2L3 2L3 14L2 14ZM5.5 14L5.5 2L6.5 2L6.5 14L5.5 14ZM8.8 14L8.8 2L13.8 4.5L13.8 14L8.8 14Z"
+            id="Rectangle-3-Union" fill-rule="evenodd" stroke="none" />
         </g>
       </svg>
       Your Library
