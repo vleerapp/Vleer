@@ -1,7 +1,7 @@
 {
   "productName": "Vleer",
   "version": "1.0.0",
-  "identifier": "net.pandadev",
+  "identifier": "app.vleer",
   "build": {
     "beforeDevCommand": "pnpm nuxt dev",
     "beforeBuildCommand": "pnpm nuxt generate",
