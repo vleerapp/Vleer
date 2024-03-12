@@ -8,16 +8,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta", features = [] }
+tauri-build = { version = "2.0.0-beta.9", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta", features = [] }
-tauri-plugin-shell = "2.0.0-beta.1"
+tauri = { version = "2.0.0-beta.11", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 discord-rich-presence = "0.2.3"
 lazy_static = "1.4"
-rusty_ytdl = "0.6.6"
+rusty_ytdl = "0.7.0"
 reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 log = "0.4"
