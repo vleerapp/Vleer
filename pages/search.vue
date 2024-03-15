@@ -23,17 +23,16 @@ import axios from 'axios';
 const searchTerm = ref("");
 const searchResults = ref([]);
 const isLoading = ref(false);
-const url = ref("");
 
 const searchSongs = async () => {
-  // await DiscordRPC.update(
-  //   searchTerm.value,
-  //   "Searching...",
-  //   "logo",
-  //   "Vleer",
-  //   "search",
-  //   "Search"
-  // );
+  await DiscordRPC.update(
+    searchTerm.value,
+    "Searching...",
+    "logo",
+    "Vleer",
+    "search",
+    "Search"
+  );
 
   isLoading.value = true;
 
@@ -72,14 +71,14 @@ const handleSongClick = async (song) => {
     await fetchYoutubeLink(song);
   }
   if (song.youtubeLink) {
-    // DiscordRPC.update(
-    //   " ",
-    //   "Downloading " + song.trackName,
-    //   "logo",
-    //   "Vleer",
-    //   "search",
-    //   "Search"
-    // );
+    DiscordRPC.update(
+      " ",
+      "Downloading " + song.trackName,
+      "logo",
+      "Vleer",
+      "search",
+      "Search"
+    );
     downloadSong(song.youtubeLink)
   }
 };

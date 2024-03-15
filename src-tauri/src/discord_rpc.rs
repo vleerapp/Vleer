@@ -8,7 +8,6 @@ use std::sync::{
 };
 use tauri::{command, Manager};
 
-
 pub struct DiscordRpc {
     client: Arc<Mutex<DiscordIpcClient>>,
     connected: AtomicBool,
@@ -26,8 +25,17 @@ impl DiscordRpc {
         }
     }
 
+    pub async fn initialize_rpc(client_id: &str) -> Result<Self, String> {
+        let rpc = DiscordRpc::new(client_id);
+        rpc.connect().await?;
+        Ok(rpc)
+    }
+
     pub async fn connect(&self) -> Result<(), String> {
-        let mut client = self.client.lock().expect("Failed to lock client for connection");
+        let mut client = self
+            .client
+            .lock()
+            .expect("Failed to lock client for connection");
 
         client.connect().map_err(|e| e.to_string()).map(|_| {
             self.connected.store(true, Ordering::SeqCst);
@@ -46,7 +54,9 @@ impl DiscordRpc {
     }
 
     pub fn update_activity(&self, details: &str, state: &str) {
+        println!("Updating Discord RPC activity: {} - {}", details, state);
         if !self.connected.load(Ordering::SeqCst) {
+            println!("Discord RPC is not connected.");
             return;
         }
 
@@ -64,12 +74,6 @@ impl DiscordRpc {
             .expect("Failed to lock client for activity update");
         let _ = client.set_activity(activity);
     }
-}
-
-#[command]
-pub async fn initialize_rpc() -> Result<(), String> {
-    let rpc = DiscordRpc::new("1194990403963858984");
-    rpc.connect().await
 }
 
 #[command]
