@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { getCurrent } from "@tauri-apps/api/window";
+import { platform } from '@tauri-apps/plugin-os';
 
 const isMaximized = ref(false);
 
@@ -8,10 +9,12 @@ onMounted(async () => {
   const currentWindow = await getCurrent();
   isMaximized.value = await currentWindow.isMaximized();
 
-  if (await window.__TAURI__.core.invoke('get_os') == 'MacOS') {
+  if (await platform() == 'macos') {
     const controls = document.getElementById("window-controls")
     controls.style.display = "none";
   }
+
+  console.log(await platform())
 
   currentWindow.listen('tauri://resize', async () => {
     isMaximized.value = await currentWindow.isMaximized();
