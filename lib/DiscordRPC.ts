@@ -8,8 +8,7 @@ export default class DiscordRPC {
     smallImageText: string
   ): Promise<void> {
     try {
-      await window.__TAURI__.core.invoke("update_activity_rpc", {
-        // Corrected command name
+      await window.__TAURI__.core.invoke("update_activity", {
         state,
         details,
         largeImage,

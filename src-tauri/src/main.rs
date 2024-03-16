@@ -10,11 +10,9 @@ mod discord_rpc;
 mod downloader;
 mod music_handler;
 
-use crate::discord_rpc::DiscordRpc;
 use music_handler::MusicHandlerWrapper;
-use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
-use tauri::{command, Manager};
+use tauri::command;
 
 lazy_static! {
     static ref MUSIC_HANDLER: Arc<Mutex<MusicHandlerWrapper>> =
@@ -26,24 +24,6 @@ async fn download_wrapper(url: String, name: String) -> Result<(), String> {
     downloader::download(url, name)
         .await
         .map_err(|e| e.to_string())
-}
-
-#[command]
-fn get_os() -> OS {
-    #[cfg(target_os = "windows")]
-    let os = OS::Windows;
-    #[cfg(target_os = "linux")]
-    let os = OS::Linux;
-    #[cfg(target_os = "macos")]
-    let os = OS::MacOS;
-    os
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum OS {
-    Windows,
-    Linux,
-    MacOS,
 }
 
 #[command]
@@ -72,28 +52,19 @@ fn resume_music() {
 
 fn main() {
     env_logger::init();
+    discord_rpc::initialize_rpc();
 
-    let mut builder = tauri::Builder::default();
+    let mut builder = tauri::Builder::default().plugin(tauri_plugin_os::init());
 
     builder = builder
         .invoke_handler(tauri::generate_handler![
-            // discord_rpc::update_activity_rpc,
-            // discord_rpc::disconnect_rpc,
             download_wrapper,
-            get_os,
             play_music,
             stop_music,
             pause_music,
-            resume_music
+            resume_music,
+            discord_rpc::update_activity
         ]);
-        // .setup(|app| {
-        //     let rpc = DiscordRpc::new("1194990403963858984");
-        //     app.manage(rpc);
-        //     tauri::async_runtime::spawn(async move {
-        //         let _ = discord_rpc::initialize_rpc().await;
-        //     });
-        //     Ok(())
-        // });
 
     builder
         .run(tauri::generate_context!())

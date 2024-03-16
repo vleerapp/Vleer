@@ -25,7 +25,9 @@ impl MusicHandlerWrapper {
             let mut music_handler = MusicHandler::new();
             for command in receiver {
                 match command {
-                    MusicHandlerCommand::Play(path) => { let _ = music_handler.play(&path); },
+                    MusicHandlerCommand::Play(path) => {
+                        let _ = music_handler.play(&path);
+                    }
                     MusicHandlerCommand::Stop => music_handler.stop(),
                     MusicHandlerCommand::Pause => music_handler.pause(),
                     MusicHandlerCommand::Resume => music_handler.resume(),
@@ -67,9 +69,11 @@ impl MusicHandler {
     }
 
     pub fn play(&mut self, file_path: &str) -> io::Result<()> {
-        let (stream, stream_handle) = OutputStream::try_default().map_err(|e| Error::new(ErrorKind::Other, e))?;
+        let (stream, stream_handle) =
+            OutputStream::try_default().map_err(|e| Error::new(ErrorKind::Other, e))?;
         let file = File::open(Path::new(file_path))?;
-        let source = Decoder::new(BufReader::new(file)).map_err(|e| Error::new(ErrorKind::Other, e))?;
+        let source =
+            Decoder::new(BufReader::new(file)).map_err(|e| Error::new(ErrorKind::Other, e))?;
 
         let sink = Sink::try_new(&stream_handle).map_err(|e| Error::new(ErrorKind::Other, e))?;
         sink.append(source);
