@@ -23,7 +23,8 @@
     "window:allow-hide",
     "window:allow-close",
     "window:allow-set-decorations",
-    "window:allow-start-dragging"
+    "window:allow-start-dragging",
+    "os:allow-platform"
   ],
   "platforms": [
     "linux",
