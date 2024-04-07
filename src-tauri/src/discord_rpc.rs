@@ -1,4 +1,4 @@
-use discord_ipc_rp::{Result, activity, DiscordIpc, DiscordIpcClient};
+use discord_ipc_rp::{activity, DiscordIpc, DiscordIpcClient};
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 use std::thread;
