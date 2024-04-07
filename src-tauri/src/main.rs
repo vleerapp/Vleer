@@ -8,17 +8,17 @@ mod downloader;
 mod music_handler;
 
 // use music_handler::MusicHandler;
-use rodio::OutputStream;
-use std::sync::mpsc;
-use std::sync::{Arc, Mutex};
-use std::thread;
+// use rodio::OutputStream;
+// use std::sync::mpsc;
+// use std::sync::{Arc, Mutex};
+// use std::thread;
 use tauri::command;
 
-enum AudioCommand {
-    Play(String), // Play a file
-    Stop,
-    SetVolume(f32),
-}
+// enum AudioCommand {
+//     Play(String), // Play a file
+//     Stop,
+//     SetVolume(f32),
+// }
 
 #[command]
 async fn download_wrapper(url: String, name: String) -> Result<(), String> {
