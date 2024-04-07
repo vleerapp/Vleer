@@ -4,8 +4,6 @@ export default class DiscordRPC {
     details: string,
     largeImage: string,
     largeImageText: string,
-    smallImage: string,
-    smallImageText: string
   ): Promise<void> {
     try {
       await window.__TAURI__.core.invoke("update_activity", {
@@ -13,11 +11,17 @@ export default class DiscordRPC {
         details,
         largeImage,
         largeImageText,
-        smallImage,
-        smallImageText,
       });
     } catch (error) {
       console.error("Failed to update Discord RPC:", error);
+    }
+  }
+
+  static async clear(): Promise<void> {
+    try {
+      await window.__TAURI__.core.invoke("clear_activity");
+    } catch (error) {
+      console.error("Failed to disconnect Discord RPC:", error);
     }
   }
 }

@@ -29,9 +29,7 @@ const searchSongs = async () => {
     "Searching...",
     searchTerm.value,
     "logo",
-    "Vleer",
-    "search",
-    "Search"
+    "Vleer"
   );
 
   isLoading.value = true;
@@ -72,12 +70,10 @@ const handleSongClick = async (song) => {
   }
   if (song.youtubeLink) {
     DiscordRPC.update(
-      " ",
+      "  ",
       "Downloading " + song.trackName,
       "logo",
-      "Vleer",
-      "search",
-      "Search"
+      "Vleer"
     );
     downloadSong(song.youtubeLink)
   }
@@ -96,6 +92,7 @@ const downloadSong = async (url) => {
     }
     const videoId = match[1] + ".webm";
     await Download.downloadVideoAsMp3(url, videoId);
+    DiscordRPC.clear()
   } catch (error) {
     console.error("Error:", error);
   }
