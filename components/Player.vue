@@ -110,27 +110,68 @@
       </div>
     </div>
     <div class="bottom">
-      <div class="progress">
+      <div class="progress" @click="seekTo($event)" :style="{ width: progress + '%' }" style="cursor: pointer;">
         <div class="indicator"></div>
       </div>
       <div class="numbers">
-        2:23 / 3:25
+        {{ currentTimeFormatted }} / {{ durationFormatted }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Player from '@/lib/Player.ts';
+
 export default {
   data() {
     return {
-      playing: false,
-      volume: 100,
-      title: "",
-      artist: "",
+      player: new Player(),
+      title: 'Song Title',
+      artist: 'Artist Name',
+    };
+  },
+  computed: {
+    playing() {
+      return !this.player.isStopped;
+    },
+    volume() {
+      return this.player.lastVolume * 100;
+    },
+    progress() {
+      return this.player.getDuration() > 0 ? this.player.getProgress() : 0;
+    },
+    currentTimeFormatted() {
+      const time = this.player.getCurrentTime();
+      return this.player.getDuration() > 0 ? new Date(time * 1000).toISOString().substr(14, 5) : '0:00';
+    },
+    durationFormatted() {
+      const duration = this.player.getDuration();
+      return duration > 0 ? new Date(duration * 1000).toISOString().substr(14, 5) : '0:00';
+    }
+  },
+  methods: {
+    seekTo(event) {
+      const progressContainer = this.$el.querySelector('.progress');
+      const clickX = event.pageX - progressContainer.offsetLeft;
+      const width = progressContainer.offsetWidth;
+      const clickProgress = (clickX / width) * 100;
+      this.player.seek(clickProgress * this.player.getDuration() / 100);
+    },
+    play() {
+      this.player.playPause();
+    },
+    pause() {
+      this.player.playPause();
+    },
+    setVolume(volume) {
+      this.player.setVolume(volume / 100);
+    },
+    toggleMute() {
+      this.player.toggleMute();
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

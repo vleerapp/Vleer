@@ -90,7 +90,7 @@ const downloadSong = async (url) => {
       console.error("Invalid YouTube URL.");
       return;
     }
-    const videoId = match[1] + ".webm";
+    const videoId = match[1] + ".mp3";
     await Download.downloadVideoAsMp3(url, videoId);
     DiscordRPC.clear()
   } catch (error) {

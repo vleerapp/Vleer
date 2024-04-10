@@ -55,7 +55,6 @@
 
   .progress {
     background-color: v.$accent;
-    width: 40%;
     position: relative;
     
     .indicator {
@@ -63,7 +62,7 @@
       height: 16px;
       background-color: transparent;
       position: absolute;
-      right: 0;
+      right: -12px;
     }
   }
 
