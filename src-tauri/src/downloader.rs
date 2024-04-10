@@ -23,10 +23,11 @@ struct ApiItem {
 
 #[tauri::command]
 pub async fn download(url: String, name: String) -> Result<()> {
-    let watch_id = url.trim_start_matches("https://www.youtube.com/watch?v=");
+    let meta_id = url.trim_start_matches("https://www.youtube.com/watch?v=");
+    let watch_id = url.trim_start_matches("https://www.youtube.com");
 
     let client = Client::new();
-    let url = "https://wave.wireway.ch/api/transcode/download/music?q=/watch?v=06JYzej_NJ0";
+    let url = format!("https://wave.wireway.ch/api/transcode/download/music?q={}", watch_id);
     let response = client.get(url).send().await?;
 
     let mut path = PathBuf::new();
@@ -53,7 +54,7 @@ pub async fn download(url: String, name: String) -> Result<()> {
     let content = response.bytes().await?;
     file.write_all(&content)?;
 
-    let api_url = format!("https://wireway.ch/api/musicAPI/search/?q={}", watch_id);
+    let api_url = format!("https://wireway.ch/api/musicAPI/search/?q={}", meta_id);
     let resp_body = reqwest::get(&api_url).await?.text().await?;
     let api_response: ApiResponse = serde_json::from_str(&resp_body)?;
 
