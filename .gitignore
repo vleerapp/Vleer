@@ -23,7 +23,6 @@ logs
 .env.*
 !.env.example
 pnpm-lock.yaml
-bun.lockb
 package.json
 .vscode/settings.json
 src-tauri/gen/
