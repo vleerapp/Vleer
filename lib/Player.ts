@@ -9,7 +9,7 @@ class Player {
     this.audio = new Audio();
     this.isStopped = true;
     this.waitingToPlay = false;
-    this.lastVolume = 1; // Default volume
+    this.lastVolume = 10;
     this.startTime = Date.now();
 
     this.setupEventListeners();
@@ -105,6 +105,33 @@ class Player {
       return (this.audio.currentTime / this.audio.duration) * 100;
     }
     return 0;
+  }
+
+  public async getCover(id: string) {
+    try {
+      const songData = await window.__TAURI__.core.invoke('read_songs_wrapper');
+      return songData.songs[id]?.cover || '';
+    } catch (error) {
+      console.error('Error fetching cover image:', error);
+    }
+  }
+
+  public async getTitle(id: string) {
+    try {
+      const songData = await window.__TAURI__.core.invoke('read_songs_wrapper');
+      return songData.songs[id]?.title || 'Unknown Title';
+    } catch (error) {
+      console.error('Error fetching title:', error);
+    }
+  }
+
+  public async getArtist(id: string) {
+    try {
+      const songData = await window.__TAURI__.core.invoke('read_songs_wrapper');
+      return songData.songs[id]?.artist || 'Unknown Artist';
+    } catch (error) {
+      console.error('Error fetching artist:', error);
+    }
   }
 }
 

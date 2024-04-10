@@ -3,7 +3,7 @@
     <p class="element-title">Player</p>
     <div class="top">
       <div class="info">
-        <img src="/cover.png" class="cover"></img>
+        <img :src="cover || '/cover.png'" class="cover"></img>
         <div class="h">
           <div class="title">{{ title }}</div>
           <div class="artist">{{ artist }}</div>
@@ -129,6 +129,7 @@ export default {
       player: new Player(),
       title: 'Song Title',
       artist: 'Artist Name',
+      cover: "",
     };
   },
   computed: {
@@ -148,7 +149,7 @@ export default {
     durationFormatted() {
       const duration = this.player.getDuration();
       return duration > 0 ? new Date(duration * 1000).toISOString().substr(14, 5) : '0:00';
-    }
+    },
   },
   methods: {
     seekTo(event) {
@@ -169,9 +170,23 @@ export default {
     },
     toggleMute() {
       this.player.toggleMute();
+    },
+    async getTitle(id) {
+      this.title = await this.player.getTitle(id)
+    },
+    async getArtist(id) {
+      this.artist = await this.player.getArtist(id)
+    },
+    async getCover(id) {
+      this.cover = await this.player.getCover(id)
     }
+  },
+  async mounted() {
+    await this.getArtist("ZbwEuFb2Zec")
+    await this.getTitle("ZbwEuFb2Zec")
+    await this.getCover("ZbwEuFb2Zec")
   }
-};
+}
 </script>
 
 <style lang="scss">

@@ -54,7 +54,10 @@ const searchSongs = async () => {
 const fetchYoutubeLink = async (song) => {
   if (!song.youtubeLink) {
     try {
-      const response = await axios.get(`https://wireway.ch/api/musicAPI/search/?q=${encodeURIComponent(song.trackName + ' ' + song.artistName)}`);
+      const query = song.trackName + ' ' + song.artistName;
+      const sanitizedQuery = query.replace(/&/g, '');
+      console.log(sanitizedQuery)
+      const response = await axios.get(`https://wireway.ch/api/musicAPI/search/?q=${encodeURIComponent(sanitizedQuery)}`);
       if (response.data) {
         song.youtubeLink = "https://youtube.com" + response.data.items[0].url;
       }
@@ -70,8 +73,8 @@ const handleSongClick = async (song) => {
   }
   if (song.youtubeLink) {
     DiscordRPC.update(
-      "  ",
-      "Downloading " + song.trackName,
+      "Downloading",
+      song.trackName,
       "logo",
       "Vleer"
     );
