@@ -2,4 +2,81 @@
 
 .player {
   height: v.$playersize;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 36px;
+
+  .info{
+    display: flex;
+    font-size: 14px;
+    gap: 14px;
+
+    .artist{
+      color: v.$text;
+    }
+  }
+
+  .controls{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .controls, .right-controls{
+    color: #303030;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .top:hover .controls, .top:hover .right-controls{
+    color: v.$text;
+  }
+
+  .icon:hover{
+    color: white;
+  }
+}
+
+.bottom {
+  display: flex;
+  width: 100%;
+  height: 16px;
+  position: relative;
+
+  .progress {
+    background-color: v.$accent;
+    width: 40%;
+    position: relative;
+    
+    .indicator {
+      width: 12px;
+      height: 16px;
+      background-color: transparent;
+      position: absolute;
+      right: 0;
+    }
+  }
+
+  .numbers {
+    position: absolute;
+    font-size: 14px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: v.$accent;
+  }
+}
+
+.bottom:hover .indicator{
+  background-color: white;
 }
