@@ -1,11 +1,10 @@
 use anyhow::Result;
-use id3::frame::PictureType;
-use id3::TagLike;
-use id3::{Tag, Version};
-use reqwest;
-use rusty_ytdl::Video;
+use id3::{Tag, Version, frame::PictureType, TagLike};
+use reqwest::Client;
 use serde::Deserialize;
 use std::path::PathBuf;
+use std::fs::File;
+use std::io::{Write};
 
 #[derive(Debug, Deserialize)]
 struct ApiResponse {
@@ -24,13 +23,11 @@ struct ApiItem {
 
 #[tauri::command]
 pub async fn download(url: String, name: String) -> Result<()> {
-    let video = Video::new(url.clone()).unwrap();
+    let watch_id = url.trim_start_matches("https://www.youtube.com/watch?v=");
 
-    let watch_id = name.trim_end_matches(".mp3");
-
-    let api_url = format!("https://wireway.ch/api/musicAPI/search/?q={}", watch_id);
-    let resp_body = reqwest::get(&api_url).await?.text().await?;
-    let api_response: ApiResponse = serde_json::from_str(&resp_body)?;
+    let client = Client::new();
+    let url = "https://wave.wireway.ch/api/transcode/download/music?q=/watch?v=06JYzej_NJ0";
+    let response = client.get(url).send().await?;
 
     let mut path = PathBuf::new();
     match std::env::consts::OS {
@@ -52,7 +49,13 @@ pub async fn download(url: String, name: String) -> Result<()> {
     }
     path.push(&name);
 
-    video.download(&path).await.unwrap();
+    let mut file = File::create(&path)?;
+    let content = response.bytes().await?;
+    file.write_all(&content)?;
+
+    let api_url = format!("https://wireway.ch/api/musicAPI/search/?q={}", watch_id);
+    let resp_body = reqwest::get(&api_url).await?.text().await?;
+    let api_response: ApiResponse = serde_json::from_str(&resp_body)?;
 
     let mut tag = Tag::new();
     if let Some(first_item) = api_response.items.first() {
@@ -75,7 +78,7 @@ pub async fn download(url: String, name: String) -> Result<()> {
                 let mut content: Vec<u8> = Vec::new();
                 let body = response.bytes().await?;
                 content.extend_from_slice(&body);
-                let mime = "image/webp".to_string();
+                let mime = "image/jpeg".to_string(); // Assuming JPEG for broader compatibility
                 tag.add_frame(id3::frame::Picture {
                     mime_type: mime,
                     picture_type: PictureType::CoverFront,
@@ -86,8 +89,9 @@ pub async fn download(url: String, name: String) -> Result<()> {
         }
     }
 
-    tag.write_to_path(&path, Version::Id3v23)?;
+    // Write ID3 tags to the downloaded file
+    tag.write_to_path(&path, Version::Id3v24)?;
 
-    println!(" {}", path.display());
+    println!("Downloaded and tagged: {}", path.display());
     Ok(())
 }

@@ -3851,9 +3851,9 @@ checksum = "7ffc183a10b4478d04cbbbfc96d0873219d962dd5accaff2ffbd4ceb7df837f4"
 
 [[package]]
 name = "rusty_ytdl"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c388678259afc7c385418ee5245d2d3535922bc24a75292b4a13e27589fe88b"
+checksum = "f7fbc9dd1bcc9a127dc0d85b0c289c3624e30dd10fb46cfc8adea7950798ede6"
 dependencies = [
  "aes",
  "async-trait",
