@@ -14,8 +14,6 @@ onMounted(async () => {
     controls.style.display = "none";
   }
 
-  console.log(await platform())
-
   currentWindow.listen('tauri://resize', async () => {
     isMaximized.value = await currentWindow.isMaximized();
   });
