@@ -6,6 +6,7 @@ use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize)]
 struct Song {
+    id: String,
     title: String,
     artist: String,
     length: u32,
@@ -37,15 +38,25 @@ impl SongsConfig {
         Ok(())
     }
 
-    fn add_song(&mut self, id: String, title: String, artist: String, length: u32, cover: String, date_added: String) {
+    fn add_song(
+        &mut self,
+        id: String,
+        title: String,
+        artist: String,
+        length: u32,
+        cover: String,
+        date_added: String,
+    ) {
+        let song_id = id.clone(); // Clone `id` before moving it
         let song = Song {
+            id, // `id` is moved here
             title,
             artist,
             length,
             cover,
             date_added,
         };
-        self.songs.insert(id, song);
+        self.songs.insert(song_id, song); // Use `song_id` here
     }
 }
 
@@ -66,7 +77,14 @@ pub fn get_config_path() -> PathBuf {
     path
 }
 
-pub fn write_song(id: String, title: String, artist: String, length: u32, cover: String, date_added: String) -> Result<(), Error> {
+pub fn write_song(
+    id: String,
+    title: String,
+    artist: String,
+    length: u32,
+    cover: String,
+    date_added: String,
+) -> Result<(), Error> {
     let path = get_config_path();
     if !path.exists() {
         fs::create_dir_all(path.parent().unwrap())?;
