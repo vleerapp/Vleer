@@ -1,13 +1,14 @@
 use crate::config;
 use anyhow::{anyhow, Result};
 use chrono::Local;
-use id3::{frame::PictureType, Tag, TagLike, Version};
-use image::{self, ImageFormat};
-use reqwest::Client;
+// use id3::{frame::PictureType, Tag, TagLike, Version};
+// use image::{self, ImageFormat};
+// use reqwest::Client;
 use serde::Deserialize;
-use std::fs::File;
-use std::io::{Cursor, Write};
+// use std::fs::File;
+// use std::io::{Cursor, Write};
 use std::path::PathBuf;
+use rusty_ytdl::Video;
 
 #[derive(Debug, Deserialize)]
 struct ApiResponse {
@@ -28,12 +29,15 @@ struct ApiItem {
 
 #[tauri::command]
 pub async fn download(url: String, name: String) -> Result<()> {
-    let client = Client::new();
-    let url = format!(
-        "https://wave.wireway.ch/api/transcode/download/music?q={}",
-        url.trim_start_matches("https://www.youtube.com")
-    );
-    let response = client.get(&url).send().await?;
+
+    let video = Video::new(url.clone()).unwrap();
+
+    // let client = Client::new();
+    // let url = format!(
+    //     "https://wave.wireway.ch/api/transcode/download/music?q={}",
+    //     url.trim_start_matches("https://www.youtube.com")
+    // );
+    // let response = client.get(&url).send().await?;
 
     let mut path = PathBuf::new();
     match std::env::consts::OS {
@@ -55,53 +59,55 @@ pub async fn download(url: String, name: String) -> Result<()> {
     }
     path.push(&name);
 
-    let mut file = File::create(&path)?;
-    let content = response.bytes().await?;
-    file.write_all(&content)?;
+    video.download(&path).await.unwrap();
+
+    // let mut file = File::create(&path)?;
+    // let content = response.bytes().await?;
+    // file.write_all(&content)?;
 
     let api_url = format!(
         "https://wireway.ch/api/musicAPI/search/?q={}",
         url.trim_start_matches(
-            "https://wave.wireway.ch/api/transcode/download/music?q=https://youtube.com/watch?v="
+            "https://youtube.com/watch?v="
         )
     );
     let resp_body = reqwest::get(&api_url).await?.text().await?;
     let api_response: ApiResponse = serde_json::from_str(&resp_body)?;
 
-    let mut tag = Tag::new();
-    if let Some(first_item) = api_response.items.first() {
-        tag.set_artist(
-            first_item
-                .uploader_name
-                .as_ref()
-                .unwrap_or(&String::from("Unknown Artist")),
-        );
-        tag.set_title(
-            first_item
-                .title
-                .as_ref()
-                .unwrap_or(&String::from("Unknown Title")),
-        );
+    // let mut tag = Tag::new();
+    // if let Some(first_item) = api_response.items.first() {
+    //     tag.set_artist(
+    //         first_item
+    //             .uploader_name
+    //             .as_ref()
+    //             .unwrap_or(&String::from("Unknown Artist")),
+    //     );
+    //     tag.set_title(
+    //         first_item
+    //             .title
+    //             .as_ref()
+    //             .unwrap_or(&String::from("Unknown Title")),
+    //     );
 
-        if let Some(thumbnail_url) = &first_item.thumbnail {
-            let response = reqwest::get(thumbnail_url).await?;
-            if response.status().is_success() {
-                let body = response.bytes().await?;
-                let image = image::load_from_memory(&body)?;
-                let mut buffer = Cursor::new(Vec::new());
-                image.write_to(&mut buffer, ImageFormat::Png)?;
-                let png_data = buffer.into_inner();
-                tag.add_frame(id3::frame::Picture {
-                    mime_type: "image/png".to_string(),
-                    picture_type: PictureType::CoverFront,
-                    description: "Cover image".to_string(),
-                    data: png_data,
-                });
-            }
-        }
-    }
+    //     if let Some(thumbnail_url) = &first_item.thumbnail {
+    //         let response = reqwest::get(thumbnail_url).await?;
+    //         if response.status().is_success() {
+    //             let body = response.bytes().await?;
+    //             let image = image::load_from_memory(&body)?;
+    //             let mut buffer = Cursor::new(Vec::new());
+    //             image.write_to(&mut buffer, ImageFormat::Png)?;
+    //             let png_data = buffer.into_inner();
+    //             tag.add_frame(id3::frame::Picture {
+    //                 mime_type: "image/png".to_string(),
+    //                 picture_type: PictureType::CoverFront,
+    //                 description: "Cover image".to_string(),
+    //                 data: png_data,
+    //             });
+    //         }
+    //     }
+    // }
 
-    tag.write_to_path(&path, Version::Id3v24)?;
+    // tag.write_to_path(&path, Version::Id3v24)?;
 
     if let Some(first_item) = api_response.items.first() {
         let title = first_item
@@ -118,7 +124,7 @@ pub async fn download(url: String, name: String) -> Result<()> {
         let length = first_item.duration.unwrap_or(0);
 
         let video_id = url.trim_start_matches(
-            "https://wave.wireway.ch/api/transcode/download/music?q=https://youtube.com/watch?v=",
+            "https://youtube.com/watch?v=",
         );
         let date_added = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
