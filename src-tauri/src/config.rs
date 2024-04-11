@@ -49,7 +49,7 @@ impl SongsConfig {
     }
 }
 
-fn get_config_path() -> PathBuf {
+pub fn get_config_path() -> PathBuf {
     let mut path = PathBuf::new();
     match std::env::consts::OS {
         "macos" | "linux" => {

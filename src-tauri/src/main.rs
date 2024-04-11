@@ -8,6 +8,7 @@ mod downloader;
 mod config;
 
 use tauri::command;
+use std::path::PathBuf;
 
 #[command]
 async fn download_wrapper(url: String, name: String) -> Result<(), String> {
@@ -28,6 +29,23 @@ fn read_songs_wrapper() -> Result<config::SongsConfig, String> {
         .map_err(|e| e.to_string())
 }
 
+#[command]
+fn get_path() -> PathBuf {
+    let mut path = PathBuf::new();
+    match std::env::consts::OS {
+        "macos" | "linux" => {
+            let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
+            path.push(format!("/users/{}/Music/Vleer", username));
+        }
+        "windows" => {
+            let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
+            path.push(format!("C:\\Users\\{}\\Music\\Vleer", username));
+        }
+        _ => {}
+    }
+    path
+}
+
 fn main() {
     env_logger::init();
     discord_rpc::connect_rpc();
@@ -39,6 +57,7 @@ fn main() {
             discord_rpc::clear_activity,
             write_song_wrapper,
             read_songs_wrapper,
+            get_path
         ])
         .plugin(tauri_plugin_os::init())
         .run(tauri::generate_context!())
