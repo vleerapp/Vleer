@@ -15,7 +15,6 @@ export default class Search {
         return [];
       }
 
-      // Return the first 20 results
       return searchResults;
     } catch (error) {
       console.error('Failed to perform search:', error);

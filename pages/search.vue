@@ -56,7 +56,6 @@ const fetchYoutubeLink = async (song) => {
     try {
       const query = song.trackName + ' ' + song.artistName;
       const sanitizedQuery = query.replace(/&/g, '');
-      console.log(sanitizedQuery)
       const response = await axios.get(`https://wireway.ch/api/musicAPI/search/?q=${encodeURIComponent(sanitizedQuery)}`);
       if (response.data) {
         song.youtubeLink = "https://youtube.com" + response.data.items[0].url;
@@ -93,7 +92,7 @@ const downloadSong = async (url) => {
       console.error("Invalid YouTube URL.");
       return;
     }
-    const videoId = match[1] + ".mp3";
+    const videoId = match[1] + ".webm";
     await Download.downloadVideoAsMp3(url, videoId);
     DiscordRPC.clear()
   } catch (error) {

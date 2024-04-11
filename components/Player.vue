@@ -122,6 +122,7 @@
 
 <script>
 import Player from '@/lib/Player.ts';
+import { readSongs } from '~/lib/Config.ts';
 
 export default {
   data() {
