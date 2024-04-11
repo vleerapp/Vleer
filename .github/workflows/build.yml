@@ -37,3 +37,9 @@ jobs:
         run: npm install -g pnpm && pnpm install
 
       - uses: tauri-apps/tauri-action@v0
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.platform }}
+          path: src-tauri/target/release/bundle/
