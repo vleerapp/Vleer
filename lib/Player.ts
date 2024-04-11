@@ -27,9 +27,10 @@ class Player {
     this.currentSongId = id;
     const song = this.songsData[id];
     if (song) {
-      const path = await this.getPath(this.currentSongId);
-      console.log("Audio path:", path); // Log the path for verification
-      this.audio.src = path;
+      const songData = await this.getSongData(id);
+      const blob = new Blob([songData], { type: 'audio/webm' });
+      const url = URL.createObjectURL(blob);
+      this.audio.src = url;
       this.audio.load(); // Ensure the audio is loaded
       this.audio.addEventListener('canplay', () => {
         console.log('Audio can play, attempting to play...');
@@ -38,26 +39,20 @@ class Player {
       this.audio.addEventListener('error', (e) => {
         console.error('Error with audio element:', e);
       });
-      this.audio.addEventListener('loadedmetadata', () => {
-        console.log('Metadata loaded, duration:', this.audio.duration);
-      });
-      this.audio.addEventListener('loadstart', () => console.log('Audio loading started'));
-      this.audio.addEventListener('loadeddata', () => console.log('Audio data loaded'));
-      this.audio.addEventListener('canplay', () => console.log('Audio can play'));
-      this.audio.addEventListener('error', () => console.error('Audio playback error'));
-      this.audio.addEventListener('abort', () => console.log('Audio loading aborted'));
-      this.audio.addEventListener('suspend', () => console.log('Audio loading suspended'));
-      this.audio.addEventListener('error', (e) => {
-        console.error('Audio loading error', e);
-      });
     } else {
       console.error('Song not found in songsData');
     }
   }
 
-  public async getPath(id){
-    const path = await window.__TAURI__.core.invoke("get_path")
-    return path + "/" + id + ".webm"
+  private async getSongData(id: string): Promise<ArrayBuffer> {
+    try {
+      console.log(id)
+      const response = await window.__TAURI__.core.invoke('get_song_data', { songId: id });
+      return new Uint8Array(response).buffer;
+    } catch (error) {
+      console.error('Failed to get song data:', error);
+      throw new Error('Failed to get song data');
+    }
   }
 
   public play() {
@@ -94,8 +89,8 @@ class Player {
     return this.songsData[this.currentSongId]?.artist || 'Unknown Artist';
   }
 
-  public getCover(): string {
-    return this.songsData[this.currentSongId]?.cover || '';
+  public async getCover(id: string): Promise<string> {
+    return this.songsData[id]?.cover || '';
   }
 
   public getDuration(): number {

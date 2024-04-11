@@ -1,7 +1,9 @@
 <template>
   <div>
     <li v-for="song in songs" :key="song.id" class="song-item">
+      <!-- Update src binding to use object URLs -->
       <img :src="song.cover" :alt="song.title" class="song-cover">
+      <p v-if="!song.id" class="error">Song ID is missing</p>
       <div class="song-info">
         <h2>{{ song.title }}</h2>
         <p>{{ song.artist }}</p>
@@ -21,14 +23,22 @@ import Player from '~/lib/Player.ts';
 
 const songs = ref([]);
 const player = new Player();
+const path = await window.__TAURI__.core.invoke("get_path")
 
 onMounted(async () => {
   try {
     const songsConfig = await readSongs();
-    songs.value = Object.entries(songsConfig.songs).map(([id, song]) => ({
-      ...song,
-      length: formatDuration(song.length),
-      date_added: formatDate(song.date_added),
+    songs.value = await Promise.all(Object.entries(songsConfig.songs).map(async ([id, song]) => {
+      const coverBase64 = await window.__TAURI__.core.invoke('read_image_as_base64', { path: path + song.cover });
+      // Convert base64 to object URL
+      const coverBlob = base64ToBlob(coverBase64, 'image/jpeg'); // Assuming JPEG format; adjust MIME type if necessary
+      const coverObjectURL = URL.createObjectURL(coverBlob);
+      return {
+        ...song,
+        cover: coverObjectURL, // Use object URL instead of base64 string
+        length: formatDuration(song.length),
+        date_added: formatDate(song.date_added),
+      };
     }));
   } catch (error) {
     console.error("Error during mounted hook:", error);
@@ -53,6 +63,17 @@ const playSong = (song) => {
   player.setSong(song.id);
   player.play()
 };
+
+// Helper function to convert base64 to Blob
+function base64ToBlob(base64, mimeType) {
+  const byteCharacters = atob(base64);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+}
 </script>
 
 <style lang="scss">

@@ -12,7 +12,7 @@ interface SongsConfig {
 }
 
 export const writeSong = async (song: Song): Promise<void> => {
-  await window.__TAURI__.invoke('write_song_wrapper', {
+  await window.__TAURI__.invoke('write_song', {
     id: song.id,
     title: song.title,
     artist: song.artist,
@@ -23,5 +23,5 @@ export const writeSong = async (song: Song): Promise<void> => {
 };
 
 export const readSongs = async (): Promise<SongsConfig> => {
-  return await window.__TAURI__.core.invoke('read_songs_wrapper');
+  return await window.__TAURI__.core.invoke('read_songs');
 };

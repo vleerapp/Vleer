@@ -1,12 +1,10 @@
 use crate::config;
 use anyhow::{anyhow, Result};
 use chrono::Local;
-// use id3::{frame::PictureType, Tag, TagLike, Version};
-// use image::{self, ImageFormat};
-// use reqwest::Client;
+use image::{self, ImageFormat};
+use reqwest::Client;
 use serde::Deserialize;
-// use std::fs::File;
-// use std::io::{Cursor, Write};
+use std::fs::{self, File};
 use std::path::PathBuf;
 use rusty_ytdl::Video;
 
@@ -30,40 +28,34 @@ struct ApiItem {
 #[tauri::command]
 pub async fn download(url: String, name: String) -> Result<()> {
 
-    let video = Video::new(url.clone()).unwrap();
+    let video = Video::new(url.clone()).map_err(|e| anyhow!(e.to_string()))?;
 
-    // let client = Client::new();
-    // let url = format!(
-    //     "https://wave.wireway.ch/api/transcode/download/music?q={}",
-    //     url.trim_start_matches("https://www.youtube.com")
-    // );
-    // let response = client.get(&url).send().await?;
+    let client = Client::new();
 
-    let mut path = PathBuf::new();
+    let mut base_path = PathBuf::new();
     match std::env::consts::OS {
         "macos" | "linux" => {
             let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
-            path.push(format!("/users/{}/Music/Vleer/Songs", username));
-            if !path.exists() {
-                std::fs::create_dir_all(&path).unwrap();
-            }
+            base_path.push(format!("/users/{}/Music/Vleer", username));
         }
         "windows" => {
             let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
-            path.push(format!("C:\\Users\\{}\\Music\\Vleer\\Songs", username));
-            if !path.exists() {
-                std::fs::create_dir_all(&path).unwrap();
-            }
+            base_path.push(format!("C:\\Users\\{}\\Music\\Vleer", username));
         }
         _ => {}
     }
+    if !base_path.exists() {
+        fs::create_dir_all(&base_path)?;
+    }
+
+    let mut path = base_path.clone();
+    path.push("Songs");
+    if !path.exists() {
+        fs::create_dir_all(&path)?;
+    }
     path.push(&name);
 
-    video.download(&path).await.unwrap();
-
-    // let mut file = File::create(&path)?;
-    // let content = response.bytes().await?;
-    // file.write_all(&content)?;
+    video.download(&path).await.map_err(|e| anyhow!(e.to_string()))?;
 
     let api_url = format!(
         "https://wireway.ch/api/musicAPI/search/?q={}",
@@ -74,40 +66,7 @@ pub async fn download(url: String, name: String) -> Result<()> {
     let resp_body = reqwest::get(&api_url).await?.text().await?;
     let api_response: ApiResponse = serde_json::from_str(&resp_body)?;
 
-    // let mut tag = Tag::new();
-    // if let Some(first_item) = api_response.items.first() {
-    //     tag.set_artist(
-    //         first_item
-    //             .uploader_name
-    //             .as_ref()
-    //             .unwrap_or(&String::from("Unknown Artist")),
-    //     );
-    //     tag.set_title(
-    //         first_item
-    //             .title
-    //             .as_ref()
-    //             .unwrap_or(&String::from("Unknown Title")),
-    //     );
-
-    //     if let Some(thumbnail_url) = &first_item.thumbnail {
-    //         let response = reqwest::get(thumbnail_url).await?;
-    //         if response.status().is_success() {
-    //             let body = response.bytes().await?;
-    //             let image = image::load_from_memory(&body)?;
-    //             let mut buffer = Cursor::new(Vec::new());
-    //             image.write_to(&mut buffer, ImageFormat::Png)?;
-    //             let png_data = buffer.into_inner();
-    //             tag.add_frame(id3::frame::Picture {
-    //                 mime_type: "image/png".to_string(),
-    //                 picture_type: PictureType::CoverFront,
-    //                 description: "Cover image".to_string(),
-    //                 data: png_data,
-    //             });
-    //         }
-    //     }
-    // }
-
-    // tag.write_to_path(&path, Version::Id3v24)?;
+    let mut cover_path = String::new();
 
     if let Some(first_item) = api_response.items.first() {
         let title = first_item
@@ -128,12 +87,29 @@ pub async fn download(url: String, name: String) -> Result<()> {
         );
         let date_added = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
+        if !cover.is_empty() {
+            let response = client.get(&cover).send().await?;
+            if response.status().is_success() {
+                let body = response.bytes().await?;
+                let image = image::load_from_memory(&body)?;
+                let covers_path = base_path.join("Covers");
+                if !covers_path.exists() {
+                    fs::create_dir_all(&covers_path)?;
+                }
+                let cover_file_name = format!("{}.png", video_id);
+                let cover_file_path = covers_path.join(&cover_file_name);
+                let mut file = File::create(&cover_file_path)?;
+                image.write_to(&mut file, ImageFormat::Png)?;
+                cover_path = format!("/Covers/{}", cover_file_name);
+            }
+        }
+
         config::write_song(
             video_id.to_string(),
             title,
             artist,
             length,
-            cover,
+            cover_path,
             date_added,
         )
         .map_err(|e| anyhow!(e.to_string()))?;
