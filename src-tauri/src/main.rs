@@ -37,7 +37,9 @@ fn get_path() -> PathBuf {
 }
 
 #[tauri::command]
-fn read_image_as_base64(path: PathBuf) -> Result<String, tauri::Error> {
+fn get_cover_base64(id: String) -> Result<String, tauri::Error> {
+    let path = get_path().join(format!("Covers/{}.png", id));
+    println!("{}", path.display());
     let mut file = fs::File::open(path).map_err(tauri::Error::from)?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).map_err(tauri::Error::from)?;
@@ -73,7 +75,7 @@ fn main() {
             write_song,
             read_songs,
             get_path,
-            read_image_as_base64,
+            get_cover_base64,
             download_wrapper,
             get_song_data,
         ])

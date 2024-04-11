@@ -27,7 +27,7 @@ onMounted(async () => {
   try {
     const songsConfig = await readSongs();
     songs.value = await Promise.all(Object.entries(songsConfig.songs).map(async ([id, song]) => {
-      const coverBase64 = await window.__TAURI__.core.invoke('read_image_as_base64', { path: path + song.cover });
+      const coverBase64 = await window.__TAURI__.core.invoke('get_cover_base64', { id: song.id });
       const coverBlob = base64ToBlob(coverBase64, 'image/jpeg'); 
       const coverObjectURL = URL.createObjectURL(coverBlob);
       return {
