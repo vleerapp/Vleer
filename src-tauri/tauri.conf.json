@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "identifier": "app.vleer",
   "build": {
-    "beforeDevCommand": "bun nuxt dev",
-    "beforeBuildCommand": "bun nuxt generate",
+    "beforeDevCommand": "pnpm nuxt dev",
+    "beforeBuildCommand": "pnpm nuxt generate",
     "devUrl": "http://localhost:3000",
     "frontendDist": "../dist"
   },
