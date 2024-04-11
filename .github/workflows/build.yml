@@ -35,7 +35,9 @@ jobs:
 
       - name: install bun
         if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest'
-        run: curl -fsSL https://bun.sh/install | bash
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          source /Users/runner/.bashrc
 
       - name: install bun
         if: matrix.platform == 'windows-latest'
