@@ -33,7 +33,15 @@ jobs:
           sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
           echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
 
+      - name: install bun
+        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest'
+        run: curl -fsSL https://bun.sh/install | bash
+
+      - name: install bun
+        if: matrix.platform == 'windows-latest'
+        run: powershell -c "irm bun.sh/install.ps1 | iex"
+
       - name: install frontend dependencies
-        run: npm install -g bun && bun i
+        run: bun i
 
       - uses: tauri-apps/tauri-action@v0
