@@ -34,7 +34,7 @@
               transform="matrix(-1 0 -0 -1 32 32)" />
           </g>
         </svg>
-        <svg v-if="!playing" width="32px" height="32px" viewBox="0 0 32 32" class="icon play">
+        <svg v-if="!playing" @click="play()" width="32px" height="32px" viewBox="0 0 32 32" class="icon play">
           <g id="play">
             <path d="M-1930 -2100L-1930 -2100L-1930 -2068L-1962 -2068L-1962 -2100L-1930 -2100Z" id="play" fill="none"
               stroke="none" />
@@ -42,7 +42,7 @@
               clip-path="url(#clip_1)" />
           </g>
         </svg>
-        <svg v-if="playing" width="32px" height="32px" viewBox="0 0 32 32" class="icon pause">
+        <svg v-if="playing" @click="pause()" width="32px" height="32px" viewBox="0 0 32 32" class="icon pause">
           <g id="pause">
             <path d="M-1930 -2100L-1930 -2100L-1930 -2068L-1962 -2068L-1962 -2100L-1930 -2100Z" id="pause" fill="none"
               stroke="none" />
@@ -107,6 +107,8 @@
               clip-path="url(#clip_1)" />
           </g>
         </svg>
+
+        <input @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
       </div>
     </div>
     <div class="bottom">
@@ -114,7 +116,7 @@
         <div class="indicator"></div>
       </div>
       <div class="numbers">
-        {{ currentTimeFormatted }} / {{ durationFormatted }}
+        {{ time }} / {{ duration }}
       </div>
     </div>
   </div>
@@ -122,7 +124,6 @@
 
 <script>
 import Player from '@/lib/Player.ts';
-import { readSongs } from '~/lib/Config.ts';
 
 export default {
   data() {
@@ -131,14 +132,14 @@ export default {
       title: 'Song Title',
       artist: 'Artist Name',
       cover: "",
+      volume: 100,
+      time: "0:00",
+      duration: "0:00"
     };
   },
   computed: {
     playing() {
       return !this.player.isStopped;
-    },
-    volume() {
-      return this.player.lastVolume * 100;
     },
     progress() {
       return this.player.getDuration() > 0 ? this.player.getProgress() : 0;
@@ -161,13 +162,13 @@ export default {
       this.player.seek(clickProgress * this.player.getDuration() / 100);
     },
     play() {
-      this.player.playPause();
+      this.player.play();
     },
     pause() {
-      this.player.playPause();
+      this.player.pause();
     },
-    setVolume(volume) {
-      this.player.setVolume(volume / 100);
+    setVolume() {
+      this.player.setVolume(this.volume / 100);
     },
     toggleMute() {
       this.player.toggleMute();
@@ -180,12 +181,28 @@ export default {
     },
     async getCover(id) {
       this.cover = await this.player.getCover(id)
+    },
+    formatTime(time) {
+      const minutes = Math.floor(time / 60);
+      const seconds = Math.floor(time % 60);
+      return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    },
+    updateCurrentTime() {
+      const time = this.player.getCurrentTime();
+      this.time = time > 0 ? new Date(time * 1000).toISOString().substr(14, 5) : '0:00';
+    },
+    updateDuration() {
+      const duration = this.player.getDuration();
+      this.duration = duration > 0 ? new Date(duration * 1000).toISOString().substr(14, 5) : '0:00'
     }
   },
-  async mounted() {
-    await this.getArtist("ZbwEuFb2Zec")
-    await this.getTitle("ZbwEuFb2Zec")
-    await this.getCover("ZbwEuFb2Zec")
+  mounted() {
+    this.player.audio.addEventListener('timeupdate', this.updateCurrentTime);
+    this.player.audio.addEventListener('loadedmetadata', this.updateDuration);
+  },
+  beforeDestroy() {
+    this.player.audio.removeEventListener('timeupdate', this.updateCurrentTime);
+    this.player.audio.removeEventListener('loadedmetadata', this.updateDuration);
   }
 }
 </script>

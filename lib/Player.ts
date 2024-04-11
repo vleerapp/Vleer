@@ -1,17 +1,22 @@
 import { readSongs } from './Config';
 
 class Player {
-  private audio: HTMLAudioElement;
+  private static instance: Player;
+  public audio: HTMLAudioElement;
   private currentSongId: string;
   private songsData: Record<string, any>;
 
-  constructor() {
-    this.audio = new Audio();
-    this.audio.preload = 'auto';
-    this.audio.crossOrigin = 'anonymous';
-    this.currentSongId = '';
-    this.songsData = {};
-    this.initializeSongsData();
+  private constructor() {
+    if (!Player.instance) {
+      this.audio = new Audio();
+      this.audio.volume = 1;
+      this.audio.preload = 'auto';
+      this.currentSongId = '';
+      this.songsData = {};
+      this.initializeSongsData();
+      Player.instance = this;
+    }
+    return Player.instance;
   }
 
   private async initializeSongsData() {
@@ -31,11 +36,6 @@ class Player {
       const blob = new Blob([songData], { type: 'audio/webm' });
       const url = URL.createObjectURL(blob);
       this.audio.src = url;
-      this.audio.load(); // Ensure the audio is loaded
-      this.audio.addEventListener('canplay', () => {
-        console.log('Audio can play, attempting to play...');
-        this.play();
-      }, { once: true });
       this.audio.addEventListener('error', (e) => {
         console.error('Error with audio element:', e);
       });
@@ -46,7 +46,6 @@ class Player {
 
   private async getSongData(id: string): Promise<ArrayBuffer> {
     try {
-      console.log(id)
       const response = await window.__TAURI__.core.invoke('get_song_data', { songId: id });
       return new Uint8Array(response).buffer;
     } catch (error) {
@@ -56,7 +55,7 @@ class Player {
   }
 
   public play() {
-    this.audio.play().catch(e => console.error('Error playing audio:', e));
+    this.audio.play();
   }
 
   public pause() {
@@ -99,6 +98,13 @@ class Player {
 
   public getCurrentTime(): number {
     return this.audio.currentTime || 0;
+  }
+
+  public static getInstance(): Player {
+    if (!Player.instance) {
+      Player.instance = new Player();
+    }
+    return Player.instance;
   }
 }
 

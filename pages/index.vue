@@ -1,7 +1,6 @@
 <template>
   <div>
     <li v-for="song in songs" :key="song.id" class="song-item">
-      <!-- Update src binding to use object URLs -->
       <img :src="song.cover" :alt="song.title" class="song-cover">
       <p v-if="!song.id" class="error">Song ID is missing</p>
       <div class="song-info">
@@ -10,7 +9,6 @@
         <p>{{ song.length }}</p>
         <p>{{ song.date_added }}</p>
       </div>
-      <!-- Directly call playSong on click, passing the current song as an argument -->
       <button @click="playSong(song)">Play</button>
     </li>
   </div>
@@ -30,12 +28,11 @@ onMounted(async () => {
     const songsConfig = await readSongs();
     songs.value = await Promise.all(Object.entries(songsConfig.songs).map(async ([id, song]) => {
       const coverBase64 = await window.__TAURI__.core.invoke('read_image_as_base64', { path: path + song.cover });
-      // Convert base64 to object URL
-      const coverBlob = base64ToBlob(coverBase64, 'image/jpeg'); // Assuming JPEG format; adjust MIME type if necessary
+      const coverBlob = base64ToBlob(coverBase64, 'image/jpeg'); 
       const coverObjectURL = URL.createObjectURL(coverBlob);
       return {
         ...song,
-        cover: coverObjectURL, // Use object URL instead of base64 string
+        cover: coverObjectURL, 
         length: formatDuration(song.length),
         date_added: formatDate(song.date_added),
       };
@@ -59,12 +56,11 @@ function formatDate(dateString) {
   return `${day < 10 ? '0' : ''}${day}.${month < 10 ? '0' : ''}${month}.${year}`;
 }
 
-const playSong = (song) => {
-  player.setSong(song.id);
+const playSong = async (song) => {
+  await player.setSong(song.id);
   player.play()
 };
 
-// Helper function to convert base64 to Blob
 function base64ToBlob(base64, mimeType) {
   const byteCharacters = atob(base64);
   const byteNumbers = new Array(byteCharacters.length);
