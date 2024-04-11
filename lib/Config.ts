@@ -4,7 +4,7 @@ interface Song {
   artist: string;
   length: number;
   cover: string;
-  dateAdded: string;
+  date_added: string;
 }
 
 interface SongsConfig {
@@ -18,7 +18,7 @@ export const writeSong = async (song: Song): Promise<void> => {
     artist: song.artist,
     length: song.length,
     cover: song.cover,
-    dateAdded: song.dateAdded,
+    date_added: song.date_added,
   });
 };
 
