@@ -1,6 +1,6 @@
 [package]
 name = "vleer"
-version = "1.0.0"
+version = "1.0.0-pre.2"
 description = "A Music app from the Future"
 authors = ["you"]
 edition = "2021"
