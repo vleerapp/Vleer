@@ -25,6 +25,39 @@
     "window:allow-set-decorations",
     "window:allow-start-dragging",
     "os:allow-platform",
+    {
+      "identifier": "fs:allow-audio-read-recursive",
+      "allow": [
+        {
+          "path": "$AUDIO"
+        },
+        {
+          "path": "$AUDIO/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-audio-write-recursive",
+      "allow": [
+        {
+          "path": "$AUDIO"
+        },
+        {
+          "path": "$AUDIO/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-audio-meta-recursive",
+      "allow": [
+        {
+          "path": "$AUDIO"
+        },
+        {
+          "path": "$AUDIO/**"
+        }
+      ]
+    },
     "fs:default"
   ],
   "platforms": [

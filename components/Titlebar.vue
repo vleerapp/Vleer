@@ -1,5 +1,4 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import { getCurrent } from "@tauri-apps/api/window";
 import { platform } from '@tauri-apps/plugin-os';
 
