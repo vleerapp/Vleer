@@ -3,8 +3,7 @@ import { readSongs } from './Config';
 class Player {
   private static instance: Player;
   public audio: HTMLAudioElement;
-  private currentSongId: string;
-  private songsData: Record<string, any>;
+  public currentSongId: string;
 
   private constructor() {
     if (!Player.instance) {
@@ -12,25 +11,15 @@ class Player {
       this.audio.volume = 1;
       this.audio.preload = 'auto';
       this.currentSongId = '';
-      this.songsData = {};
-      this.initializeSongsData();
       Player.instance = this;
     }
     return Player.instance;
   }
 
-  private async initializeSongsData() {
-    try {
-      const songsConfig = await readSongs();
-      this.songsData = songsConfig.songs;
-    } catch (error) {
-      console.error('Failed to initialize songs data:', error);
-    }
-  }
-
   public async setSong(id: string) {
     this.currentSongId = id;
-    const song = this.songsData[id];
+    const songsData = (await readSongs()).songs;
+    const song = songsData[id];
     if (song) {
       const songData = await this.getSongData(id);
       const blob = new Blob([songData], { type: 'audio/webm' });
@@ -63,14 +52,16 @@ class Player {
   }
 
   public async skip() {
-    const songIds = Object.keys(this.songsData);
+    const songsData = (await readSongs()).songs;
+    const songIds = Object.keys(songsData);
     const currentIndex = songIds.indexOf(this.currentSongId);
     const nextIndex = (currentIndex + 1) % songIds.length;
     await this.setSong(songIds[nextIndex]);
   }
 
   public async rewind() {
-    const songIds = Object.keys(this.songsData);
+    const songsData = (await readSongs()).songs;
+    const songIds = Object.keys(songsData);
     const currentIndex = songIds.indexOf(this.currentSongId);
     const prevIndex = (currentIndex - 1 + songIds.length) % songIds.length;
     await this.setSong(songIds[prevIndex]);
@@ -80,16 +71,35 @@ class Player {
     this.audio.volume = value;
   }
 
-  public getTitle(): string {
-    return this.songsData[this.currentSongId]?.title || 'Unknown Title';
+  public async getTitle(): string {
+    const songsData = (await readSongs()).songs;
+    return songsData[this.currentSongId]?.title || 'Unknown Title';
   }
 
-  public getArtist(): string {
-    return this.songsData[this.currentSongId]?.artist || 'Unknown Artist';
+  public async getArtist(): string {
+    const songsData = (await readSongs()).songs;
+    return songsData[this.currentSongId]?.artist || 'Unknown Artist';
   }
 
   public async getCover(id: string): Promise<string> {
-    return this.songsData[id]?.cover || '';
+    try {
+      const coverBase64 = await window.__TAURI__.core.invoke('get_cover_base64', { id: id });
+      const coverBlob = this.base64ToBlob(coverBase64, 'image/jpeg');
+      return URL.createObjectURL(coverBlob);
+    } catch (error) {
+      console.error('Failed to get cover image:', error);
+      return '';
+    }
+  }
+
+  private base64ToBlob(base64: string, mimeType: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
   }
 
   public getDuration(): number {
