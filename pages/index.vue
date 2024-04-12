@@ -1,5 +1,7 @@
 <template>
   <div>
+    <button @click="$music.increase">Increase</button>
+    {{ num }}
     <li v-for="song in songs" :key="song.id" class="song-item">
       <img :src="song.cover" :alt="song.title" class="song-cover">
       <p v-if="!song.id" class="error">Song ID is missing</p>
@@ -18,6 +20,11 @@
 import { onMounted, ref } from 'vue';
 import { readSongs } from '~/lib/Config.ts';
 import Player from '~/lib/Player.ts';
+
+
+const { $music } = useNuxtApp()
+
+const num = computed(() => $music.getCounter());
 
 const songs = ref([]);
 const player = new Player();
