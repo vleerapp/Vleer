@@ -4,7 +4,8 @@ use std::sync::Mutex;
 use std::thread;
 
 lazy_static! {
-    static ref DRPC_CLIENT: Mutex<DiscordIpcClient> = Mutex::new(DiscordIpcClient::new("1194990403963858984"));
+    static ref DRPC_CLIENT: Mutex<DiscordIpcClient> =
+        Mutex::new(DiscordIpcClient::new("1194990403963858984"));
 }
 
 #[tauri::command]
@@ -24,18 +25,20 @@ pub fn update_activity(
     state: String,
     details: String,
     large_image: String,
-    large_image_text: String
+    large_image_text: String,
 ) {
     thread::spawn(move || {
         let mut drpc = DRPC_CLIENT.lock().unwrap();
 
-        let activity = activity::Activity::new().state(&state).details(&details).assets(
-            activity::Assets::new()
-                .large_image(&large_image)
-                .large_text(&large_image_text)
-        );
+        let activity = activity::Activity::new()
+            .state(&state)
+            .details(&details)
+            .assets(
+                activity::Assets::new()
+                    .large_image(&large_image)
+                    .large_text(&large_image_text),
+            );
 
-        drpc.set_activity(activity)
-            .expect("Failed to set activity");
+        drpc.set_activity(activity).expect("Failed to set activity");
     });
 }

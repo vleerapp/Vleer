@@ -3,10 +3,10 @@ use anyhow::{anyhow, Result};
 use chrono::Local;
 use image::{self, ImageFormat};
 use reqwest::Client;
+use rusty_ytdl::Video;
 use serde::Deserialize;
 use std::fs::{self, File};
 use std::path::PathBuf;
-use rusty_ytdl::Video;
 
 #[derive(Debug, Deserialize)]
 struct ApiResponse {
@@ -27,7 +27,6 @@ struct ApiItem {
 
 #[tauri::command]
 pub async fn download(url: String, name: String) -> Result<()> {
-
     let video = Video::new(url.clone()).map_err(|e| anyhow!(e.to_string()))?;
 
     let client = Client::new();
@@ -55,13 +54,14 @@ pub async fn download(url: String, name: String) -> Result<()> {
     }
     path.push(&name);
 
-    video.download(&path).await.map_err(|e| anyhow!(e.to_string()))?;
+    video
+        .download(&path)
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?;
 
     let api_url = format!(
         "https://wireway.ch/api/musicAPI/search/?q={}",
-        url.trim_start_matches(
-            "https://youtube.com/watch?v="
-        )
+        url.trim_start_matches("https://youtube.com/watch?v=")
     );
     let resp_body = reqwest::get(&api_url).await?.text().await?;
     let api_response: ApiResponse = serde_json::from_str(&resp_body)?;
@@ -82,9 +82,7 @@ pub async fn download(url: String, name: String) -> Result<()> {
         let cover = first_item.thumbnail.clone().unwrap_or_default();
         let length = first_item.duration.unwrap_or(0);
 
-        let video_id = url.trim_start_matches(
-            "https://youtube.com/watch?v=",
-        );
+        let video_id = url.trim_start_matches("https://youtube.com/watch?v=");
         let date_added = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
         if !cover.is_empty() {
