@@ -24,7 +24,8 @@
     "window:allow-close",
     "window:allow-set-decorations",
     "window:allow-start-dragging",
-    "os:allow-platform"
+    "os:allow-platform",
+    "fs:default"
   ],
   "platforms": [
     "linux",

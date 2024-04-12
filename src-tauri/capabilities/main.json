@@ -1,0 +1,27 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    {
+      "identifier": "fs:allow-audio-read-recursive",
+      "allow": [{ "path": "$AUDIO/**" }]
+    },
+    {
+      "identifier": "fs:allow-audio-write-recursive",
+      "allow": [{ "path": "$AUDIO/**" }]
+    },
+    {
+      "identifier": "fs:allow-audio-meta-recursive",
+      "allow": [{ "path": "$AUDIO/**" }]
+    }
+  ],
+  "platforms": [
+    "linux",
+    "macOS",
+    "windows",
+    "android",
+    "iOS"
+  ]
+}
