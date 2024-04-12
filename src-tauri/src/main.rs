@@ -3,14 +3,14 @@
     windows_subsystem = "windows"
 )]
 
+mod config;
 mod discord_rpc;
 mod downloader;
-mod config;
 
-use std::path::PathBuf;
+use base64::{engine::general_purpose::STANDARD as BASE64_ENGINE, Engine};
 use std::fs;
 use std::io::Read;
-use base64::{engine::general_purpose::STANDARD as BASE64_ENGINE, Engine};
+use std::path::PathBuf;
 
 #[tauri::command]
 async fn download_wrapper(url: String, name: String) -> Result<(), String> {
@@ -45,15 +45,20 @@ fn read_image_as_base64(path: PathBuf) -> Result<String, tauri::Error> {
 }
 
 #[tauri::command]
-fn write_song(id: String, title: String, artist: String, length: u32, cover: String, date_added: String) -> Result<(), String> {
-    config::write_song(id, title, artist, length, cover, date_added)
-        .map_err(|e| e.to_string())
+fn write_song(
+    id: String,
+    title: String,
+    artist: String,
+    length: u32,
+    cover: String,
+    date_added: String,
+) -> Result<(), String> {
+    config::write_song(id, title, artist, length, cover, date_added).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 fn read_songs() -> Result<config::SongsConfig, String> {
-    config::read_songs()
-        .map_err(|e| e.to_string())
+    config::read_songs().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -67,6 +72,7 @@ fn main() {
     discord_rpc::connect_rpc();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
