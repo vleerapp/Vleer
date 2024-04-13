@@ -46,10 +46,23 @@ export interface MusicSearchResponse {
   items: MusicSearchResponseItem[];
 }
 
+export interface EQSettings {
+  "32": string;
+  "64": string;
+  "125": string;
+  "250": string;
+  "500": string;
+  "1000": string;
+  "2000": string;
+  "4000": string;
+  "8000": string;
+  "16000": string;
+}
+
 export interface PlayerSettings {
   volume: number;
   currentSong: string;
-  eq: Record<string, string>;
+  eq: EQSettings;
 }
 
 export interface UserSettings {

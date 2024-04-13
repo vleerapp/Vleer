@@ -1,5 +1,4 @@
-import { defineStore } from "pinia";
-import type { MusicStore, SongsConfig, Song } from "~/types/definitions";
+import type { MusicStore, SongsConfig, Song } from "~/types/types";
 
 export const useMusicStore = defineStore("musicStore", {
   state: () =>

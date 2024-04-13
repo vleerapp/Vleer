@@ -38,13 +38,13 @@
 <script lang="ts" setup>
 const { $music, $settings } = useNuxtApp();
 
-const settings = await $settings.getSettings()
-
 const paused = ref(true)
 const time = ref("0:00")
 const progress = ref($music.getAudio().currentTime)
 const audio = ref($music.getAudio())
-const volume = ref($music.getAudio().volume * 100);
+const volume = ref($settings.getVolume());
+setVolume()
+console.log($settings.getVolume(), $music.getAudio().volume);
 const coverUrl = ref('/cover.png');
 
 audio.value.addEventListener('pause', () => {
@@ -95,6 +95,7 @@ watch(currentSong, async (newSong, oldSong) => {
 
 function setVolume() {
   $music.setVolume(volume.value);
+  $settings.setVolume(volume.value)
 }
 </script>
 

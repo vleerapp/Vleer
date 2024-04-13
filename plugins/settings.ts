@@ -1,37 +1,34 @@
-import {
-  exists,
-  BaseDirectory,
-  mkdir,
-  writeTextFile,
-  readTextFile,
-} from "@tauri-apps/plugin-fs";
-import { defaultSettings, type PlayerSettings, type UserSettings } from "~/types/definitions";
+import { createPinia } from "pinia";
+import { useSettingsStore } from "~/stores/settings";
+import type { EQSettings } from "~/types/types";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async (nuxtApp) => {
+  const store = useSettingsStore();
+
+  await store.getSettings();
+  
   const settings = {
-    async checkForDefaultFiles() {
-      const configDirExists = await exists("", {
-        baseDir: BaseDirectory.AppConfig,
-      });
-
-      const settingsFileExists = await exists("settings.json", {
-        baseDir: BaseDirectory.AppConfig,
-      });
-
-      if (!configDirExists) {
-        await mkdir("", { baseDir: BaseDirectory.AppConfig });
-      }
-
-      if (!settingsFileExists) {
-        await writeTextFile("settings.json", JSON.stringify(defaultSettings, null, 2), {
-          baseDir: BaseDirectory.AppConfig,
-          createNew: true,
-        });
-      }
+    getVolume(): number {
+      return store.settings.playerSettings.volume;
     },
-    async getSettings() {
-      await this.checkForDefaultFiles();
+    setVolume(volume: number) {
+      store.settings.playerSettings.volume = volume;
+      store.saveSettings()
     },
+    getEq(): EQSettings {
+      return store.settings.playerSettings.eq;
+    },
+    setEq(eq: EQSettings) {
+      store.settings.playerSettings.eq = eq;
+      store.saveSettings()
+    },
+    getCurrentSong(): string {
+      return store.settings.playerSettings.currentSong;
+    },
+    setCurrentSong(song: string) {
+      store.settings.playerSettings.currentSong = song;
+      store.saveSettings()
+    }
   };
 
   return {
