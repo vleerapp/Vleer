@@ -3,17 +3,12 @@
     <p class="element-title">Home</p>
     <div class="index">
       <div class="eq-controls">
+        <div @click="resetEQ" class="reset">Reset</div>
         <div v-for="(freq, index) in frequencies" :key="freq" class="eq-control">
-          <input
-            type="range"
-            min="-12"
-            max="12"
-            step="0.1"
-            v-model.number="eqGains[index]"
-            @input="updateEqGain(index, eqGains[index])"
-          />
+          <input type="range" min="-12" max="12" step="0.1" v-model.number="eqGains[index]"
+            @input="updateEqGain(index, eqGains[index])" />
           <label>{{ freq }} Hz</label>
-          <span>{{ eqGains[index].toFixed(1) }}</span>
+          <span>{{ eqGains[index] }}</span>
         </div>
       </div>
       <div v-for="song in songs" :key="song.id" class="song-item">
@@ -32,21 +27,38 @@
 </template>
 
 <script lang="ts" setup>
-import type { Song } from '~/types/types';
+import { type EQSettings, type Song } from '~/types/types';
 
-const { $music } = useNuxtApp()
+const { $music, $settings } = useNuxtApp()
 
 await $music.init()
 
 const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-const eqGains = ref(new Array(frequencies.length).fill(0));
+const eqGains = ref(new Array(frequencies.length).fill("0"));
 
-function updateEqGain(filterIndex, gain) {
+const eq = $settings.getEq()
+frequencies.forEach((freq, index) => {
+  const freqKey = freq.toString();
+  eqGains.value[index] = eq[freqKey as keyof EQSettings] || 0;
+});
+
+function updateEqGain(filterIndex: number, gain: number) {
   $music.setEqGain(filterIndex, gain);
-  const eqSettingsMap = new Map();
+  const eqSettingsMap = $settings.getEq()
+  eqSettingsMap[frequencies[filterIndex].toString() as keyof EQSettings] = eqGains.value[filterIndex].toString();
+  $settings.setEq(eqSettingsMap as EQSettings)
+}
+
+function resetEQ() {
   frequencies.forEach((freq, index) => {
-    eqSettingsMap.set(freq.toString(), eqGains.value[index]);
+    eqGains.value[index] = 0;
   });
+  const eqSettingsMap = {} as EQSettings;
+  frequencies.forEach((freq, index) => {
+    $music.setEqGain(index, 0);
+    eqSettingsMap[freq.toString() as keyof EQSettings] = "0";
+  });
+  $settings.setEq(eqSettingsMap as EQSettings)
 }
 
 const songs = ref<Song[]>([]);

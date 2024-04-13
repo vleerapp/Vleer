@@ -95,6 +95,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     play() {
       const audio = musicStore.getAudio();
+      settingsStore.settings.playerSettings.currentSong = musicStore.player.currentSongId
+      settingsStore.saveSettings()
       audio.play();
     },
     pause() {
@@ -142,7 +144,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       });
     },
     connectEqFilters(): void {
-      let lastNode = musicStore.player.sourceNode!;
+      let lastNode: AudioNode = musicStore.player.sourceNode!;
       musicStore.player.eqFilters.forEach((filter) => {
         lastNode.connect(filter);
         lastNode = filter;

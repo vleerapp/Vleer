@@ -44,7 +44,6 @@ const progress = ref($music.getAudio().currentTime)
 const audio = ref($music.getAudio())
 const volume = ref($settings.getVolume());
 setVolume()
-console.log($settings.getVolume(), $music.getAudio().volume);
 const coverUrl = ref('/cover.png');
 
 audio.value.addEventListener('pause', () => {

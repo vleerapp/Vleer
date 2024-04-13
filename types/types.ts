@@ -59,6 +59,8 @@ export interface EQSettings {
   "16000": string;
 }
 
+export type EQSettingsKeys = keyof EQSettings;
+
 export type EQ = keyof EQSettings;
 
 export interface PlayerSettings {
