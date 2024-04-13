@@ -37,22 +37,27 @@
 </template>
 
 <script lang="ts" setup>
-import type { Song } from '~/types/music';
-
 const { $music } = useNuxtApp();
 
+const paused = ref(true)
+const audio = ref($music.getAudio())
 const volume = ref($music.getAudio().volume * 100);
-const paused = ref($music.getAudio().paused);
 const coverUrl = ref('/cover.png');
+
+audio.value.addEventListener('pause', () => {
+  paused.value = true
+})
+
+audio.value.addEventListener('play', () => {
+  paused.value = false  
+})
 
 function play() {
   $music.play();
-  paused.value = false;
 }
 
 function pause() {
   $music.pause();
-  paused.value = true;
 }
 
 const currentSong = computed(() => {
@@ -67,7 +72,6 @@ watch(currentSong, async (newSong, oldSong) => {
   if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
-      paused.value = $music.getAudio().paused
     } catch (error) {
       console.error('Error fetching cover URL:', error);
       coverUrl.value = '/cover.png';
