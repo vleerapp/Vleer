@@ -8,10 +8,13 @@ import {
   writeTextFile,
   readTextFile,
 } from "@tauri-apps/plugin-fs";
-import type { Song, SongsConfig } from "~/types/types";
+import type { EQSettings, Song, SongsConfig } from "~/types/types";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const store = useMusicStore();
+  const musicStore = useMusicStore();
+  const settingsStore = useSettingsStore();
+
+  musicStore.player.audio.onplay = () => music.ensureAudioContextAndFilters();
 
   const music = {
     async init() {
@@ -54,32 +57,33 @@ export default defineNuxtPlugin((nuxtApp) => {
         await readTextFile("Vleer/songs.json", { baseDir: BaseDirectory.Audio })
       ) as SongsConfig;
 
-      store.init(songsConfig);
+      musicStore.init(songsConfig);
     },
     getSongs() {
-      return store.songsConfig;
+      return musicStore.songsConfig;
     },
     async addSongData(song: Song) {
       const songsConfig = JSON.parse(
         await readTextFile("Vleer/songs.json", { baseDir: BaseDirectory.Audio })
       ) as SongsConfig;
 
-      store.replaceConfig(songsConfig);
+      musicStore.replaceConfig(songsConfig);
 
-      store.addSongData(song);
+      musicStore.addSongData(song);
 
-      const data = store.getSongsData()
+      const data = musicStore.getSongsData();
 
       await writeTextFile("Vleer/songs.json", JSON.stringify(data, null, 2), {
-        baseDir: BaseDirectory.Audio
+        baseDir: BaseDirectory.Audio,
       });
     },
     async setSong(id: string) {
       const contents = await readFile(`Vleer/Songs/${id}.webm`, {
         baseDir: BaseDirectory.Audio,
       });
-      store.player.currentSongId = id;
-      await store.setSongFromBuffer(contents);
+      musicStore.player.currentSongId = id;
+      await musicStore.setSongFromBuffer(contents);
+      await this.ensureAudioContextAndFilters(); 
     },
     async getCoverURLFromID(id: string): Promise<string> {
       const contents = await readFile(`Vleer/Covers/${id}.png`, {
@@ -90,18 +94,18 @@ export default defineNuxtPlugin((nuxtApp) => {
       return coverObjectURL;
     },
     play() {
-      const audio = store.getAudio();
+      const audio = musicStore.getAudio();
       audio.play();
     },
     pause() {
-      const audio = store.getAudio();
+      const audio = musicStore.getAudio();
       audio.pause();
     },
     getAudio(): HTMLAudioElement {
-      return store.getAudio();
+      return musicStore.getAudio();
     },
     setVolume(volume: number) {
-      const audio = store.getAudio();
+      const audio = musicStore.getAudio();
       if (volume == 0) {
         audio.volume = 0;
         return;
@@ -122,7 +126,62 @@ export default defineNuxtPlugin((nuxtApp) => {
       audio.volume = Math.exp(minv + scale * (volume - minp));
     },
     getCurrentSong() {
-      return store.getSongByID(store.player.currentSongId);
+      return musicStore.getSongByID(musicStore.player.currentSongId);
+    },
+    createEqFilters(): BiquadFilterNode[] {
+      const frequencies = [
+        32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000,
+      ];
+      return frequencies.map((freq) => {
+        const filter = musicStore.player.audioContext!.createBiquadFilter();
+        filter.type = "peaking";
+        filter.frequency.value = freq;
+        filter.Q.value = 1;
+        filter.gain.value = 0;
+        return filter;
+      });
+    },
+    connectEqFilters(): void {
+      let lastNode = musicStore.player.sourceNode!;
+      musicStore.player.eqFilters.forEach((filter) => {
+        lastNode.connect(filter);
+        lastNode = filter;
+      });
+      lastNode.connect(musicStore.player.audioContext!.destination);
+    },
+    async applyEqSettings() {
+      const eqSettings = (await settingsStore.getSettings()).eq;
+      musicStore.player.eqFilters.forEach((filter, index) => {
+        const gain =
+          eqSettings[filter.frequency.value.toString() as keyof EQSettings];
+        if (gain !== undefined) {
+          this.setEqGain(index, parseInt(gain));
+        }
+      });
+    },
+    setEqGain(filterIndex: number, gain: number): void {
+      if (musicStore.player.eqFilters[filterIndex]) {
+        musicStore.player.eqFilters[filterIndex].gain.value = gain;
+
+        this.ensureAudioContextAndFilters();
+      }
+    },
+    async ensureAudioContextAndFilters() {
+      if (!musicStore.player.audioContext) {
+        musicStore.player.audioContext = new AudioContext();
+        musicStore.player.sourceNode =
+          musicStore.player.audioContext.createMediaElementSource(
+            musicStore.player.audio
+          );
+        musicStore.player.eqFilters = this.createEqFilters();
+        this.connectEqFilters();
+        await this.applyEqSettings();
+        if (musicStore.player.audioContext.state === "suspended") {
+          await musicStore.player.audioContext.resume();
+        }
+      } else if (musicStore.player.audioContext.state === "suspended") {
+        await musicStore.player.audioContext.resume();
+      }
     },
   };
 

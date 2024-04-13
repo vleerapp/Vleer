@@ -5,10 +5,7 @@
         <Pages />
         <Library />
       </div>
-      <div class="main element">
-        <p class="element-title">Main</p>
-        <slot />
-      </div>
+      <slot />
     </div>
     <Player />
   </div>

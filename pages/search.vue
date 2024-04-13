@@ -1,15 +1,18 @@
 <template>
-  <div class="search">
-    <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
-      placeholder="Search for songs" />
-    <ul v-if="searchResults.length > 0">
-      <li v-for="(song, index) in searchResults" :class="{ 'first-result': index === 0 }"
-        @click="handleSongClick(song)">
-        <img :src="song.thumbnail" alt="Cover image" />
-        <div>{{ song.title }}</div>
-        <div>{{ song.uploaderName }}</div>
-      </li>
-    </ul>
+  <div class="main element">
+    <p class="element-title">Search</p>
+    <div class="search">
+      <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
+        placeholder="Search for songs" />
+      <ul v-if="searchResults.length > 0">
+        <li v-for="(song, index) in searchResults" :class="{ 'first-result': index === 0 }"
+          @click="handleSongClick(song)">
+          <img :src="song.thumbnail" alt="Cover image" />
+          <div>{{ song.title }}</div>
+          <div>{{ song.uploaderName }}</div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -74,7 +77,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
     }
 
     try {
-      await invoke('download', { url: "https://youtube.com"+song.url, name: videoId+".webm" });
+      await invoke('download', { url: "https://youtube.com" + song.url, name: videoId + ".webm" });
 
       const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
       const data = new Uint8Array(response.data);

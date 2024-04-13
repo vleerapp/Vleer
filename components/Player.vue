@@ -18,9 +18,9 @@
         <IconsRepeat />
       </div>
       <div class="right-controls">
-        <IconsVolumeLoud v-if="volume > 50" />
-        <IconsVolumeMid v-else-if="volume > 0" />
-        <IconsVolumeMute v-else />
+        <IconsVolumeLoud @click="mute" v-if="volume > 50" />
+        <IconsVolumeMid @click="mute" v-else-if="volume > 0" />
+        <IconsVolumeMute @click="mute" v-else />
 
         <input @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
       </div>
@@ -92,6 +92,12 @@ watch(currentSong, async (newSong, oldSong) => {
     coverUrl.value = '/cover.png';
   }
 }, { immediate: true });
+
+function mute() {
+  volume.value = 0
+  $music.setVolume(volume.value);
+  $settings.setVolume(volume.value)
+}
 
 function setVolume() {
   $music.setVolume(volume.value);
