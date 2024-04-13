@@ -31,8 +31,6 @@ import { type EQSettings, type Song } from '~/types/types';
 
 const { $music, $settings } = useNuxtApp()
 
-await $music.init()
-
 const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 const eqGains = ref(new Array(frequencies.length).fill("0"));
 
