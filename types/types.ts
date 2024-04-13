@@ -75,7 +75,7 @@ export interface UserSettings {
 
 export const defaultSettings: UserSettings = {
   playerSettings: {
-    volume: 100,
+    volume: 50,
     currentSong: "",
     eq: {
       "32": "0.0",

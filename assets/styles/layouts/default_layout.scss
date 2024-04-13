@@ -4,7 +4,7 @@
   border: 1px solid v.$foreground;
   position: relative;
   padding: v.$spacing;
-  transition: border .05s;
+  transition: border 0.05s;
 
   .element-title {
     font-size: 14px;
@@ -15,7 +15,7 @@
     padding-inline: 3px;
     color: v.$text-muted;
     user-select: none;
-    transition: color .05s;
+    transition: color 0.05s;
   }
 
   &:hover {
