@@ -58,6 +58,39 @@
         }
       ]
     },
+    {
+      "identifier": "fs:allow-appconfig-read-recursive",
+      "allow": [
+        {
+          "path": "$APPCONFIG"
+        },
+        {
+          "path": "$APPCONFIG/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-appconfig-write-recursive",
+      "allow": [
+        {
+          "path": "$APPCONFIG"
+        },
+        {
+          "path": "$APPCONFIG/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-appconfig-meta-recursive",
+      "allow": [
+        {
+          "path": "$APPCONFIG"
+        },
+        {
+          "path": "$APPCONFIG/**"
+        }
+      ]
+    },
     "fs:default"
   ],
   "platforms": [

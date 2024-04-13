@@ -17,7 +17,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
 import axios from 'axios';
-import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/music';
+import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/definitions';
 const { $music } = useNuxtApp();
 
 const searchTerm = ref("")

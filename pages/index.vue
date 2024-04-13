@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Song } from '~/types/music';
+import type { Song } from '~/types/definitions';
 
 const { $music } = useNuxtApp()
 

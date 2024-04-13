@@ -25,21 +25,24 @@
         <input @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
       </div>
     </div>
-    <!-- <div class="bottom">
-      <div class="progress" @click="seekTo($event)" :style="{ width: progress + '%' }" style="cursor: pointer;">
-        <div class="indicator"></div>
-      </div>
-      <div class="numbers">
-        {{ time }} / {{ duration }}
-      </div>
-    </div> -->
+    <div class="bottom">
+      <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
+      <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
+      <div class="numbers">{{ time }} / {{ audio.duration > 0
+        ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
+        : "0:00" }}</div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const { $music } = useNuxtApp();
+const { $music, $settings } = useNuxtApp();
+
+const settings = await $settings.getSettings()
 
 const paused = ref(true)
+const time = ref("0:00")
+const progress = ref($music.getAudio().currentTime)
 const audio = ref($music.getAudio())
 const volume = ref($music.getAudio().volume * 100);
 const coverUrl = ref('/cover.png');
@@ -49,7 +52,12 @@ audio.value.addEventListener('pause', () => {
 })
 
 audio.value.addEventListener('play', () => {
-  paused.value = false  
+  paused.value = false
+})
+
+audio.value.addEventListener('timeupdate', () => {
+  time.value = audio.value.currentTime > 0 ? new Date(audio.value.currentTime * 1000).toISOString().substr(14, 5) : "0:00";
+  progress.value = (audio.value.currentTime / audio.value.duration) * 100;
 })
 
 function play() {
@@ -58,6 +66,10 @@ function play() {
 
 function pause() {
   $music.pause();
+}
+
+function skipTo() {
+  audio.value.currentTime = (progress.value / 100) * audio.value.duration;
 }
 
 const currentSong = computed(() => {

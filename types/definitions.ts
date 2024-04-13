@@ -15,6 +15,9 @@ export interface SongsConfig {
 export interface Player {
   audio: HTMLAudioElement;
   currentSongId: string;
+  audioContext: AudioContext | null;
+  sourceNode: MediaElementAudioSourceNode | null;
+  eqFilters: BiquadFilterNode[];
 }
 
 export interface MusicStore {
@@ -42,3 +45,32 @@ export interface MusicSearchResponseItem {
 export interface MusicSearchResponse {
   items: MusicSearchResponseItem[];
 }
+
+export interface PlayerSettings {
+  volume: number;
+  currentSong: string;
+  eq: Record<string, string>;
+}
+
+export interface UserSettings {
+  playerSettings: PlayerSettings;
+}
+
+export const defaultSettings: UserSettings = {
+  playerSettings: {
+    volume: 100,
+    currentSong: "",
+    eq: {
+      "32": "0.0",
+      "64": "0.0",
+      "125": "0.0",
+      "250": "0.0",
+      "500": "0.0",
+      "1000": "0.0",
+      "2000": "0.0",
+      "4000": "0.0",
+      "8000": "0.0",
+      "16000": "0.0",
+    },
+  },
+};

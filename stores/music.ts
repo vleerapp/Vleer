@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { MusicStore, SongsConfig, Song } from "~/types/music";
+import type { MusicStore, SongsConfig, Song } from "~/types/definitions";
 
 export const useMusicStore = defineStore("musicStore", {
   state: () =>
@@ -10,6 +10,9 @@ export const useMusicStore = defineStore("musicStore", {
       player: {
         audio: new Audio(),
         currentSongId: "",
+        audioContext: null,
+        sourceNode: null,
+        eqFilters: []
       },
     } as MusicStore),
 

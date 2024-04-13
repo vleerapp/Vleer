@@ -8,7 +8,7 @@ import {
   writeTextFile,
   readTextFile,
 } from "@tauri-apps/plugin-fs";
-import type { Song, SongsConfig } from "~/types/music";
+import type { Song, SongsConfig } from "~/types/definitions";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const pinia = createPinia();

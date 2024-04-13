@@ -15,35 +15,47 @@
   width: 100%;
   height: 36px;
 
-  .info{
+  .info {
     display: flex;
     font-size: 14px;
     gap: 14px;
 
-    .artist{
+    .artist {
       color: v.$text;
     }
   }
 
-  .controls{
+  .controls {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
 
-  .controls, .right-controls{
+  .controls,
+  .right-controls {
     color: #303030;
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  .top:hover .controls, .top:hover .right-controls{
+  .top:hover .controls,
+  .top:hover .right-controls {
     color: v.$text;
   }
 
-  .icon:hover{
+  .icon:hover {
     color: white;
+  }
+
+  .right-controls {
+    .volume {
+      background: repeating-linear-gradient(135deg,
+          #303030,
+          #303030 10px,
+          #505050 10px,
+          #505050 20px);
+    }
   }
 }
 
@@ -54,15 +66,74 @@
   position: relative;
 
   .progress {
+    background-color: transparent;
+    position: absolute;
+    width: 100%;
+    appearance: none;
+    height: 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    border-radius: 0;
+    z-index: 3;
+
+    &::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, v.$accent var(--slider-progress), #000 var(--slider-progress));
+    }
+
+    &::-moz-range-track {
+      background: linear-gradient(to right, v.$accent var(--slider-progress), #000 var(--slider-progress));
+    }
+
+    &::-ms-track {
+      background: linear-gradient(to right, v.$accent var(--slider-progress), #000 var(--slider-progress));
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+
+    &::-moz-range-thumb {
+      appearance: none;
+      background: transparent;
+    }
+
+    &::-ms-thumb {
+      appearance: none;
+      background: transparent;
+    }
+  }
+
+  .progress-indicator {
     background-color: v.$accent;
-    position: relative;
-    
-    .indicator {
+    position: absolute;
+    z-index: 1;
+    height: 16px;
+  }
+
+  .progress:hover {
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
       width: 12px;
       height: 16px;
-      background-color: transparent;
-      position: absolute;
-      right: -12px;
+      background: v.$text-bright;
+      cursor: pointer;
+    }
+
+    &::-moz-range-thumb {
+      appearance: none;
+      width: 12px;
+      height: 16px;
+      background: v.$text-bright;
+      cursor: pointer;
+    }
+
+    &::-ms-thumb {
+      appearance: none;
+      width: 12px;
+      height: 16px;
+      background: v.$text-bright;
+      cursor: pointer;
     }
   }
 
@@ -74,9 +145,11 @@
     transform: translate(-50%, -50%);
     color: v.$accent;
     mix-blend-mode: difference;
+    z-index: 4;
+    pointer-events: none;
   }
 }
 
-.bottom:hover .indicator{
+.bottom:hover .indicator {
   background-color: white;
 }
