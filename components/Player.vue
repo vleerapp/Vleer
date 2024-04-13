@@ -15,7 +15,7 @@
         <IconsPlay v-if="paused" @click="play" />
         <IconsPause v-if="!paused" @click="pause" />
         <IconsSkip />
-        <IconsRepeat />
+        <IconsRepeat @click="toggleLoop" :class="{ 'active': looping }" />
       </div>
       <div class="right-controls">
         <IconsVolumeLoud @click="mute" v-if="volume > 50" />
@@ -23,6 +23,8 @@
         <IconsVolumeMute @click="mute" v-else />
 
         <input @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
+
+        <div class="volume-text">{{ volume }}%</div>
       </div>
     </div>
     <div class="bottom">
@@ -30,7 +32,7 @@
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
       <div class="numbers">{{ time }} / {{ audio.duration > 0
         ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
-        : "0:00" }}</div>
+        : "00:00" }}</div>
     </div>
   </div>
 </template>
@@ -39,7 +41,8 @@
 const { $music, $settings } = useNuxtApp();
 
 const paused = ref(true)
-const time = ref("0:00")
+const looping = ref(false)
+const time = ref("00:00")
 const progress = ref($music.getAudio().currentTime)
 const audio = ref($music.getAudio())
 const volume = ref($settings.getVolume());
@@ -54,8 +57,14 @@ audio.value.addEventListener('play', () => {
   paused.value = false
 })
 
+audio.value.addEventListener('ended', () => {
+  if (looping.value) {
+    $music.play()
+  }
+})
+
 audio.value.addEventListener('timeupdate', () => {
-  time.value = audio.value.currentTime > 0 ? new Date(audio.value.currentTime * 1000).toISOString().substr(14, 5) : "0:00";
+  time.value = audio.value.currentTime > 0 ? new Date(audio.value.currentTime * 1000).toISOString().substr(14, 5) : "00:00";
   progress.value = (audio.value.currentTime / audio.value.duration) * 100;
 })
 
@@ -69,6 +78,10 @@ function pause() {
 
 function skipTo() {
   audio.value.currentTime = (progress.value / 100) * audio.value.duration;
+}
+
+function toggleLoop() {
+  looping.value = !looping.value
 }
 
 const currentSong = computed(() => {

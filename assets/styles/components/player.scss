@@ -45,7 +45,11 @@
   }
 
   .icon:hover {
-    color: white;
+    color: #999999;
+  }
+
+  .active {
+    color: white !important;
   }
 
   .right-controls {
@@ -55,6 +59,11 @@
           #303030 10px,
           #505050 10px,
           #505050 20px);
+    }
+
+    .volume-text {
+      width: 40px;
+      text-align: end;
     }
   }
 }
