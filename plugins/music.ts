@@ -78,12 +78,26 @@ export default defineNuxtPlugin((nuxtApp) => {
       });
     },
     async setSong(id: string) {
-      const contents = await readFile(`Vleer/Songs/${id}.webm`, {
+      if (
+        await exists(`Vleer/Songs/${id}.webm`, {
+          baseDir: BaseDirectory.Audio,
+        })
+      ) {
+        const contents = await readFile(`Vleer/Songs/${id}.webm`, {
+          baseDir: BaseDirectory.Audio,
+        });
+        musicStore.player.currentSongId = id;
+        await musicStore.setSongFromBuffer(contents);
+        await this.ensureAudioContextAndFilters();
+      } else {
+        settingsStore.settings.playerSettings.currentSong = "";
+        await settingsStore.saveSettings();
+      }
+    },
+    async exists(id: string): Promise<boolean> {
+      return await exists(`Vleer/Songs/${id}.webm`, {
         baseDir: BaseDirectory.Audio,
-      });
-      musicStore.player.currentSongId = id;
-      await musicStore.setSongFromBuffer(contents);
-      await this.ensureAudioContextAndFilters();
+      })
     },
     async getCoverURLFromID(id: string): Promise<string> {
       const contents = await readFile(`Vleer/Covers/${id}.png`, {
@@ -136,8 +150,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 
       audio.volume = Math.exp(minv + scale * (volume - minp));
     },
-    getCurrentSong() {
-      return musicStore.getSongByID(musicStore.player.currentSongId);
+    getCurrentSong(): Song | null {
+      const song = musicStore.getSongByID(musicStore.player.currentSongId)
+      if (song) {
+        return song;
+      }
+      return null;
     },
     createEqFilters(): BiquadFilterNode[] {
       const frequencies = [

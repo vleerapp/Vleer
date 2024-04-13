@@ -43,8 +43,8 @@ export const useMusicStore = defineStore("musicStore", {
     getAudio(): HTMLAudioElement {
       return this.player.audio;
     },
-    getSongByID(id: string): Song {
-      return this.songsConfig.songs[id];
-    },
+    getSongByID(id: string): Song | null {
+      return this.songsConfig?.songs?.[id] ?? null;
+    }
   },
 });
