@@ -4,20 +4,33 @@ use std::sync::Mutex;
 use std::thread;
 
 lazy_static! {
-    static ref DRPC_CLIENT: Mutex<DiscordIpcClient> =
-        Mutex::new(DiscordIpcClient::new("1194990403963858984"));
+    static ref DRPC_CLIENT: Mutex<Option<DiscordIpcClient>> =
+        Mutex::new(Some(DiscordIpcClient::new("1194990403963858984")));
 }
 
 #[tauri::command]
-pub fn connect_rpc() {
+pub fn connect_rpc() -> Result<(), String> {
     let mut drpc = DRPC_CLIENT.lock().unwrap();
-    drpc.connect().expect("Failed to connect to Discord IPC");
+    if let Some(ref mut client) = *drpc {
+        match client.connect() {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                Err(format!("Failed to connect to Discord IPC: {}", e))
+            }
+        }
+    } else {
+        Err("Discord IPC client not initialized".to_string())
+    }
 }
 
 #[tauri::command]
-pub fn clear_activity() {
+pub fn clear_activity() -> Result<(), String> {
     let mut drpc = DRPC_CLIENT.lock().unwrap();
-    drpc.clear_activity().expect("Failed to clear activity");
+    if let Some(ref mut client) = *drpc {
+        client.clear_activity().map_err(|e| e.to_string())
+    } else {
+        Err("Discord IPC client not initialized".to_string())
+    }
 }
 
 #[tauri::command]
@@ -26,19 +39,22 @@ pub fn update_activity(
     details: String,
     large_image: String,
     large_image_text: String,
-) {
+) -> Result<(), String> {
     thread::spawn(move || {
         let mut drpc = DRPC_CLIENT.lock().unwrap();
+        if let Some(ref mut client) = *drpc {
+            let activity = activity::Activity::new()
+                .state(&state)
+                .details(&details)
+                .assets(
+                    activity::Assets::new()
+                        .large_image(&large_image)
+                        .large_text(&large_image_text),
+                );
 
-        let activity = activity::Activity::new()
-            .state(&state)
-            .details(&details)
-            .assets(
-                activity::Assets::new()
-                    .large_image(&large_image)
-                    .large_text(&large_image_text),
-            );
-
-        drpc.set_activity(activity).expect("Failed to set activity");
+            client.set_activity(activity).expect("Failed to set activity");
+        }
     });
+    Ok(())
 }
+

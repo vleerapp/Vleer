@@ -42,9 +42,10 @@ async fn download(url: String, name: String) -> Result<(), TauriError> {
 
 fn main() {
     env_logger::init();
-    discord_rpc::connect_rpc();
+    let _ = discord_rpc::connect_rpc();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,

@@ -6,10 +6,14 @@
 </template>
 
 <script lang="ts" setup>
-const { $music, $settings } = useNuxtApp();
+import { register } from '@tauri-apps/plugin-global-shortcut';
+const { $music } = useNuxtApp();
 
-const eq = $settings.getEq()
 await $music.init();
+
+await register('KeyS', () => {
+  console.log('Shortcut triggered');
+});
 </script>
 
 <style lang="scss">
