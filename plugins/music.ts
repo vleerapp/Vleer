@@ -83,7 +83,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       });
       musicStore.player.currentSongId = id;
       await musicStore.setSongFromBuffer(contents);
-      await this.ensureAudioContextAndFilters(); 
+      await this.ensureAudioContextAndFilters();
     },
     async getCoverURLFromID(id: string): Promise<string> {
       const contents = await readFile(`Vleer/Covers/${id}.png`, {
@@ -95,13 +95,22 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     play() {
       const audio = musicStore.getAudio();
-      settingsStore.settings.playerSettings.currentSong = musicStore.player.currentSongId
-      settingsStore.saveSettings()
+      settingsStore.settings.playerSettings.currentSong =
+        musicStore.player.currentSongId;
+      settingsStore.saveSettings();
       audio.play();
     },
     pause() {
       const audio = musicStore.getAudio();
       audio.pause();
+    },
+    playPause() {
+      const audio = musicStore.getAudio();
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
     },
     getAudio(): HTMLAudioElement {
       return musicStore.getAudio();
