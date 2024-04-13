@@ -19,6 +19,15 @@ export const useMusicStore = defineStore("musicStore", {
       this.player.audio.volume = 1;
       this.player.audio.preload = "auto";
     },
+    replaceConfig(songs: SongsConfig) {
+      this.songsConfig = songs
+    },
+    addSongData(song: Song) {
+      this.songsConfig.songs[song.id] = song;
+    },
+    getSongsData(): SongsConfig {
+      return this.songsConfig;
+    },
     async setSongFromBuffer(buffer: any) {
       const blob = new Blob([buffer], { type: "audio/webm" });
       const url = URL.createObjectURL(blob);

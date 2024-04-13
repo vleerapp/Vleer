@@ -21,3 +21,24 @@ export interface MusicStore {
   songsConfig: SongsConfig;
   player: Player;
 }
+
+export interface MusicSearchResponseItem {
+  url: string;
+  type: string;
+  title: string;
+  thumbnail: string;
+  uploaderName: string;
+  uploaderUrl: string;
+  uploaderAvatar: any;
+  uploadedDate: any;
+  shortDescription: any;
+  duration: number;
+  views: number;
+  uploaded: number;
+  uploaderVerified: boolean;
+  isShort: boolean;
+}
+
+export interface MusicSearchResponse {
+  items: MusicSearchResponseItem[];
+}

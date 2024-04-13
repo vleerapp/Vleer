@@ -8,7 +8,7 @@ import {
   writeTextFile,
   readTextFile,
 } from "@tauri-apps/plugin-fs";
-import type { SongsConfig } from "~/types/music";
+import type { Song, SongsConfig } from "~/types/music";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const pinia = createPinia();
@@ -21,12 +21,29 @@ export default defineNuxtPlugin((nuxtApp) => {
       const baseDirExists = await exists("Vleer", {
         baseDir: BaseDirectory.Audio,
       });
+
+      const songsDirExists = await exists("Vleer/Songs", {
+        baseDir: BaseDirectory.Audio,
+      });
+
+      const coverDirExists = await exists("Vleer/Covers", {
+        baseDir: BaseDirectory.Audio,
+      });
+
       const songJsonExists = await exists("Vleer/songs.json", {
         baseDir: BaseDirectory.Audio,
       });
 
       if (!baseDirExists) {
         await mkdir("Vleer", { baseDir: BaseDirectory.Audio });
+      }
+
+      if (!songsDirExists) {
+        await mkdir("Vleer/Songs", { baseDir: BaseDirectory.Audio });
+      }
+
+      if (!coverDirExists) {
+        await mkdir("Vleer/Covers", { baseDir: BaseDirectory.Audio });
       }
 
       if (!songJsonExists) {
@@ -39,10 +56,26 @@ export default defineNuxtPlugin((nuxtApp) => {
       const songsConfig = JSON.parse(
         await readTextFile("Vleer/songs.json", { baseDir: BaseDirectory.Audio })
       ) as SongsConfig;
+
       store.init(songsConfig);
     },
     getSongs() {
       return store.songsConfig;
+    },
+    async addSongData(song: Song) {
+      const songsConfig = JSON.parse(
+        await readTextFile("Vleer/songs.json", { baseDir: BaseDirectory.Audio })
+      ) as SongsConfig;
+
+      store.replaceConfig(songsConfig);
+
+      store.addSongData(song);
+
+      const data = store.getSongsData()
+
+      await writeTextFile("Vleer/songs.json", JSON.stringify(data, null, 2), {
+        baseDir: BaseDirectory.Audio
+      });
     },
     async setSong(id: string) {
       const contents = await readFile(`Vleer/Songs/${id}.webm`, {
@@ -93,7 +126,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     getCurrentSong() {
       return store.getSongByID(store.player.currentSongId);
-    }
+    },
   };
 
   return {
