@@ -46,11 +46,19 @@ export default defineNuxtPlugin((nuxtApp) => {
         await mkdir("Vleer/Covers", { baseDir: BaseDirectory.Audio });
       }
 
+      const defaultJson = {
+        songs: {},
+      };
+
       if (!songJsonExists) {
-        await writeTextFile("Vleer/songs.json", "{}", {
-          baseDir: BaseDirectory.Audio,
-          createNew: true,
-        });
+        await writeTextFile(
+          "Vleer/songs.json",
+          JSON.stringify(defaultJson, null, 2),
+          {
+            baseDir: BaseDirectory.Audio,
+            createNew: true,
+          }
+        );
       }
 
       const songsConfig = JSON.parse(
@@ -97,7 +105,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     async exists(id: string): Promise<boolean> {
       return await exists(`Vleer/Songs/${id}.webm`, {
         baseDir: BaseDirectory.Audio,
-      })
+      });
     },
     async getCoverURLFromID(id: string): Promise<string> {
       const contents = await readFile(`Vleer/Covers/${id}.png`, {
@@ -151,7 +159,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       audio.volume = Math.exp(minv + scale * (volume - minp));
     },
     getCurrentSong(): Song | null {
-      const song = musicStore.getSongByID(musicStore.player.currentSongId)
+      const song = musicStore.getSongByID(musicStore.player.currentSongId);
       if (song) {
         return song;
       }
