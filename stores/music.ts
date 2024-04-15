@@ -39,15 +39,15 @@ export const useMusicStore = defineStore("musicStore", {
     async setSongFromBuffer(buffer: any) {
       const blob = new Blob([buffer], { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
-      this.player.audio.currentTime = 0;
-      this.player.audio.src = url;
-      await this.player.audio.load();
-      this.player.audio.addEventListener("error", (e) => {
+      this.player.audio!.currentTime = 0;
+      this.player.audio!.src = url;
+      await this.player.audio!.load();
+      this.player.audio!.addEventListener("error", (e) => {
         console.error("Error with audio element:", e);
       });
     },
     getAudio(): HTMLAudioElement {
-      return this.player.audio;
+      return this.player.audio!;
     },
     getSongByID(id: string): Song | null {
       return this.songsConfig?.songs?.[id] ?? null;

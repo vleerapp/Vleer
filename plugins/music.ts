@@ -14,6 +14,14 @@ export default defineNuxtPlugin((nuxtApp) => {
   const musicStore = useMusicStore();
   const settingsStore = useSettingsStore();
 
+  musicStore.player.audio.addEventListener("error", (e) => {
+    const mediaError = e.target.error;
+    if (mediaError) {
+      console.error("Error with audio element:", mediaError);
+      console.error("MediaError code:", mediaError.code);
+    }
+  });
+
   musicStore.player.audio.onplay = () => music.ensureAudioContextAndFilters();
 
   const music = {
@@ -210,7 +218,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         musicStore.player.audioContext = new AudioContext();
         musicStore.player.sourceNode =
           musicStore.player.audioContext.createMediaElementSource(
-            musicStore.player.audio
+            musicStore.player.audio!
           );
         musicStore.player.eqFilters = this.createEqFilters();
         this.connectEqFilters();
