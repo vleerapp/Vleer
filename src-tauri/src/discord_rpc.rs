@@ -12,7 +12,6 @@ lazy_static! {
 
 fn is_discord_rpc_disabled() -> bool {
     let value = env::var("disable_discord_rpc").unwrap_or_else(|_| "not set".to_string());
-    println!("disable_discord_rpc is set to: {}", value);
     value == "1"
 }
 
