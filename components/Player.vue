@@ -23,7 +23,8 @@
         <IconsVolumeMute @click="mute" v-else />
 
         <div class="bar">
-          <input class="range" @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
+          <input class="range" @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name=""
+            id="">
           <div class="volume-indicator" :style="{ width: volume + '%' }"></div>
         </div>
 
@@ -34,8 +35,8 @@
       <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
       <div class="numbers">{{ time }} / {{ audio.duration > 0
-        ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
-        : "00:00" }}</div>
+          ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
+          : "00:00" }}</div>
     </div>
   </div>
 </template>
@@ -56,25 +57,37 @@ const coverUrl = ref('/cover.png');
 
 audio.value.addEventListener('pause', async () => {
   paused.value = true
-  await invoke("clear_activity")
+  try {
+    await invoke("clear_activity")
+  } catch (error) {
+    console.error("Failed to update Discord activity:", error);
+  }
 })
 
 audio.value.addEventListener('play', async () => {
   paused.value = false
-  await invoke("update_activity", {
-    state: currentSong.value.artist,
-    details: currentSong.value.title,
-    largeImage: currentSong.value.cover,
-    largeImageText: currentSong.value.title,
-    youtube_url: "https://youtube.com/watch?v=" + currentSong.value.id
-  });
+  try {
+    await invoke("update_activity", {
+      state: currentSong.value.artist,
+      details: currentSong.value.title,
+      largeImage: currentSong.value.cover,
+      largeImageText: currentSong.value.title,
+      youtube_url: "https://youtube.com/watch?v=" + currentSong.value.id
+    });
+  } catch (error) {
+    console.error("Failed to update Discord activity:", error);
+  }
 })
 
 audio.value.addEventListener('ended', async () => {
   if (looping.value) {
     $music.play()
   }
-  await invoke("clear_activity")
+  try {
+    await invoke("clear_activity")
+  } catch (error) {
+    console.error("Failed to update Discord activity:", error);
+  }
 })
 
 audio.value.addEventListener('timeupdate', () => {
@@ -88,7 +101,11 @@ function play() {
 
 async function pause() {
   $music.pause();
-  await invoke("clear_activity")
+  try {
+    await invoke("clear_activity")
+  } catch (error) {
+    console.error("Failed to update Discord activity:", error);
+  }
 }
 
 function skipTo() {

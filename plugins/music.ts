@@ -161,7 +161,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       const minp = 0;
       const maxp = 100;
 
-      const minv = Math.log(0.01);
+      const minv = Math.log(0.001);
       const maxv = Math.log(1);
 
       const scale = (maxv - minv) / (maxp - minp);
