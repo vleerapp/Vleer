@@ -71,7 +71,8 @@ const filteredSongs = computed(() => {
           new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
         );
       }
-    });
+    })
+    .slice(0, 30);
 });
 
 async function play(id: string) {
