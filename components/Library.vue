@@ -1,6 +1,6 @@
 <template>
+  <p class="library-title">Library</p>
   <div class="library element">
-    <p class="element-title">Library</p>
     <div class="search-container">
       <IconsSearch />
       <input class="input" spellcheck="false" v-model="searchQuery" />
@@ -79,8 +79,8 @@ async function play(id: string) {
   $music.play();
 }
 
-function truncate(text: string, length: number = 40) {
-  return text.length > length ? text.substring(0, length - 3) + "..." : text;
+function truncate(text: string, length: number = 45) {
+  return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
 }
 </script>
 
