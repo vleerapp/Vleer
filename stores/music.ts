@@ -39,6 +39,7 @@ export const useMusicStore = defineStore("musicStore", {
     async setSongFromBuffer(buffer: any) {
       const blob = new Blob([buffer], { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
+      console.log(url);
       this.player.audio!.currentTime = 0;
       this.player.audio!.src = url;
       await this.player.audio!.load();
