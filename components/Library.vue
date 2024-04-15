@@ -2,7 +2,7 @@
   <div class="library element">
     <p class="element-title">Library</p>
     <div class="search-container">
-      <IconsSearch/>
+      <IconsSearch />
       <input class="input" spellcheck="false" v-model="searchQuery" />
     </div>
     <div class="items">
@@ -24,10 +24,11 @@
 <script lang="ts" setup>
 import { type Song } from "~/types/types";
 import { computed, ref, onMounted, watch } from "vue";
-import { useMusicStore } from "~/stores/music"; 
+import { useMusicStore } from "~/stores/music";
+import { invoke } from "@tauri-apps/api/core";
 
 const { $music } = useNuxtApp();
-const musicStore = useMusicStore(); 
+const musicStore = useMusicStore();
 
 const songs = ref<Song[]>([]);
 const searchQuery = ref("");
@@ -47,9 +48,12 @@ const loadSongs = async () => {
   songs.value = songArray;
 };
 
-watch(() => musicStore.lastUpdated, async () => {
-  await loadSongs();
-});
+watch(
+  () => musicStore.lastUpdated,
+  async () => {
+    await loadSongs();
+  }
+);
 
 const filteredSongs = computed(() => {
   return songs.value
@@ -58,9 +62,14 @@ const filteredSongs = computed(() => {
     )
     .sort((a, b) => {
       if (searchQuery.value) {
-        return a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) - b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase());
+        return (
+          a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) -
+          b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase())
+        );
       } else {
-        return new Date(b.date_added).getTime() - new Date(a.date_added).getTime();
+        return (
+          new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
+        );
       }
     });
 });

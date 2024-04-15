@@ -72,7 +72,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       title: song.title,
       artist: song.uploaderName,
       length: song.duration,
-      cover: `/Covers/${videoId}.png`,
+      cover: song.thumbnail.replace("w120-h120", "w500-h500"),
       date_added: formatDate(new Date())
     }
 

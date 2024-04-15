@@ -31,13 +31,15 @@
       <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
       <div class="numbers">{{ time }} / {{ audio.duration > 0
-        ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
-        : "00:00" }}</div>
+          ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
+          : "00:00" }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { invoke } from "@tauri-apps/api/core";
+
 const { $music, $settings } = useNuxtApp();
 
 const paused = ref(true)
@@ -49,18 +51,20 @@ const volume = ref($settings.getVolume());
 setVolume()
 const coverUrl = ref('/cover.png');
 
-audio.value.addEventListener('pause', () => {
+audio.value.addEventListener('pause', async () => {
   paused.value = true
+  await invoke("clear_activity")
 })
 
 audio.value.addEventListener('play', () => {
   paused.value = false
 })
 
-audio.value.addEventListener('ended', () => {
+audio.value.addEventListener('ended', async () => {
   if (looping.value) {
     $music.play()
   }
+  await invoke("clear_activity")
 })
 
 audio.value.addEventListener('timeupdate', () => {
@@ -72,8 +76,9 @@ function play() {
   $music.play();
 }
 
-function pause() {
+async function pause() {
   $music.pause();
+  await invoke("clear_activity")
 }
 
 function skipTo() {
@@ -96,6 +101,14 @@ watch(currentSong, async (newSong, oldSong) => {
   if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
+
+      await invoke("update_activity", {
+        state: newSong.artist,
+        details: newSong.title,
+        largeImage: newSong.cover,
+        largeImageText: newSong.title,
+      });
+
     } catch (error) {
       console.error('Error fetching cover URL:', error);
       coverUrl.value = '/cover.png';

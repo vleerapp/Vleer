@@ -122,7 +122,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       settingsStore.settings.playerSettings.currentSong =
         musicStore.player.currentSongId;
       settingsStore.saveSettings();
-      audio.play();
+      audio.play(); 
     },
     pause() {
       const audio = musicStore.getAudio();
