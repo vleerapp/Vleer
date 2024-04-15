@@ -39,17 +39,16 @@
     gap: 10px;
   }
 
-  .top:hover .controls,
-  .top:hover .right-controls {
-    color: v.$text;
+  .controls:hover .icon {
+    color: #b3b3b3;
   }
 
-  .icon:hover {
-    color: #999999;
+  .icon:hover{
+    color: v.$text-bright !important;
   }
 
   .active {
-    color: white !important;
+    color: v.$text !important;
   }
 
   .right-controls {
@@ -65,6 +64,10 @@
       width: 40px;
       text-align: end;
     }
+  }
+
+  .right-controls:hover{
+    color: v.$text;
   }
 }
 
@@ -84,18 +87,6 @@
     cursor: pointer;
     border-radius: 0;
     z-index: 3;
-
-    &::-webkit-slider-runnable-track {
-      background: linear-gradient(to right, v.$accent var(--slider-progress), #000 var(--slider-progress));
-    }
-
-    &::-moz-range-track {
-      background: linear-gradient(to right, v.$accent var(--slider-progress), #000 var(--slider-progress));
-    }
-
-    &::-ms-track {
-      background: linear-gradient(to right, v.$accent var(--slider-progress), #000 var(--slider-progress));
-    }
 
     &::-webkit-slider-thumb {
       -webkit-appearance: none;

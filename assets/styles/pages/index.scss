@@ -1,1 +1,10 @@
 @use '~/assets/styles/variables' as v;
+
+.element {
+  padding: 0 !important;
+}
+
+.index{
+  padding: 24px;
+  padding-bottom: 0;
+}

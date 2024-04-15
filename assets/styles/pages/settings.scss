@@ -1,0 +1,124 @@
+@use '~/assets/styles/variables' as v;
+
+.element {
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center;
+}
+
+.settings {
+  padding-bottom: 0;
+  padding-top: 64px;
+  gap: v.$spacing;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  text-align: left;
+  padding-inline: 24px;
+}
+
+.equalizer {
+  background-color: v.$element;
+  color: v.$text;
+  padding: 38px;
+  display: flex;
+  gap: 32px;
+  width: 866px;
+  font-size: 14px;
+  height: 318px;
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 94px;
+  }
+
+  .sliders {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+    .freq {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      width: 48px;
+      position: relative;
+
+      .gain {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+        appearance: none;
+        background-color: transparent;
+        color: v.$text;
+        outline: none;
+        border: none;
+        width: 48px;
+        text-align: center;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+      }
+
+      .range {
+        writing-mode: vertical-lr;
+        appearance: none;
+        width: 2px;
+        height: 100% !important;
+        background: transparent;
+        border-radius: 0;
+        cursor: pointer;
+        background-image: linear-gradient(to bottom, v.$accent 4px, transparent 1px);
+        background-size: 2px 10px;
+        background-repeat: repeat-y;
+
+        &::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          background: v.$text-bright;
+          border: none;
+          width: 16px;
+          height: 12px;
+        }
+
+        &::-moz-range-thumb {
+          appearance: none;
+          background: v.$text-bright;
+          border: none;
+          width: 16px;
+          height: 12px;
+        }
+
+        &::-ms-thumb {
+          appearance: none;
+          background: v.$text-bright;
+          border: none;
+          width: 16px;
+          height: 12px;
+        }
+      }
+    }
+
+    .freq:hover {
+      .range::-webkit-slider-thumb {
+        background: darken(v.$text-bright, 20%);
+      }
+
+      .range::-moz-range-thumb {
+        background: darken(v.$text-bright, 20%);
+      }
+
+      .range::-ms-thumb {
+        background: darken(v.$text-bright, 20%);
+      }
+    }
+  }
+}

@@ -2,17 +2,15 @@
   <div class="main element">
     <p class="element-title">Home</p>
     <div class="index">
-      <div class="eq-controls">
-        <div @click="resetEQ" class="reset">Reset</div>
-        <div v-for="(freq, index) in frequencies" :key="freq" class="eq-control">
-          <input type="range" min="-12" max="12" step="0.1" v-model.number="eqGains[index]"
-            @input="updateEqGain(index, eqGains[index])" />
-          <label>{{ freq }} Hz</label>
-          <span>{{ eqGains[index] }}</span>
-        </div>
-      </div>
+      <pre class="ascii-art">
+                __                        
+ _      _____  / /________  ____ ___  ___ 
+| | /| / / _ \/ / ___/ __ \/ __ `__ \/ _ \
+| |/ |/ /  __/ / /__/ /_/ / / / / / /  __/
+|__/|__/\___/_/\___/\____/_/ /_/ /_/\___/ 
+      </pre>
       <div v-for="song in songs" :key="song.id" class="song-item">
-        <img :src="song.coverURL" :alt="song.title" class="song-cover">
+        <img :src="song.coverURL" :alt="song.title" class="song-cover" />
         <p v-if="!song.id" class="error">Song ID is missing</p>
         <div class="song-info">
           <h2>{{ song.title }}</h2>
@@ -27,58 +25,32 @@
 </template>
 
 <script lang="ts" setup>
-import { type EQSettings, type Song } from '~/types/types';
+import { type Song } from "~/types/types";
 
-const { $music, $settings } = useNuxtApp()
-
-const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-const eqGains = ref(new Array(frequencies.length).fill("0"));
-
-const eq = $settings.getEq()
-frequencies.forEach((freq, index) => {
-  const freqKey = freq.toString();
-  eqGains.value[index] = eq[freqKey as keyof EQSettings] || 0;
-});
-
-function updateEqGain(filterIndex: number, gain: number) {
-  $music.setEqGain(filterIndex, gain);
-  const eqSettingsMap = $settings.getEq()
-  eqSettingsMap[frequencies[filterIndex].toString() as keyof EQSettings] = eqGains.value[filterIndex].toString();
-  $settings.setEq(eqSettingsMap as EQSettings)
-}
-
-function resetEQ() {
-  frequencies.forEach((freq, index) => {
-    eqGains.value[index] = 0;
-  });
-  const eqSettingsMap = {} as EQSettings;
-  frequencies.forEach((freq, index) => {
-    $music.setEqGain(index, 0);
-    eqSettingsMap[freq.toString() as keyof EQSettings] = "0";
-  });
-  $settings.setEq(eqSettingsMap as EQSettings)
-}
+const { $music } = useNuxtApp();
 
 const songs = ref<Song[]>([]);
 
 onMounted(async () => {
   const loadedSongs = await $music.getSongs();
   const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(songArray.map(async song => {
-    song.coverURL = await $music.getCoverURLFromID(song.id);
-  }));
+  await Promise.all(
+    songArray.map(async (song) => {
+      song.coverURL = await $music.getCoverURLFromID(song.id);
+    })
+  );
   songs.value = songArray;
 });
 
 async function play(id: string) {
-  await $music.setSong(id)
-  $music.play()
+  await $music.setSong(id);
+  $music.play();
 }
 
 function formatDuration(duration: number) {
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 }
 
 function formatDate(dateString: string) {
@@ -86,12 +58,14 @@ function formatDate(dateString: string) {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${day < 10 ? '0' : ''}${day}.${month < 10 ? '0' : ''}${month}.${year}`;
+  return `${day < 10 ? "0" : ""}${day}.${
+    month < 10 ? "0" : ""
+  }${month}.${year}`;
 }
 </script>
 
-<style lang="scss">
-@import '~/assets/styles/pages/index.scss';
+<style scoped lang="scss">
+@import "~/assets/styles/pages/index.scss";
 
 .song-item {
   display: flex;

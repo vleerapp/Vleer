@@ -1,7 +1,7 @@
 <template>
   <div class="library element">
     <p class="element-title">Library</p>
-    <p class="link">
+    <!-- <p class="link">
       <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
         xmlns="http://www.w3.org/2000/svg">
         <g id="Icon">
@@ -11,7 +11,7 @@
         </g>
       </svg>
       Your Library
-    </p>
+    </p> -->
     <div class="search-container">
       <svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
         xmlns="http://www.w3.org/2000/svg">
@@ -24,7 +24,6 @@
       </svg>
       <input class="input" spellcheck="false">
     </div>
-    </input>
   </div>
 </template>
 
