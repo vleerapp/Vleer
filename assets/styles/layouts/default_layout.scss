@@ -18,19 +18,6 @@
     transition: color v.$transition-time;
   }
 
-  +.library-title {
-    font-size: 14px;
-    position: absolute;
-    top: 155px;
-    z-index: 100;
-    left: 21px;
-    background-color: v.$background;
-    padding-inline: 3px;
-    color: v.$text-muted;
-    user-select: none;
-    transition: color v.$transition-time;
-  }
-
   &:hover {
     border-color: v.$accent;
   }
@@ -45,38 +32,39 @@
   height: 100%;
   overflow: hidden;
 
-  display: flex;
-  flex-direction: column;
   padding: v.$spacing;
   padding-top: v.$titlebar-height + 5px;
-  gap: v.$spacing;
+  position: relative;
 
-  .content {
-    display: flex;
-    gap: v.$spacing;
-    flex: auto;
-    height: calc(100vh - (v.$playersize + (v.$spacing * 2) + v.$titlebar-height + 5px));
+  .pages {
+    position: fixed;
+    top: v.$titlebar-height + 5px;
+    left: v.$spacing;
+    width: 300px;
+    height: 116px;
+  }
 
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: v.$spacing;
-      height: 100%;
-      width: v.$sidebar-width;
+  .library {
+    position: fixed;
+    top: v.$titlebar-height + 5px + 116px + v.$spacing;
+    left: v.$spacing;
+    width: 300px;
+    height: calc(100vh - (v.$titlebar-height + 5px + (v.$spacing * 3) + v.$playersize + 116px));
+  }
 
-      &:has(.library:hover) .library-title {
-        color: v.$accent;
-      }
-    }
+  .main {
+    position: fixed;
+    top: v.$titlebar-height + 5px;
+    left: 300px + (v.$spacing * 2);
+    width: calc(100vw - (v.$spacing * 3 + 300px));
+    height: calc(100vh - (v.$titlebar-height + 5px + (v.$spacing * 2) + v.$playersize));
+  }
 
-    .main {
-      width: 100%;
-      height: 100%;
-
-      > div {
-        height: 100%;
-        overflow: auto;
-      }
-    }
+  .player {
+    position: fixed;
+    bottom: v.$spacing;
+    left: v.$spacing;
+    width: calc(100vw - (v.$spacing * 2));
+    height: v.$playersize;
   }
 }

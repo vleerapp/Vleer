@@ -1,6 +1,6 @@
 <template>
-  <p class="library-title">Library</p>
   <div class="library element">
+    <p class="element-title">Library</p>
     <div class="search-container">
       <IconsSearch />
       <input class="input" spellcheck="false" v-model="searchQuery" />

@@ -1,12 +1,8 @@
 <template>
   <div class="default-layout">
-    <div class="content">
-      <div class="sidebar">
-        <Pages />
-        <Library />
-      </div>
-      <slot />
-    </div>
+    <Pages />
+    <Library />
+    <slot />
     <Player />
   </div>
 </template>

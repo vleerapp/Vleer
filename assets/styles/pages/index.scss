@@ -1,4 +1,4 @@
-@use '~/assets/styles/variables' as v;
+@use "~/assets/styles/variables" as v;
 
 .element {
   padding: 0 !important;
@@ -7,8 +7,11 @@
 .index {
   padding: 24px;
   padding-top: 48px;
-  padding-bottom: 0;
   font-size: 14px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .ascii {
@@ -23,34 +26,38 @@
   gap: 14px;
 }
 
-.recently-played .cards {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-
-  .song {
+.recently-played {
+  .cards {
+    padding-bottom: 10px;
+    overflow-y: auto;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    cursor: pointer;
+    flex-direction: row;
+    gap: 16px;
 
-    .info {
-      p {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
+    .song {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+
+      .info {
+        p {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
+        }
+
+        .artist {
+          color: v.$text;
+        }
       }
 
-      .artist{
-        color: v.$text;
+      .cover {
+        flex: 1;
+        max-width: 240px;
+        min-width: 150px;
       }
-    }
-
-    .cover {
-      flex: 1;
-      max-width: 240px;
-      min-width: 150px;
     }
   }
 }
