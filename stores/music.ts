@@ -1,19 +1,23 @@
+import {
+  BaseDirectory,
+  writeTextFile,
+} from "@tauri-apps/plugin-fs";
 import type { MusicStore, SongsConfig, Song } from "~/types/types";
 
 export const useMusicStore = defineStore("musicStore", {
   state: () =>
-    ({
-      songsConfig: {
-        songs: {},
-      },
-      player: {
-        audio: new Audio(),
-        currentSongId: "",
-        audioContext: null,
-        sourceNode: null,
-        eqFilters: []
-      },
-    } as MusicStore),
+  ({
+    songsConfig: {
+      songs: {},
+    },
+    player: {
+      audio: new Audio(),
+      currentSongId: "",
+      audioContext: null,
+      sourceNode: null,
+      eqFilters: []
+    },
+  } as MusicStore),
 
   actions: {
     init(songs: SongsConfig) {
@@ -45,6 +49,14 @@ export const useMusicStore = defineStore("musicStore", {
     },
     getSongByID(id: string): Song | null {
       return this.songsConfig?.songs?.[id] ?? null;
-    }
+    },
+    updateLastPlayed(songId: string, lastPlayed: string) {
+      if (this.songsConfig.songs[songId]) {
+        this.songsConfig.songs[songId].lastPlayed = lastPlayed;
+        writeTextFile("Vleer/songs.json", JSON.stringify(this.songsConfig, null, 2), {
+          baseDir: BaseDirectory.Audio,
+        });
+      }
+    },
   },
 });

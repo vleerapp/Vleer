@@ -6,6 +6,7 @@ export interface Song {
   cover: string;
   coverURL?: string;
   date_added: string;
+  lastPlayed?: string;
 }
 
 export interface SongsConfig {

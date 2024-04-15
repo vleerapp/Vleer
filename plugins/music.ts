@@ -97,6 +97,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         musicStore.player.currentSongId = id;
         await musicStore.setSongFromBuffer(contents);
         await this.ensureAudioContextAndFilters();
+        const currentTime = new Date().toISOString();
+        musicStore.updateLastPlayed(id, currentTime);
       } else {
         settingsStore.settings.playerSettings.currentSong = "";
         await settingsStore.saveSettings();

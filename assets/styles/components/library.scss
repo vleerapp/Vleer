@@ -10,6 +10,7 @@
   width: v.$sidebar-width;
   height: 100%;
   padding: 16px;
+  position: relative;
 
   .link{
     display: flex;
@@ -34,7 +35,7 @@
   .search-container {
     width: 268px;
     height: 32px;
-    background-color: #222222;
+    background-color: v.$element;
     outline: none;
     border: none;
     display: flex;
@@ -53,5 +54,22 @@
       width: 235px;
       height: 32px;
     }
+  }
+}
+
+.items{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: v.$text-bright;
+
+  .song{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cover{
+    width: 32px;
   }
 }

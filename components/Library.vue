@@ -1,32 +1,71 @@
 <template>
   <div class="library element">
     <p class="element-title">Library</p>
-    <!-- <p class="link">
-      <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns="http://www.w3.org/2000/svg">
-        <g id="Icon">
-          <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
-          <path d="M2 14L2 2L3 2L3 14L2 14ZM5.5 14L5.5 2L6.5 2L6.5 14L5.5 14ZM8.8 14L8.8 2L13.8 4.5L13.8 14L8.8 14Z"
-            id="Rectangle-3-Union" fill-rule="evenodd" stroke="none" />
-        </g>
-      </svg>
-      Your Library
-    </p> -->
     <div class="search-container">
-      <svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns="http://www.w3.org/2000/svg">
-        <g id="Search-icon">
-          <path d="M0 0L20 0L20 20L0 20L0 0Z" id="Shape-2" fill="none" fill-rule="evenodd" stroke="none" />
-          <path
-            d="M8.74998 1.66687C5.64729 1.66713 2.9059 3.68661 1.98584 6.64974C1.06578 9.61287 2.18123 12.8299 4.73811 14.5875C7.29498 16.345 10.6981 16.234 13.135 14.3135L16.1783 17.3569C16.5053 17.6727 17.025 17.6681 17.3465 17.3467C17.6679 17.0253 17.6724 16.5055 17.3566 16.1785L14.3133 13.1352C15.9933 11.004 16.3079 8.10025 15.1235 5.65861C13.9391 3.21698 11.4637 1.66669 8.74998 1.66687M3.33328 8.75041C3.33328 5.75886 5.75841 3.33374 8.74995 3.33374C11.7415 3.33374 14.1666 5.75887 14.1666 8.75041C14.1666 11.742 11.7415 14.1671 8.74995 14.1671C5.75841 14.1671 3.33328 11.742 3.33328 8.75041"
-            id="Shape" fill="#8B8B8B" fill-rule="evenodd" stroke="none" />
-        </g>
-      </svg>
-      <input class="input" spellcheck="false">
+      <IconsSearch/>
+      <input class="input" spellcheck="false" v-model="searchQuery" />
+    </div>
+    <div class="items">
+      <div
+        v-for="song in filteredSongs"
+        :key="song.id"
+        @click="play(song.id)"
+        class="song"
+      >
+        <img :src="song.coverURL" :alt="song.title" class="cover" />
+        <div class="info">
+          <p class="title">{{ truncate(song.title) }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
+<script lang="ts" setup>
+import { type Song } from "~/types/types";
+import { computed, ref, onMounted } from "vue";
+
+const { $music } = useNuxtApp();
+
+const songs = ref<Song[]>([]);
+const searchQuery = ref("");
+
+onMounted(async () => {
+  const loadedSongs = await $music.getSongs();
+  const songArray = Object.values(loadedSongs.songs);
+  await Promise.all(
+    songArray.map(async (song) => {
+      song.coverURL = await $music.getCoverURLFromID(song.id);
+    })
+  );
+  songs.value = songArray;
+});
+
+const filteredSongs = computed(() => {
+  return songs.value
+    .filter((song) =>
+      song.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+    .sort((a, b) => {
+      // Sort by date added if search query is empty, otherwise sort by search relevance
+      if (searchQuery.value) {
+        return a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) - b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase());
+      } else {
+        return new Date(b.date_added).getTime() - new Date(a.date_added).getTime();
+      }
+    });
+});
+
+async function play(id: string) {
+  await $music.setSong(id);
+  $music.play();
+}
+
+function truncate(text: string, length: number = 40) {
+  return text.length > length ? text.substring(0, length - 3) + "..." : text;
+}
+</script>
+
 <style lang="scss">
-@import '~/assets/styles/components/library.scss';
+@import "~/assets/styles/components/library.scss";
 </style>

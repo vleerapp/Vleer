@@ -4,7 +4,52 @@
   padding: 0 !important;
 }
 
-.index{
+.index {
   padding: 24px;
+  padding-top: 48px;
   padding-bottom: 0;
+  font-size: 14px;
+}
+
+.ascii {
+  padding-bottom: 48px;
+  color: v.$accent;
+}
+
+.playlists,
+.recently-played {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.recently-played .cards {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+
+  .song {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .info {
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .artist{
+        color: v.$text;
+      }
+    }
+
+    .cover {
+      flex: 1;
+      max-width: 240px;
+      min-width: 150px;
+    }
+  }
 }
