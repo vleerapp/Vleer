@@ -24,6 +24,7 @@ export interface Player {
 export interface MusicStore {
   songsConfig: SongsConfig;
   player: Player;
+  lastUpdated: Number;
 }
 
 export interface MusicSearchResponseItem {

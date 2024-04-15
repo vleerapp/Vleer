@@ -23,14 +23,20 @@
 
 <script lang="ts" setup>
 import { type Song } from "~/types/types";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
+import { useMusicStore } from "~/stores/music"; 
 
 const { $music } = useNuxtApp();
+const musicStore = useMusicStore(); 
 
 const songs = ref<Song[]>([]);
 const searchQuery = ref("");
 
 onMounted(async () => {
+  await loadSongs();
+});
+
+const loadSongs = async () => {
   const loadedSongs = await $music.getSongs();
   const songArray = Object.values(loadedSongs.songs);
   await Promise.all(
@@ -39,6 +45,10 @@ onMounted(async () => {
     })
   );
   songs.value = songArray;
+};
+
+watch(() => musicStore.lastUpdated, async () => {
+  await loadSongs();
 });
 
 const filteredSongs = computed(() => {
@@ -47,7 +57,6 @@ const filteredSongs = computed(() => {
       song.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
     .sort((a, b) => {
-      // Sort by date added if search query is empty, otherwise sort by search relevance
       if (searchQuery.value) {
         return a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) - b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase());
       } else {

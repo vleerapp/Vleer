@@ -17,6 +17,7 @@ export const useMusicStore = defineStore("musicStore", {
       sourceNode: null,
       eqFilters: []
     },
+    lastUpdated: Date.now(),
   } as MusicStore),
 
   actions: {
@@ -30,6 +31,7 @@ export const useMusicStore = defineStore("musicStore", {
     },
     addSongData(song: Song) {
       this.songsConfig.songs[song.id] = song;
+      this.lastUpdated = Date.now();
     },
     getSongsData(): SongsConfig {
       return this.songsConfig;

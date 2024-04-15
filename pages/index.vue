@@ -53,7 +53,7 @@ onMounted(async () => {
 const sortedRecentlyPlayed = computed(() => {
   return [...songs.value]
     .filter(song => song.lastPlayed)
-    .sort((a, b) => b.lastPlayed - a.lastPlayed)
+    .sort((a, b) => new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime())
     .slice(0, 7);
 });
 
@@ -62,7 +62,7 @@ async function play(id: string) {
   $music.play();
 }
 
-function truncate(text: string, length: number = 40) {
+function truncate(text: string, length: number = 24) {
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 }
 </script>

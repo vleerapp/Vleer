@@ -5,8 +5,8 @@
       <div class="info">
         <img :src="coverUrl || '/cover.png'" class="cover"></img>
         <div class="h">
-          <div class="title">{{ currentSong.title }}</div>
-          <div class="artist">{{ currentSong.artist }}</div>
+          <div class="title">{{ truncate(currentSong.title) }}</div>
+          <div class="artist">{{ truncate(currentSong.artist) }}</div>
         </div>
       </div>
       <div class="controls">
@@ -114,6 +114,10 @@ function mute() {
 function setVolume() {
   $music.setVolume(volume.value);
   $settings.setVolume(volume.value)
+}
+
+function truncate(text: string, length: number = 30) {
+  return text.length > length ? text.substring(0, length - 3) + '...' : text;
 }
 </script>
 
