@@ -1,4 +1,4 @@
-@use '~/assets/styles/variables' as v;
+@use "~/assets/styles/variables" as v;
 
 .player {
   height: v.$playersize;
@@ -48,7 +48,7 @@
     color: #b3b3b3;
   }
 
-  .icon:hover{
+  .icon:hover {
     color: v.$text-bright !important;
   }
 
@@ -58,11 +58,7 @@
 
   .right-controls {
     .volume {
-      background: repeating-linear-gradient(135deg,
-          #303030,
-          #303030 10px,
-          #505050 10px,
-          #505050 20px);
+      background: repeating-linear-gradient(135deg, #303030, #303030 10px, #505050 10px, #505050 20px);
     }
 
     .volume-text {
@@ -71,7 +67,7 @@
     }
   }
 
-  .right-controls:hover{
+  .right-controls:hover {
     color: v.$text;
   }
 }

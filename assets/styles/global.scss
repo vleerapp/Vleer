@@ -1,10 +1,9 @@
-@use '~/assets/styles/variables' as v;
+@use "~/assets/styles/variables" as v;
 
 @font-face {
-  font-family: 'DMMono';
+  font-family: "DMMono";
   font-display: swap;
   src: url("/DMMono.woff2") format("woff2");
-
 }
 
 * {
@@ -29,7 +28,9 @@
   background: #6b6b6b;
 }
 
-html, body, #__nuxt {
+html,
+body,
+#__nuxt {
   background-color: v.$background;
   color: white;
   width: 100%;

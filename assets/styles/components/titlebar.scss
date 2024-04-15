@@ -1,4 +1,4 @@
-@use '~/assets/styles/variables' as v;
+@use "~/assets/styles/variables" as v;
 
 .titlebar {
   width: 100%;
@@ -21,7 +21,7 @@
     display: flex;
     position: relative;
     top: -2px;
-  
+
     .button {
       background: none;
       border: none;
@@ -30,24 +30,23 @@
       height: 100%;
       display: grid;
       place-items: center;
-  
+
       img {
         width: 10px;
         height: 10px;
       }
-  
+
       &:hover {
         background-color: v.$titlebar-button-hover;
-        
+
         img {
           filter: brightness(200%);
         }
       }
-  
+
       &:last-child:hover {
         background-color: v.$titlebar-button-hover-red;
       }
     }
-  
   }
 }
