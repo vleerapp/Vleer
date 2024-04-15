@@ -14,9 +14,7 @@ pub fn connect_rpc() -> Result<(), String> {
     if let Some(ref mut client) = *drpc {
         match client.connect() {
             Ok(_) => Ok(()),
-            Err(e) => {
-                Err(format!("Failed to connect to Discord IPC: {}", e))
-            }
+            Err(e) => Err(format!("Failed to connect to Discord IPC: {}", e)),
         }
     } else {
         Err("Discord IPC client not initialized".to_string())
@@ -39,11 +37,12 @@ pub fn update_activity(
     details: String,
     large_image: String,
     large_image_text: String,
+    youtube_url: Option<String>,
 ) -> Result<(), String> {
     thread::spawn(move || {
         let mut drpc = DRPC_CLIENT.lock().unwrap();
         if let Some(ref mut client) = *drpc {
-            let activity = activity::Activity::new()
+            let mut activity_builder = activity::Activity::new()
                 .state(&state)
                 .details(&details)
                 .assets(
@@ -52,9 +51,15 @@ pub fn update_activity(
                         .large_text(&large_image_text),
                 );
 
-            client.set_activity(activity).expect("Failed to set activity");
+            if let Some(ref url) = youtube_url {
+                let youtube_button = activity::Button::new("YouTube", url); 
+                activity_builder = activity_builder.buttons(vec![youtube_button]);
+            }
+
+            client
+                .set_activity(activity_builder)
+                .expect("Failed to set activity");
         }
     });
     Ok(())
 }
-

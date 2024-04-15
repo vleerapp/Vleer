@@ -85,6 +85,9 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
 
       await $music.addSongData(songData)
+
+      await $music.setSong(videoId)
+      $music.play();
     } catch (error) {
       console.error('Error downloading video as MP3:', error);
     }

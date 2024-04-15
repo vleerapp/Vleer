@@ -56,8 +56,15 @@ audio.value.addEventListener('pause', async () => {
   await invoke("clear_activity")
 })
 
-audio.value.addEventListener('play', () => {
+audio.value.addEventListener('play', async () => {
   paused.value = false
+  await invoke("update_activity", {
+    state: currentSong.value.artist,
+    details: currentSong.value.title,
+    largeImage: currentSong.value.cover,
+    largeImageText: currentSong.value.title,
+    youtube_url: "https://youtube.com/watch?v=" + currentSong.value.id
+  });
 })
 
 audio.value.addEventListener('ended', async () => {
@@ -101,14 +108,6 @@ watch(currentSong, async (newSong, oldSong) => {
   if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
-
-      await invoke("update_activity", {
-        state: newSong.artist,
-        details: newSong.title,
-        largeImage: newSong.cover,
-        largeImageText: newSong.title,
-      });
-
     } catch (error) {
       console.error('Error fetching cover URL:', error);
       coverUrl.value = '/cover.png';
