@@ -210,7 +210,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         musicStore.player.audioContext = new AudioContext();
         musicStore.player.sourceNode =
           musicStore.player.audioContext.createMediaElementSource(
-            musicStore.player.audio
+            musicStore.player.audio!
           );
         musicStore.player.eqFilters = this.createEqFilters();
         this.connectEqFilters();
