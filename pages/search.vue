@@ -107,6 +107,6 @@ const formatDate = (date: Date) => {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '~/assets/styles/pages/search.scss';
 </style>

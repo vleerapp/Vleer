@@ -41,7 +41,7 @@
     color: #303030;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
   }
 
   .controls:hover .icon {
@@ -57,6 +57,8 @@
   }
 
   .right-controls {
+    gap: 2px;
+
     .volume {
       background: repeating-linear-gradient(135deg, #303030, #303030 10px, #505050 10px, #505050 20px);
     }
@@ -64,6 +66,55 @@
     .volume-text {
       width: 40px;
       text-align: end;
+    }
+
+    .bar {
+      position: relative;
+      display: flex;
+    }
+
+    .range {
+      width: 150px;
+      cursor: pointer;
+      appearance: none;
+      background-color: transparent;
+      height: 2px;
+      z-index: 2;
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        background: v.$text-bright;
+        border: none;
+        width: 12px;
+        height: 16px;
+      }
+
+      &::-moz-range-thumb {
+        appearance: none;
+        background: v.$text-bright;
+        border: none;
+        width: 12px;
+        height: 16px;
+      }
+
+      &::-ms-thumb {
+        appearance: none;
+        background: v.$text-bright;
+        border: none;
+        width: 12px;
+        height: 16px;
+      }
+    }
+
+    .volume-indicator {
+      position: absolute;
+      top: 0;
+      background-image: linear-gradient(to left, v.$accent 4px, transparent 1px);
+      background-size: 10px 2px;
+      background-repeat: repeat-x;
+      height: 2px;
+      z-index: 1;
     }
   }
 

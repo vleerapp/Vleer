@@ -22,7 +22,10 @@
         <IconsVolumeMid @click="mute" v-else-if="volume > 0" />
         <IconsVolumeMute @click="mute" v-else />
 
-        <input @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
+        <div class="bar">
+          <input class="range" @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name="" id="">
+          <div class="volume-indicator" :style="{ width: volume + '%' }"></div>
+        </div>
 
         <div class="volume-text">{{ volume }}%</div>
       </div>
@@ -31,8 +34,8 @@
       <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
       <div class="numbers">{{ time }} / {{ audio.duration > 0
-          ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
-          : "00:00" }}</div>
+        ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
+        : "00:00" }}</div>
     </div>
   </div>
 </template>

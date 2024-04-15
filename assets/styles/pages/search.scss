@@ -1,5 +1,10 @@
 @use '~/assets/styles/variables' as v;
 
+.element {
+  padding: 24px !important;
+  padding-bottom: 0px; 
+}
+
 .search {
   display: flex;
   flex-direction: column;
