@@ -2,13 +2,14 @@ import {
   BaseDirectory,
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
-import type { MusicStore, SongsConfig, Song } from "~/types/types";
+import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
 
 export const useMusicStore = defineStore("musicStore", {
   state: () =>
   ({
     songsConfig: {
       songs: {},
+      playlists: {},
     },
     player: {
       audio: new Audio(),
@@ -60,6 +61,15 @@ export const useMusicStore = defineStore("musicStore", {
           baseDir: BaseDirectory.Audio,
         });
       }
+    },
+    createPlaylist(playlist: Playlist) {
+      this.songsConfig.playlists[playlist.id] = playlist;
+      writeTextFile("Vleer/songs.json", JSON.stringify(this.songsConfig, null, 2), {
+        baseDir: BaseDirectory.Audio,
+      });
+    },
+    getPlaylistByID(id: string): Playlist | null {
+      return this.songsConfig?.playlists?.[id] ?? null;
     },
   },
 });

@@ -9,8 +9,15 @@ export interface Song {
   lastPlayed?: string;
 }
 
+export interface Playlist {
+  id: string;
+  name: string;
+  songs: string[];
+}
+
 export interface SongsConfig {
   songs: Record<string, Song>;
+  playlists: Record<string, Playlist>;
 }
 
 export interface Player {
@@ -24,7 +31,7 @@ export interface Player {
 export interface MusicStore {
   songsConfig: SongsConfig;
   player: Player;
-  lastUpdated: Number;
+  lastUpdated: number;
 }
 
 export interface MusicSearchResponseItem {

@@ -1,0 +1,13 @@
+@use "~/assets/styles/variables" as v;
+
+.element {
+  padding: 0 !important;
+}
+
+.create-playlist {
+  padding: 24px;
+  font-size: 14px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
