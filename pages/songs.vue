@@ -11,12 +11,12 @@
         <div class="title">Title</div>
         <div class="date">Date added</div>
         <div class="lenght">
-          <img src="/Lenght.svg" alt="">
+          <nuxt-img src="/Lenght.svg" alt="" />
         </div>
       </div>
       <div class="items">
         <div v-for="song in filteredSongs" :key="song.id" @click="play(song.id)" class="song">
-          <img :src="song.coverURL" :alt="song.title" class="cover" />
+          <nuxt-img :src="song.coverURL" :alt="song.title" class="cover" />
           <div class="titles">
             <p class="title">{{ truncate(song.title) }}</p>
             <p class="artist">{{ truncate(song.artist) }}</p>

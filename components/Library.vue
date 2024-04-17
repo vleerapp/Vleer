@@ -23,7 +23,7 @@
     </div>
     <div class="items">
       <div v-for="song in filteredSongs" :key="song.id" @click="play(song.id)" class="song">
-        <img :src="song.coverURL" :alt="song.title" class="cover" />
+        <nuxt-img :src="song.coverURL" :alt="song.title" class="cover" />
         <div class="info">
           <p class="title">{{ truncate(song.title) }}</p>
         </div>

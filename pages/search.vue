@@ -6,10 +6,10 @@
         <IconsSearch />
         <input class="input" spellcheck="false" type="text" v-model="searchTerm" @input="handleInput" placeholder="Search" />
       </div>
-      <ul v-if="searchResults.length > 0">
+      <ul>
         <li v-for="(song, index) in searchResults" :class="{ 'first-result': index === 0 }"
           @click="handleSongClick(song)">
-          <img :src="song.thumbnail" alt="Cover image" />
+          <nuxt-img :src="song.thumbnail" :alt="song.title" loading="lazy" />
           <div>{{ song.title }}</div>
           <div>{{ song.uploaderName }}</div>
         </li>
