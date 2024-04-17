@@ -4,7 +4,7 @@
     <div class="songs">
       <div class="search-container">
         <IconsSearch />
-        <input class="input" spellcheck="false" v-model="searchQuery" />
+        <input class="input" placeholder="Search" spellcheck="false" v-model="searchQuery" />
       </div>
       <div class="songs-info">
         <div class="cover">#</div>
@@ -78,7 +78,8 @@ watch(
 const filteredSongs = computed(() => {
   return songs.value
     .filter((song) =>
-      song.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+      song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
     .sort((a, b) => {
       if (searchQuery.value) {

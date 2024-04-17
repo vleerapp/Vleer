@@ -1,17 +1,17 @@
 [package]
 name = "vleer"
 version = "1.0.0"
-description = "A Music app from the Future"
-authors = ["you"]
+description = "Vleer"
+authors = ["pandadev", "waradu"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta.11", features = [] }
+tauri-build = { version = "2.0.0-beta.12", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta.14", features = ["devtools"] }
+tauri = { version = "2.0.0-beta.15", features = ["devtools"] }
 tauri-plugin-os = "2.0.0-beta.3"
 tauri-plugin-fs = "2.0.0-beta.4"
 serde_json = "1.0"

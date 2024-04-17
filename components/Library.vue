@@ -19,7 +19,7 @@
     </div>
     <div class="search-container">
       <IconsSearch />
-      <input class="input" spellcheck="false" v-model="searchQuery" />
+      <input class="input" spellcheck="false" placeholder="Search" v-model="searchQuery" />
     </div>
     <div class="items">
       <div v-for="song in filteredSongs" :key="song.id" @click="play(song.id)" class="song">
@@ -62,6 +62,7 @@ const loadSongs = async () => {
 watch(
   () => musicStore.lastUpdated,
   async () => {
+    console.log("test")
     await loadSongs();
   }
 );
@@ -69,7 +70,8 @@ watch(
 const filteredSongs = computed(() => {
   return songs.value
     .filter((song) =>
-      song.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+      song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
     .sort((a, b) => {
       if (searchQuery.value) {
@@ -82,8 +84,7 @@ const filteredSongs = computed(() => {
           new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
         );
       }
-    })
-    .slice(0, 30);
+    });
 });
 
 async function play(id: string) {
