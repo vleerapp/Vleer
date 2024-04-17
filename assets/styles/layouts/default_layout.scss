@@ -41,15 +41,15 @@
     top: v.$titlebar-height + 5px;
     left: v.$spacing;
     width: 300px;
-    height: 116px;
+    height: 148px;
   }
 
   .library {
     position: fixed;
-    top: v.$titlebar-height + 5px + 116px + v.$spacing;
+    top: v.$titlebar-height + 5px + 148px + v.$spacing;
     left: v.$spacing;
     width: 300px;
-    height: calc(100vh - (v.$titlebar-height + 5px + (v.$spacing * 3) + v.$playersize + 116px));
+    height: calc(100vh - (v.$titlebar-height + 5px + (v.$spacing * 3) + v.$playersize + 148px));
   }
 
   .main {
