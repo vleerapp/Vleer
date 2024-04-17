@@ -5,6 +5,32 @@
   padding-bottom: 0px !important; 
 }
 
+.search-container {
+  position: absolute;
+  width: 268px;
+  height: 32px;
+  background-color: v.$element;
+  outline: none;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding-inline: 6px;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  .input {
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    outline: none;
+    color: #8b8b8b;
+    width: 100%;
+    height: 32px;
+  }
+}
+
 .search {
   display: flex;
   flex-direction: column;
@@ -12,11 +38,6 @@
   overflow: auto;
   width: 100%;
   height: 100%;
-
-  input {
-    width: 200px;
-    position: fixed;
-  }
 }
 
 .cover-image {
@@ -32,8 +53,8 @@
   font-size: 1.2em; 
 }
 
-ul {
-  padding-top: 37px;
+ul{
+  padding-top: 48px;
 }
 
 li {

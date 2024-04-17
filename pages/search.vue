@@ -2,8 +2,10 @@
   <div class="main element">
     <p class="element-title">Search</p>
     <div class="search">
-      <input type="text" v-model="searchTerm" @keyup.enter="searchSongs()" :disabled="isLoading"
-        placeholder="Search for songs" />
+      <div class="search-container">
+        <IconsSearch />
+        <input class="input" spellcheck="false" type="text" v-model="searchTerm" @input="handleInput" placeholder="Search" />
+      </div>
       <ul v-if="searchResults.length > 0">
         <li v-for="(song, index) in searchResults" :class="{ 'first-result': index === 0 }"
           @click="handleSongClick(song)">
@@ -23,9 +25,10 @@ import axios from 'axios';
 import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
 const { $music } = useNuxtApp();
 
-const searchTerm = ref("")
+const searchTerm = ref("");
 const searchResults = ref<MusicSearchResponseItem[]>([]);
-const isLoading = ref(false)
+const isLoading = ref(false);
+let searchTimeout: ReturnType<typeof setTimeout>;
 
 async function searchSongs() {
   isLoading.value = true;
@@ -58,6 +61,15 @@ async function searchSongs() {
   isLoading.value = false;
 }
 
+function handleInput() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    if (searchTerm.value.trim()) {
+      searchSongs();
+    }
+  }, 500);
+}
+
 async function handleSongClick(song: MusicSearchResponseItem) {
   try {
     const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
@@ -86,7 +98,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       cover: song.thumbnail.replace("w120-h120", "w500-h500"),
       date_added: formatDate(new Date())
     }
-    
+
     try {
       await invoke('download', { url: "https://youtube.com" + song.url, name: videoId + ".webm" });
 
@@ -115,7 +127,7 @@ const formatDate = (date: Date) => {
   let minutes = date.getMinutes().toString().padStart(2, '0');
   let seconds = date.getSeconds().toString().padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
+}
 </script>
 
 <style scoped lang="scss">
