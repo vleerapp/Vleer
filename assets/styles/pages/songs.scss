@@ -6,8 +6,118 @@
 
 .songs {
   padding: 24px;
+  padding-right: 0;
+  padding-bottom: 0;
   font-size: 14px;
   width: 100%;
   height: 100%;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-container {
+  width: 268px;
+  height: 32px;
+  background-color: v.$element;
+  outline: none;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding-inline: 6px;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  .input {
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    outline: none;
+    color: #8b8b8b;
+    width: 100%;
+    height: 32px;
+  }
+}
+
+.songs-info {
+  color: v.$text;
+  margin-right: 24px;
+  padding-left: 15px;
+  border-bottom: 1px solid v.$element;
+  display: flex;
+  padding-bottom: 8px;
+
+  .cover {
+    padding-right: 20px;
+  }
+
+  .title {
+    flex-grow: 2;
+    flex-shrink: 1;
+    width: 100%;
+  }
+
+  .date {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 52.5%;
+  }
+}
+
+.items {
+  gap: 14px;
+  padding-top: 16px;
+  padding-right: 24px;
+  padding-bottom: 14px;
+
+  .song {
+    height: 36px;
+    display: flex;
+    widows: 100%;
+
+    .cover {
+      height: 36px;
+      width: 36px;
+    }
+
+    .titles {
+      flex-grow: 2;
+      flex-shrink: 1;
+      width: 100%;
+    }
+
+    .date {
+      flex-grow: 1;
+      flex-shrink: 1;
+      width: 50%;
+    }
+
+    .artist,
+    .date,
+    .lenght {
+      color: v.$text;
+    }
+  }
+}
+
+
+.add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  width: 100%;
+  color: v.$text;
+  text-decoration: none;
+
+  .cover {
+    height: 36px;
+    width: 36px;
+  }
+}
+
+.add:hover {
+  color: v.$text-bright;
 }
