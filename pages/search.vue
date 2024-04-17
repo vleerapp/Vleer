@@ -37,8 +37,19 @@ async function searchSongs() {
   }
 
   try {
-    const response = await axios.get<MusicSearchResponse>(`https://wireway.ch/api/musicAPI/search/?q=${searchTerm.value}`);
-    searchResults.value = response.data.items;
+    const response = await fetch(`https://pipedapi.wireway.ch/search?q=${searchTerm.value}&filter=music_songs`);
+    const data = await response.json();
+    searchResults.value = data.items
+      .filter(item => item.type !== 'channel')
+      .map(item => ({
+        url: item.url,
+        title: item.title,
+        thumbnail: item.thumbnail,
+        uploaderName: item.uploaderName,
+        uploaderAvatar: item.uploaderAvatar,
+        duration: item.duration,
+        durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`
+      }));
   } catch (error) {
     console.error("Failed to fetch songs:", error);
     searchResults.value = [];
@@ -75,7 +86,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       cover: song.thumbnail.replace("w120-h120", "w500-h500"),
       date_added: formatDate(new Date())
     }
-
+    
     try {
       await invoke('download', { url: "https://youtube.com" + song.url, name: videoId + ".webm" });
 
