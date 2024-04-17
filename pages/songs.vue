@@ -2,6 +2,10 @@
   <div class="main element">
     <p class="element-title">Songs</p>
     <div class="songs">
+      <div class="search-container">
+        <IconsSearch />
+        <input class="input" spellcheck="false" v-model="searchQuery" />
+      </div>
       <div class="songs-info">
         <div class="cover">#</div>
         <div class="title">Title</div>
@@ -87,8 +91,7 @@ const filteredSongs = computed(() => {
           new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
         );
       }
-    })
-    .slice(0, 30);
+    });
 });
 
 async function play(id: string) {
