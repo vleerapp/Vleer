@@ -44,7 +44,7 @@ const musicStore = useMusicStore();
 const router = useRouter();
 
 const searchQuery = ref("");
-const playlists = ref([]);
+const playlists = ref<Playlist[]>([]);
 
 async function fetchPlaylists() {
   const rawPlaylists = Object.values(musicStore.getSongsData().playlists);
@@ -64,7 +64,7 @@ const filteredPlaylists = computed(() => {
 onMounted(fetchPlaylists);
 
 watch(() => musicStore.getSongsData().playlists, async () => {
-  await fetchPlaylists(); // Re-fetch playlists when any change is detected in the store
+  await fetchPlaylists();
 }, { deep: true });
 
 function openPlaylist(playlistId: string) {
@@ -80,7 +80,7 @@ async function createAndOpenPlaylist() {
   const newPlaylist = {
     id: newPlaylistId,
     name: 'New Playlist',
-    date: new Date().toLocaleDateString(),
+    date: new Date().toISOString(),
     cover: '/cover.png',
     songs: []
   };
