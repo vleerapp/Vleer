@@ -10,8 +10,8 @@
         "title": "Vleer",
         "width": 1270,
         "decorations": true,
-        "minHeight": 690,
-        "minWidth": 1224
+        "minHeight": 600,
+        "minWidth": 800
       }
     ]
   }
