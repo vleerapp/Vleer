@@ -13,19 +13,19 @@
         </svg>
         Your Library
       </p>
-      <NuxtLink class="create-playlist" to="/create-playlist">
+      <button @click="createAndOpenPlaylist" class="create-playlist">
         <IconsAdd />
-      </NuxtLink>
+      </button>
     </div>
     <div class="search-container">
       <IconsSearch />
-      <input class="input" spellcheck="false" placeholder="Search" v-model="searchQuery" />
+      <input class="input" spellcheck="false" placeholder="Search Playlists" v-model="searchQuery" />
     </div>
     <div class="items">
-      <div v-for="song in filteredSongs" :key="song.id" @click="play(song.id)" class="song">
-        <nuxt-img :src="song.coverURL" :alt="song.title" class="cover" />
+      <div v-for="playlist in filteredPlaylists" :key="playlist.id" @click="openPlaylist(playlist.id)" class="song">
+        <img :src="playlist.cover" class="cover">
         <div class="info">
-          <p class="title">{{ truncate(song.title) }}</p>
+          <p class="title">{{ truncate(playlist.name) }}</p>
         </div>
       </div>
     </div>
@@ -33,67 +33,60 @@
 </template>
 
 <script lang="ts" setup>
-import { type Song } from "~/types/types";
-import { computed, ref, onMounted, watch } from "vue";
+import { type Playlist } from "~/types/types";
+import { ref, onMounted, watch, computed } from "vue";
 import { useMusicStore } from "~/stores/music";
-import { invoke } from "@tauri-apps/api/core";
+import { useRouter } from 'vue-router';
+import { v4 as uuidv4 } from 'uuid';
 
 const { $music } = useNuxtApp();
 const musicStore = useMusicStore();
+const router = useRouter();
 
-const songs = ref<Song[]>([]);
 const searchQuery = ref("");
+const playlists = ref([]);
 
-onMounted(async () => {
-  await loadSongs();
-});
+async function fetchPlaylists() {
+  const rawPlaylists = Object.values(musicStore.getSongsData().playlists);
+  const playlistsWithCovers = await Promise.all(rawPlaylists.map(async playlist => {
+    const cover = await $music.searchCoverByPlaylistId(playlist.id);
+    return { ...playlist, cover: cover || '/cover.png' };
+  }));
+  playlists.value = playlistsWithCovers;
+}
 
-const loadSongs = async () => {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(
-    songArray.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
+const filteredPlaylists = computed(() => {
+  return playlists.value.filter(playlist =>
+    playlist.name && playlist.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
-  songs.value = songArray;
-};
-
-watch(
-  () => musicStore.lastUpdated,
-  async () => {
-    console.log("test")
-    await loadSongs();
-  }
-);
-
-const filteredSongs = computed(() => {
-  return songs.value
-    .filter((song) =>
-      song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (searchQuery.value) {
-        return (
-          a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) -
-          b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase())
-        );
-      } else {
-        return (
-          new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
-        );
-      }
-    });
 });
 
-async function play(id: string) {
-  await $music.setSong(id);
-  $music.play();
+onMounted(fetchPlaylists);
+
+watch(() => musicStore.getSongsData().playlists, async () => {
+  await fetchPlaylists(); // Re-fetch playlists when any change is detected in the store
+}, { deep: true });
+
+function openPlaylist(playlistId: string) {
+  router.push(`/${playlistId}`);
 }
 
 function truncate(text: string, length: number = 45) {
   return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
+}
+
+async function createAndOpenPlaylist() {
+  const newPlaylistId = uuidv4();
+  const newPlaylist = {
+    id: newPlaylistId,
+    name: 'New Playlist',
+    date: new Date().toLocaleDateString(),
+    cover: '/cover.png',
+    songs: []
+  };
+  musicStore.createPlaylist(newPlaylist);
+  await fetchPlaylists();
+  router.push(`/${newPlaylistId}`);
 }
 </script>
 

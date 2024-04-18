@@ -24,6 +24,9 @@
 
   .create-playlist {
     text-decoration: none;
+    background-color: transparent;
+    outline: none;
+    border: none;
     display: flex;
     color: v.$text;
   }
@@ -90,7 +93,7 @@
   .song {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     cursor: pointer;
     width: 100%;
 

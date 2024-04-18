@@ -25,6 +25,7 @@
     "window:allow-set-decorations",
     "window:allow-start-dragging",
     "os:allow-platform",
+    "dialog:allow-open",
     {
       "identifier": "fs:allow-audio-read-recursive",
       "allow": [

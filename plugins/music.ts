@@ -1,15 +1,17 @@
-import { createPinia } from "pinia";
 import { useMusicStore } from "~/stores/music";
-import { useSettingsStore } from "~/stores/settings"; // Assuming there's a settings store
+import { useSettingsStore } from "~/stores/settings";
 import {
   readFile,
+  writeFile,
   exists,
   BaseDirectory,
   mkdir,
   writeTextFile,
   readTextFile,
+  remove,
 } from "@tauri-apps/plugin-fs";
 import type { EQSettings, Song, SongsConfig } from "~/types/types";
+import axios from 'axios';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const musicStore = useMusicStore();
@@ -133,7 +135,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       settingsStore.settings.playerSettings.currentSong =
         musicStore.player.currentSongId;
       settingsStore.saveSettings();
-      audio.play(); 
+      audio.play();
     },
     pause() {
       const audio = musicStore.getAudio();
@@ -254,6 +256,49 @@ export default defineNuxtPlugin((nuxtApp) => {
         await this.setSong(this.queue[this.currentQueueIndex]);
         this.play();
       }
+    },
+    async updatePlaylistCover(playlistId: string, coverPath: any) {
+      if (!coverPath || typeof coverPath !== 'object' || typeof coverPath.path !== 'string') {
+        console.error('Invalid coverPath:', coverPath);
+        throw new TypeError('coverPath must be an object with a path string');
+      }
+      const extension = coverPath.path.split('.').pop();
+      const newCoverName = `${playlistId}.${extension}`;
+      const newCoverPath = `Vleer/Covers/${newCoverName}`;
+
+      const existingExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+      for (let ext of existingExtensions) {
+        const oldCoverPath = `Vleer/Covers/${playlistId}.${ext}`;
+        const coverExists = await exists(oldCoverPath, { baseDir: BaseDirectory.Audio });
+        if (coverExists) {
+          await remove(oldCoverPath, { baseDir: BaseDirectory.Audio });
+        }
+      }
+
+      try {
+        const data = await readFile(coverPath.path, { baseDir: BaseDirectory.Audio });
+        await writeFile(newCoverPath, data, { baseDir: BaseDirectory.Audio });
+        musicStore.updatePlaylistCover(playlistId, newCoverPath);
+      } catch (error) {
+        console.error('Failed to update playlist cover:', error);
+        throw new Error('Failed to update playlist cover due to path or permission issues.');
+      }
+    },
+    async searchCoverByPlaylistId(playlistId: string): Promise<string> {
+      const extensions = ['png', 'jpg', 'jpeg', 'gif'];
+      for (let ext of extensions) {
+        const coverExists = await exists(`Vleer/Covers/${playlistId}.${ext}`, {
+          baseDir: BaseDirectory.Audio,
+        });
+        if (coverExists) {
+          const contents = await readFile(`Vleer/Covers/${playlistId}.${ext}`, {
+            baseDir: BaseDirectory.Audio,
+          });
+          const blob = new Blob([contents]);
+          return URL.createObjectURL(blob);
+        }
+      }
+      return "/cover.png";
     },
   };
 

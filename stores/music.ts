@@ -40,7 +40,6 @@ export const useMusicStore = defineStore("musicStore", {
     async setSongFromBuffer(buffer: any) {
       const blob = new Blob([buffer], { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
-      console.log(url);
       this.player.audio!.currentTime = 0;
       this.player.audio!.src = url;
       await this.player.audio!.load();
@@ -63,6 +62,9 @@ export const useMusicStore = defineStore("musicStore", {
       }
     },
     createPlaylist(playlist: Playlist) {
+      if (!this.songsConfig.playlists) {
+        this.songsConfig.playlists = {};
+      }
       this.songsConfig.playlists[playlist.id] = playlist;
       writeTextFile("Vleer/songs.json", JSON.stringify(this.songsConfig, null, 2), {
         baseDir: BaseDirectory.Audio,
@@ -70,6 +72,33 @@ export const useMusicStore = defineStore("musicStore", {
     },
     getPlaylistByID(id: string): Playlist | null {
       return this.songsConfig?.playlists?.[id] ?? null;
+    },
+    addSongToPlaylist(playlistId: string, songId: string) {
+      const playlist = this.songsConfig.playlists[playlistId];
+      if (playlist && this.songsConfig.songs[songId]) {
+        playlist.songs.push(songId);
+        writeTextFile("Vleer/songs.json", JSON.stringify(this.songsConfig, null, 2), {
+          baseDir: BaseDirectory.Audio,
+        });
+      }
+    },
+    renamePlaylist(playlistId: string, newName: string) {
+      const playlist = this.songsConfig.playlists[playlistId];
+      if (playlist) {
+        playlist.name = newName;
+        writeTextFile("Vleer/songs.json", JSON.stringify(this.songsConfig, null, 2), {
+          baseDir: BaseDirectory.Audio,
+        });
+      }
+    },
+    updatePlaylistCover(playlistId: string, newCoverPath: string) {
+      const playlist = this.songsConfig.playlists[playlistId];
+      if (playlist) {
+        playlist.cover = newCoverPath;
+        writeTextFile("Vleer/songs.json", JSON.stringify(this.songsConfig, null, 2), {
+          baseDir: BaseDirectory.Audio,
+        });
+      }
     },
   },
 });
