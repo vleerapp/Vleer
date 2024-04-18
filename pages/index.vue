@@ -19,7 +19,7 @@
         <div class="title">Recently played</div>
         <div class="cards">
           <div v-for="song in sortedRecentlyPlayed" :key="song.id" @click="play(song.id)" class="song">
-            <nuxt-img :src="song.coverURL" :alt="song.title" class="cover" />
+            <img :src="song.coverURL" :alt="song.title" class="cover" />
             <div class="info">
               <p class="title">{{ truncate(song.title) }}</p>
               <p class="artist">{{ truncate(song.artist) }}</p>

@@ -9,7 +9,7 @@
       <ul>
         <li v-for="(song, index) in searchResults" :class="{ 'first-result': index === 0 }"
           @click="handleSongClick(song)">
-          <nuxt-img :src="song.thumbnail" :alt="song.title" loading="lazy" />
+          <img :src="song.thumbnail" :alt="song.title" loading="lazy" />
           <div>{{ song.title }}</div>
           <div>{{ song.uploaderName }}</div>
         </li>
