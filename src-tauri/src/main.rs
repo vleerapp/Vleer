@@ -4,15 +4,38 @@
 )]
 
 use anyhow::{anyhow, Result};
-use rusty_ytdl::Video;
+use tokio::io::AsyncWriteExt;
 use std::path::PathBuf;
 use tauri::Error as TauriError;
 
 mod discord_rpc;
 
 #[tauri::command]
-async fn download(url: String, name: String) -> Result<(), TauriError> {
-    let video = Video::new(url.clone()).map_err(|e| anyhow!(e.to_string()))?;
+async fn download(url: String) -> Result<(), TauriError> {
+
+    let yt_id = url.trim_start_matches("https://youtube.com/watch?v=");
+
+    let client = reqwest::Client::new();
+    let response = client.get(format!("https://wave.wireway.ch/api/extract/music?q=/watch?v={}", yt_id))
+        .send()
+        .await
+        .map_err(|e| anyhow!("Failed to send request: {}", e))?;
+
+    if !response.status().is_success() {
+        return Err(anyhow!("Failed to download video: {}", response.status()).into());
+    }
+    
+    let video_data = response.json::<serde_json::Value>().await.map_err(|e| anyhow!("Failed to parse JSON: {}", e))?;
+    let video_url = video_data["url"].as_str().ok_or_else(|| anyhow!("URL not found in response"))?;
+
+    let video_response = client.get(video_url)
+        .send()
+        .await
+        .map_err(|e| anyhow!("Failed to download video: {}", e))?;
+
+    if !video_response.status().is_success() {
+        return Err(anyhow!("Failed to download video: {}", video_response.status()).into());
+    }
 
     let mut base_path = PathBuf::new();
     match std::env::consts::OS {
@@ -29,14 +52,13 @@ async fn download(url: String, name: String) -> Result<(), TauriError> {
 
     let mut path = base_path.clone();
     path.push("Songs");
-    path.push(&name);
+    path.push(format!("{}.webm", yt_id));
 
-    video
-        .download(&path)
-        .await
-        .map_err(|e| anyhow!(e.to_string()))?;
+    let mut file = tokio::fs::File::create(&path).await.map_err(|e| anyhow!("Failed to create file: {}", e))?;
+    let content = video_response.bytes().await.map_err(|e| anyhow!("Failed to read video bytes: {}", e))?;
+    file.write_all(&content).await.map_err(|e| anyhow!("Failed to write video to file: {}", e))?;
 
-    println!("Downloaded and tagged: {}", path.display());
+    println!("Downloaded: {}", path.display());
     Ok(())
 }
 
