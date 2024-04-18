@@ -95,7 +95,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       title: song.title,
       artist: song.uploaderName,
       length: song.duration,
-      cover: song.thumbnail.replace("w120-h120", "w500-h500"),
+      cover: song.thumbnail,
       date_added: formatDate(new Date())
     }
 

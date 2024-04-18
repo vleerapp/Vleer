@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="items">
-        <div v-for="song in filteredSongs" :key="song.id" @click="play(song.id)" class="song">
+        <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)" class="song">
           <nuxt-img :src="song.coverURL" :alt="song.title" class="cover" />
           <div class="titles">
             <p class="title">{{ truncate(song.title) }}</p>
@@ -95,9 +95,9 @@ const filteredSongs = computed(() => {
     });
 });
 
-async function play(id: string) {
-  await $music.setSong(id);
-  $music.play();
+async function play(id: string, index: number) {
+  const queueIds = filteredSongs.value.slice(index).map(song => song.id);
+  await $music.setQueue(queueIds);
 }
 
 function truncate(text: string, length: number = 45) {

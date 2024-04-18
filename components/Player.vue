@@ -11,10 +11,10 @@
       </div>
       <div class="controls">
         <IconsShuffle />
-        <IconsRewind />
+        <IconsRewind @click="rewind" />
         <IconsPlay v-if="paused" @click="play" />
         <IconsPause v-if="!paused" @click="pause" />
-        <IconsSkip />
+        <IconsSkip @click="skip" />
         <IconsRepeat @click="toggleLoop" :class="{ 'active': looping }" />
       </div>
       <div class="right-controls">
@@ -35,8 +35,8 @@
       <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
       <div class="numbers">{{ time }} / {{ audio.duration > 0
-          ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
-          : "00:00" }}</div>
+        ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
+        : "00:00" }}</div>
     </div>
   </div>
 </template>
@@ -106,6 +106,14 @@ async function pause() {
   } catch (error) {
     console.error("Failed to update Discord activity:", error);
   }
+}
+
+function skip() {
+  $music.skip();
+}
+
+function rewind() {
+  $music.rewind();
 }
 
 function skipTo() {

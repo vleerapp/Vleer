@@ -1,5 +1,6 @@
 import { createPinia } from "pinia";
 import { useMusicStore } from "~/stores/music";
+import { useSettingsStore } from "~/stores/settings"; // Assuming there's a settings store
 import {
   readFile,
   exists,
@@ -25,6 +26,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   musicStore.player.audio.onplay = () => music.ensureAudioContextAndFilters();
 
   const music = {
+    queue: [] as string[],
+    currentQueueIndex: 0,
     async init() {
       const baseDirExists = await exists("Vleer", {
         baseDir: BaseDirectory.Audio,
@@ -230,7 +233,33 @@ export default defineNuxtPlugin((nuxtApp) => {
         await musicStore.player.audioContext.resume();
       }
     },
+    async setQueue(songIds: string[]) {
+      this.queue = songIds;
+      this.currentQueueIndex = 0;
+      if (this.queue.length > 0) {
+        await this.setSong(this.queue[0]);
+        this.play();
+      }
+    },
+    async skip() {
+      if (this.currentQueueIndex < this.queue.length - 1) {
+        this.currentQueueIndex++;
+        await this.setSong(this.queue[this.currentQueueIndex]);
+        this.play();
+      }
+    },
+    async rewind() {
+      if (this.currentQueueIndex > 0) {
+        this.currentQueueIndex--;
+        await this.setSong(this.queue[this.currentQueueIndex]);
+        this.play();
+      }
+    },
   };
+
+  musicStore.player.audio.addEventListener('ended', () => {
+    music.skip();
+  });
 
   return {
     provide: {
