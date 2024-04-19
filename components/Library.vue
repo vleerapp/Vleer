@@ -61,7 +61,9 @@ const filteredPlaylists = computed(() => {
   );
 });
 
-onMounted(fetchPlaylists);
+onMounted(() => {
+  fetchPlaylists()
+}),
 
 watch(() => musicStore.getSongsData().playlists, async () => {
   await fetchPlaylists();
