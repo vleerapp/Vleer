@@ -14,10 +14,10 @@
           <button class="shuffle"></button>
           <button class="dots"></button>
         </div>
-        <div class="search-container">
+        <!-- <div class="search-container">
           <IconsSearch />
-          <input class="input" placeholder="Search" spellcheck="false" v-model="searchQuery" />
-        </div>
+          <input class="input" placeholder="Search Playlist" spellcheck="false" v-model="searchQuery" />
+        </div> -->
       </div>
       <div class="songs">
         <div class="songs-info">
@@ -38,7 +38,7 @@
             <p class="date">{{ formatDate(song.date_added) }}</p>
             <p class="length">{{ formatDuration(song.length) }}</p>
           </div>
-          <NuxtLink to="/search" class="add">
+          <div v-if="!addSongs" @click="toggleAddSongs" class="add">
             <div class="cover">
               <svg width="36px" height="36px" viewBox="0 0 36 36">
                 <path d="M0 0L36 0L36 36L0 36L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
@@ -49,7 +49,38 @@
               </svg>
             </div>
             <div class="title">Add Songs</div>
-          </NuxtLink>
+          </div>
+        </div>
+        <div v-if="addSongs" class="addsongs">
+          <div class="horizontal">
+            <div>
+              <p>Search for songs to add</p>
+              <div class="search-container">
+                <IconsSearch />
+                <input class="input" placeholder="Search for songs to add" spellcheck="false" v-model="addSearchQuery"
+                  @input="addSearchQuery = $event.target.value" />
+              </div>
+            </div>
+            <svg @click="toggleAddSongs" width="32px" height="32px" viewBox="0 0 32 32" class="close">
+              <g id="add">
+                <path d="M0 0L32 0L32 32L0 32L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
+                <path d="M23.6367 6.66626L25.334 8.3634L8.36328 25.334L6.66626 23.6368L23.6367 6.66626Z" id="Rectangle"
+                  fill="currentColor" fill-rule="evenodd" stroke="none" />
+                <path d="M25.3339 23.6366L23.6368 25.3336L6.66626 8.3631L8.36328 6.66602L25.3339 23.6366Z"
+                  id="Rectangle" fill="currentColor" fill-rule="evenodd" stroke="none" />
+              </g>
+            </svg>
+          </div>
+          <div class="songs">
+            <div v-for="(song, index) in addFilteredSongs" :key="song.id" @click="addSongToPlaylist(song)" class="song">
+              <img :src="song.coverURL" :alt="song.title" class="cover" />
+              <div class="titles">
+                <p class="title">{{ truncate(song.title) }}</p>
+                <p class="artist">{{ truncate(song.artist) }}</p>
+              </div>
+              <p class="lenght">{{ formatDuration(song.length) }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -68,13 +99,30 @@ const route = useRoute();
 const playlistId = route.params.playlist.toString();
 
 const musicStore = useMusicStore();
-const playlist = computed<Playlist | null>(() => musicStore.getPlaylistByID(playlistId));
+const playlist = ref(null);
 const playlistName = ref<string>(playlist.value?.name || '');
 const searchQuery = ref<string>('');
 
 const songsDetails = ref<Song[]>([]);
-
 const playlistCover = ref("");
+const addSongs = ref(false);
+
+const songs = ref<Song[]>([]); // for loading songs for the add search
+const addSearchQuery = ref(""); // for loading songs for the add search
+const addFilteredSongs = ref<Song[]>([]); // for loading songs for the add search
+
+function toggleAddSongs() {
+  addSongs.value = !addSongs.value;
+}
+
+watchEffect(async () => {
+  const result = await musicStore.getPlaylistByID(playlistId);
+  if (result) {
+    playlist.value = result;
+  } else {
+    console.error('No playlist found with ID:', playlistId);
+  }
+});
 
 onMounted(async () => {
   playlistCover.value = await $music.searchCoverByPlaylistId(playlistId);
@@ -84,7 +132,71 @@ onMounted(async () => {
       return songDetail ? songDetail : null;
     }).filter((song): song is Song => song !== null));
   }
+
+  await loadSongs(); // for loading songs for the add search
+  await fetchPlaylist();
 });
+
+
+// for loading songs for the add search
+const loadSongs = async () => {
+  const loadedSongs = await $music.getSongs();
+  const songArray = Object.values(loadedSongs.songs);
+  await Promise.all(
+    songArray.map(async (song) => {
+      song.coverURL = await $music.getCoverURLFromID(song.id);
+    })
+  );
+  songs.value = songArray;
+};
+
+watch(addSearchQuery, async (newValue) => {
+  if (newValue.trim() === '') {
+    addFilteredSongs.value = [];
+    return;
+  }
+
+  const localFilteredSongs = songs.value.filter((song) =>
+    song.title.toLowerCase().includes(newValue.toLowerCase()) ||
+    song.artist.toLowerCase().includes(newValue.toLowerCase())
+  );
+
+  addFilteredSongs.value = localFilteredSongs;
+
+  // if (localFilteredSongs.length > 0) {
+  //   addFilteredSongs.value = localFilteredSongs;
+  // } else {
+  //   try {
+  //     const response = await fetch(`https://pipedapi.wireway.ch/search?q=${newValue}&filter=music_songs`);
+  //     const data = await response.json();
+  //     const fetchedSongs = data.items
+  //       .filter(item => item.type !== 'channel')
+  //       .map(item => ({
+  //         id: item.url.match(/(?:\/watch\?v=)([^&]+)/)[1],
+  //         title: item.title,
+  //         artist: item.uploaderName,
+  //         length: item.duration,
+  //         coverURL: item.thumbnail
+  //       }));
+  //     addFilteredSongs.value = fetchedSongs;
+  //   } catch (error) {
+  //     console.error("Failed to fetch songs:", error);
+  //     addFilteredSongs.value = [];
+  //   }
+  // }
+}, { immediate: true });
+
+async function addSongToPlaylist(song: Song) {
+  musicStore.addSongToPlaylist(playlistId, song.id);
+
+  await fetchPlaylist();
+}
+
+//////////////////////////////////////// for playlist songs
+
+async function fetchPlaylist() {
+  playlist.value = musicStore.getPlaylistByID(playlistId);
+}
 
 const filteredSongs = computed<Song[]>(() => {
   const songs = songsDetails.value;

@@ -14,16 +14,16 @@
   flex-direction: column;
 }
 
-.playlist-top{
+.playlist-top {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  
-  .cover{
+
+  .cover {
     width: 128px;
   }
 
-  .name{
+  .name {
     background-color: transparent;
     color: v.$text-bright;
     outline: none;
@@ -31,15 +31,16 @@
     width: 100%;
   }
 
-  .info{
+  .info {
     color: v.$text;
   }
 
-  .controls{
+  .controls {
     display: flex;
     gap: 12px;
+    margin-bottom: 16px;
 
-    button{
+    button {
       width: 36px;
       height: 36px;
     }
@@ -58,7 +59,7 @@
   align-items: center;
   padding-inline: 6px;
   gap: 6px;
-  margin-bottom: 16px;
+  margin-top: 8px;
 
   .input {
     background-color: transparent;
@@ -73,7 +74,6 @@
 
 .songs-info {
   color: v.$text;
-  margin-right: 24px;
   padding-left: 15px;
   border-bottom: 1px solid v.$element;
   display: flex;
@@ -104,6 +104,7 @@
   width: 100%;
   color: v.$text;
   text-decoration: none;
+  margin-bottom: 14px;
 
   .cover {
     height: 36px;
@@ -115,11 +116,10 @@
   color: v.$text-bright;
 }
 
-.items {
+.items,
+.addsongs {
   gap: 14px;
   padding-top: 16px;
-  padding-right: 24px;
-  padding-bottom: 14px;
 
   .song {
     height: 36px;
@@ -149,4 +149,61 @@
       color: v.$text;
     }
   }
+}
+
+.addsongs {
+  width: 100%;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid v.$element;
+
+  .songs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+
+    .song {
+      height: 36px;
+      display: flex;
+      widows: 100%;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      width: 100%;
+
+      .cover {
+        height: 32px;
+        width: 32px;
+      }
+
+      .titles {
+        flex-grow: 2;
+        flex-shrink: 1;
+        width: 100%;
+        display: flex;
+        gap: 12px;
+      }
+
+      .artist,
+      .date,
+      .length {
+        color: v.$text;
+      }
+    }
+  }
+}
+
+.horizontal{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.close{
+  color: v.$text;
+}
+
+.close:hover {
+  color: v.$text-bright;
 }
