@@ -14,9 +14,9 @@ or
 ```zsh
 cargo tauri build
 cd target/release/bundle/dmg/
-hdiutil attach -nobrowse -mountpoint /Volumes/hello ./hello_*.dmg
-cp -R /Volumes/hello .
-hdiutil detach /Volumes/hello
-codesign -s - ./hello/hello.app/Contents/MacOS/hello
-hdiutil create -format UDZO -srcfolder ./hello hello-signed.dmg
+hdiutil attach -nobrowse -mountpoint /Volumes/vleer ./Vleer*.dmg
+cp -R /Volumes/vleer .
+hdiutil detach /Volumes/vleer
+codesign -s - ./vleer/Vleer.app/Contents/MacOS/vleer
+hdiutil create -format UDZO -srcfolder ./vleer Vleer-signed.dmg
 ```
