@@ -10,3 +10,13 @@ For signing on macOS builds:
 ```zsh
 codesign -s - --force --deep --timestamp --options runtime src-tauri/target/release/bundle/macos/Vleer.app
 ```
+or
+```zsh
+cargo tauri build
+cd target/release/bundle/dmg/
+hdiutil attach -nobrowse -mountpoint /Volumes/hello ./hello_*.dmg
+cp -R /Volumes/hello .
+hdiutil detach /Volumes/hello
+codesign -s - ./hello/hello.app/Contents/MacOS/hello
+hdiutil create -format UDZO -srcfolder ./hello hello-signed.dmg
+```
