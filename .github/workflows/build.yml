@@ -52,6 +52,11 @@ jobs:
         with:
           name: windows-build-exe
           path: src-tauri/target/release/bundle/nsis/*.exe
+      - uses: actions/upload-artifact@v3
+        if: matrix.platform == 'windows-latest'
+        with:
+          name: windows-build-msi
+          path: src-tauri/target/release/bundle/msi/*.msi
 
       - name: Publish Ubuntu Artifacts
         if: matrix.platform == 'ubuntu-latest'
