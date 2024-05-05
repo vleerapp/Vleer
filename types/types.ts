@@ -82,6 +82,7 @@ export interface PlayerSettings {
 
 export interface UserSettings {
   playerSettings: PlayerSettings;
+  apiURL: string;
 }
 
 export const defaultSettings: UserSettings = {
@@ -101,4 +102,5 @@ export const defaultSettings: UserSettings = {
       "16000": "0.0",
     },
   },
+  apiURL: "",
 };

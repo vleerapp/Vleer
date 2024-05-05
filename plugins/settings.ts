@@ -1,3 +1,4 @@
+import re from "~/dist/_nuxt/BJ90lMuY";
 import { useSettingsStore } from "~/stores/settings";
 import type { EQSettings } from "~/types/types";
 
@@ -34,6 +35,28 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       store.settings.playerSettings.currentSong = song;
       store.saveSettings();
     },
+    setApiURL(url: string) {
+      store.settings.apiURL = url;
+      store.saveSettings();
+    },
+    getApiURL() {
+      return store.settings.apiURL;
+    },
+    async searchApiURL() {
+      try {
+        const response = await fetch('https://piped-instances.kavin.rocks/');
+        const instances = await response.json();
+        const urls = instances.map((instance: { api_url: string }) => instance.api_url);
+
+        const results = await window.__TAURI__.core.invoke('ping_urls', { urls });
+        console.log(results[0][0]);
+        this.setApiURL(results[0][0])
+        return results;
+      } catch (error) {
+        console.error('Failed to fetch API URLs:', error);
+        return [];
+      }
+    }
   };
 
   return {

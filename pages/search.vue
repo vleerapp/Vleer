@@ -23,7 +23,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
 import axios from 'axios';
 import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
-const { $music } = useNuxtApp();
+const { $music, $settings } = useNuxtApp();
 
 const searchTerm = ref("");
 const searchResults = ref<MusicSearchResponseItem[]>([]);
@@ -39,8 +39,10 @@ async function searchSongs() {
     return;
   }
 
+  const apiURL = $settings.getApiURL()
+
   try {
-    const response = await fetch(`https://pipedapi.wireway.ch/search?q=${searchTerm.value}&filter=music_songs`);
+    const response = await fetch(`${apiURL}/search?q=${searchTerm.value}&filter=music_songs`);
     const data = await response.json();
     searchResults.value = data.items
       .filter(item => item.type !== 'channel')
