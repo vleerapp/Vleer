@@ -40,7 +40,7 @@ const { $music, $settings } = useNuxtApp()
 
 const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 const eqGains = ref(new Array(frequencies.length).fill(0.0));
-const apiUrl = ref("");
+const apiUrl = ref($settings.getApiURL());
 
 function updateApiURL() {
   $settings.setApiURL(apiUrl.value);
