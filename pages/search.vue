@@ -42,11 +42,9 @@ async function searchSongs() {
 
   let apiURL = $settings.getApiURL()
 
-  if (apiURL == "") {
+  if (!apiURL) {
     apiURL = "https://pipedapi.r4fo.com";
   }
-  
-  console.log(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
 
   try {
     const response = await fetch(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
