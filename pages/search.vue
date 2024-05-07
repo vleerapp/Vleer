@@ -109,7 +109,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
     }
 
     try {
-      await invoke('download', { url: "https://youtube.com" + song.url, name: videoId + ".mp3" });
+      await invoke('download', { url: "https://youtube.com" + song.url, name: videoId + ".webm" });
 
       const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
       const data = new Uint8Array(response.data);
