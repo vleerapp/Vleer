@@ -7,6 +7,8 @@ use anyhow::{anyhow, Result};
 use tokio::io::AsyncWriteExt;
 use std::path::PathBuf;
 use tauri::Error as TauriError;
+use reqwest::Client;
+use tokio::time::Instant;
 
 mod discord_rpc;
 
@@ -62,6 +64,43 @@ async fn download(url: String) -> Result<(), TauriError> {
     Ok(())
 }
 
+#[tauri::command]
+async fn ping_urls(urls: Vec<String>) -> Result<Vec<(String, u128)>, TauriError> {
+    let client = Client::new();
+    let results = ping_urls_helper(&client, &urls).await?;
+    Ok(results)
+}
+
+async fn ping_urls_helper(client: &Client, urls: &[String]) -> Result<Vec<(String, u128)>, TauriError> {
+    let mut handles = vec![];
+
+    for url in urls.iter() {
+        let url_clone = url.clone();
+        let client_clone = client.clone();
+
+        let handle = tokio::spawn(async move {
+            let start = Instant::now();
+            let result = client_clone.head(&url_clone).send().await;
+            let latency = start.elapsed().as_millis();
+            match result {
+                Ok(_) => (url_clone, latency), // Use the cloned URL here
+                Err(_) => (url_clone, u128::MAX), // Use the cloned URL here
+            }
+        });
+        handles.push(handle);
+    }
+
+    let mut results = Vec::new();
+    for handle in handles {
+        if let Ok(result) = handle.await {
+            results.push(result);
+        }
+    }
+
+    results.sort_by(|a, b| a.1.cmp(&b.1));
+    Ok(results)
+}
+
 fn main() {
     env_logger::init();
     let _ = discord_rpc::connect_rpc();
@@ -74,7 +113,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
-            download
+            download,
+            ping_urls
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

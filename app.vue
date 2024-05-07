@@ -33,7 +33,7 @@ window.addEventListener('error', (e) => {
   }
 }, true);
 
-const { $music } = useNuxtApp();
+const { $music, $settings } = useNuxtApp();
 
 await $music.init();
 
@@ -43,6 +43,7 @@ onMounted(async () => {
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('focusin', updateFocus);
   document.addEventListener('focusout', updateFocus);
+  await $settings.searchApiURL()
 });
 
 onUnmounted(() => {

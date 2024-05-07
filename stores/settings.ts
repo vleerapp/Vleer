@@ -21,6 +21,7 @@ export const useSettingsStore = defineStore("settingsStore", {
           "16000": "0.0",
         },
       },
+      apiURL: ""
     }
   }),
   actions: {
@@ -45,7 +46,7 @@ export const useSettingsStore = defineStore("settingsStore", {
       }
     },
     async getSettings(): Promise<PlayerSettings> {
-      if (this.init) return this.settings.playerSettings
+      if (this.init) return this.settings.playerSettings;
 
       await this.checkForDefaultFiles();
 
@@ -54,6 +55,7 @@ export const useSettingsStore = defineStore("settingsStore", {
       ) as UserSettings;
 
       this.settings.playerSettings = settings.playerSettings;
+      this.settings.apiURL = settings.apiURL;
 
       this.init = true;
 
