@@ -27,3 +27,4 @@ package.json
 .vscode/settings.json
 src-tauri/gen/
 bun.lockb
+src-tauri/src/main copy.rs
