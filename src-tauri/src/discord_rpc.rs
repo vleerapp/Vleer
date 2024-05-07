@@ -1,6 +1,6 @@
 use discord_ipc_rp::{activity, DiscordIpc, DiscordIpcClient};
-use lazy_static::lazy_static;
 use dotenv::dotenv;
+use lazy_static::lazy_static;
 use std::env;
 use std::sync::Mutex;
 use std::thread;
