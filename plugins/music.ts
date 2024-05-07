@@ -100,11 +100,11 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     async setSong(id: string) {
       if (
-        await exists(`Vleer/Songs/${id}.webm`, {
+        await exists(`Vleer/Songs/${id}.mp3`, {
           baseDir: BaseDirectory.Audio,
         })
       ) {
-        const contents = await readFile(`Vleer/Songs/${id}.webm`, {
+        const contents = await readFile(`Vleer/Songs/${id}.mp3`, {
           baseDir: BaseDirectory.Audio,
         });
         musicStore.player.currentSongId = id;
@@ -118,7 +118,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     },
     async exists(id: string): Promise<boolean> {
-      return await exists(`Vleer/Songs/${id}.webm`, {
+      return await exists(`Vleer/Songs/${id}.mp3`, {
         baseDir: BaseDirectory.Audio,
       });
     },

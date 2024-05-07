@@ -9,17 +9,23 @@
 .settings {
   padding-bottom: 0;
   padding-top: 64px;
-  gap: v.$spacing;
+  gap: 32px;
   display: flex;
   flex-direction: column;
   width: 100%;
-  align-items: center;
+  align-items: left;
   text-align: left;
   padding-inline: 24px;
   overflow: auto;
 }
 
-.equalizer {
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.equalizer .eq {
   background-color: v.$element;
   color: v.$text;
   padding: 38px;
@@ -121,5 +127,30 @@
         background: darken(v.$text-bright, 20%);
       }
     }
+  }
+}
+
+.api-url .input-container {
+  width: 268px;
+  height: 32px;
+  background-color: v.$element;
+  outline: none;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding-inline: 6px;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  .input {
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    outline: none;
+    color: #8b8b8b;
+    width: 100%;
+    height: 32px;
   }
 }

@@ -43,35 +43,23 @@
 
 <script lang="ts" setup>
 import { type Song } from "~/types/types";
-import { computed, ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useMusicStore } from "~/stores/music";
-import { invoke } from "@tauri-apps/api/core";
 
 const { $music } = useNuxtApp();
 const musicStore = useMusicStore();
 
-const songs = ref<Song[]>([]);
 const searchQuery = ref("");
+const songs = ref([]);
 
 onMounted(async () => {
-  await loadSongs();
+  await reloadSongs();
 });
-
-const loadSongs = async () => {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(
-    songArray.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
-  );
-  songs.value = songArray;
-};
 
 watch(
   () => musicStore.lastUpdated,
   async () => {
-    await loadSongs();
+    await reloadSongs();
   }
 );
 
@@ -94,6 +82,17 @@ const filteredSongs = computed(() => {
       }
     });
 });
+
+async function reloadSongs() {
+  const loadedSongs = await $music.getSongs();
+  const songArray = Object.values(loadedSongs.songs);
+  await Promise.all(
+    songArray.map(async (song) => {
+      song.coverURL = await $music.getCoverURLFromID(song.id);
+    })
+  );
+  songs.value = songArray;
+}
 
 async function play(id: string, index: number) {
   const queueIds = filteredSongs.value.slice(index).map(song => song.id);

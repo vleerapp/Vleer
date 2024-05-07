@@ -43,7 +43,6 @@ onMounted(async () => {
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('focusin', updateFocus);
   document.addEventListener('focusout', updateFocus);
-  await $settings.searchApiURL()
 });
 
 onUnmounted(() => {

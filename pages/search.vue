@@ -4,7 +4,8 @@
     <div class="search">
       <div class="search-container">
         <IconsSearch />
-        <input class="input" spellcheck="false" type="text" v-model="searchTerm" @input="handleInput" placeholder="Search" />
+        <input class="input" spellcheck="false" type="text" v-model="searchTerm" @input="handleInput"
+          placeholder="Search" />
       </div>
       <ul>
         <li v-for="(song, index) in searchResults" :class="{ 'first-result': index === 0 }"
@@ -39,10 +40,16 @@ async function searchSongs() {
     return;
   }
 
-  const apiURL = $settings.getApiURL()
+  let apiURL = $settings.getApiURL()
+
+  if (apiURL == "") {
+    apiURL = "https://pipedapi.r4fo.com";
+  }
+  
+  console.log(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
 
   try {
-    const response = await fetch(`${apiURL}/search?q=${searchTerm.value}&filter=music_songs`);
+    const response = await fetch(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
     const data = await response.json();
     searchResults.value = data.items
       .filter(item => item.type !== 'channel')
@@ -56,7 +63,7 @@ async function searchSongs() {
         durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`
       }));
   } catch (error) {
-    console.error("Failed to fetch songs:", error);
+    console.error("Failed to fetch songs:", error, apiURL, searchTerm.value);
     searchResults.value = [];
   }
 

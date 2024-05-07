@@ -12,16 +12,16 @@
   "devDependencies": {
     "@tauri-apps/api": "2.0.0-beta.7",
     "nuxt": "^3.11.2",
-    "sass": "^1.74.1",
-    "vue": "^3.4.20"
+    "sass": "1.77.0",
+    "vue": "3.4.27"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
     "@tauri-apps/cli": "2.0.0-beta.12",
     "@tauri-apps/plugin-dialog": "^2.0.0-beta.2",
     "@tauri-apps/plugin-fs": "^2.0.0-beta.2",
-    "@tauri-apps/plugin-global-shortcut": "2.0.0-beta.2",
-    "@tauri-apps/plugin-os": "2.0.0-beta.2",
+    "@tauri-apps/plugin-global-shortcut": "2.0.0-beta.3",
+    "@tauri-apps/plugin-os": "2.0.0-beta.3",
     "axios": "^1.6.8",
     "pinia": "^2.1.7",
     "uuid": "^9.0.1",

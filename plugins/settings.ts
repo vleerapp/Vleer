@@ -56,7 +56,18 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         console.error('Failed to fetch API URLs:', error);
         return [];
       }
-    }
+    },
+    async getApiURLs() {
+      try {
+        const response = await fetch('https://piped-instances.kavin.rocks/');
+        const instances = await response.json();
+        const urls = instances.map((instance: { api_url: string }) => instance.api_url);
+        return urls;
+      } catch (error) {
+        console.error('Failed to fetch API URLs:', error);
+        return [];
+      }
+    },
   };
 
   return {

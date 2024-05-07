@@ -2,20 +2,30 @@
   <div class="main element">
     <p class="element-title">Settings</p>
     <div class="settings">
-      <p>Equalizer</p>
-      <div class="equalizer">
-        <div class="info">
-          <p>+12.0</p>
-          <p>0.0</p>
-          <p>-12.0</p>
-        </div>
-        <div class="sliders">
-          <div v-for="(freq, index) in frequencies" :key="freq" class="freq">
-            <input type="number" v-model.number="eqGains[index]" @input="updateEqGain(index, $event.target.valueAsNumber)" class="gain" step="0.1" min="-12" max="12">
-            <input type="range" min="-12" max="12" step="0.1" v-model.number="eqGains[index]"
-              @input="updateEqGain(index, eqGains[index])" class="range">
-            <div class="hz">{{ formatFrequency(freq) }}</div>
+      <div class="equalizer setting">
+        <p>Equalizer</p>
+        <div class="eq">
+          <div class="info">
+            <p>+12.0</p>
+            <p>0.0</p>
+            <p>-12.0</p>
           </div>
+          <div class="sliders">
+            <div v-for="(freq, index) in frequencies" :key="freq" class="freq">
+              <input type="number" v-model.number="eqGains[index]"
+                @input="updateEqGain(index, $event.target.valueAsNumber)" class="gain" step="0.1" min="-12" max="12">
+              <input type="range" min="-12" max="12" step="0.1" v-model.number="eqGains[index]"
+                @input="updateEqGain(index, eqGains[index])" class="range">
+              <div class="hz">{{ formatFrequency(freq) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-url setting">
+        <p>Search API URL</p>
+        <div class="input-container">
+          <input class="input" v-model="apiUrl" @input="updateApiURL" spellcheck="false" type="url" placeholder="url" />
         </div>
       </div>
     </div>
@@ -30,6 +40,12 @@ const { $music, $settings } = useNuxtApp()
 
 const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 const eqGains = ref(new Array(frequencies.length).fill(0.0));
+const apiUrl = ref("");
+
+function updateApiURL() {
+  $settings.setApiURL(apiUrl.value);
+}
+
 
 const eq = $settings.getEq()
 frequencies.forEach((freq, index) => {

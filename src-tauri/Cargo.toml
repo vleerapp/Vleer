@@ -1,6 +1,6 @@
 [package]
 name = "vleer"
-version = "1.0.0"
+version = "1.0.0-beta.4"
 description = "Vleer"
 authors = ["pandadev", "waradu"]
 edition = "2021"

@@ -30,7 +30,7 @@
         </div>
         <div class="items">
           <div v-for="(song, index) in filteredSongs" :key="song.id" @click="playSong(song.id)" class="song">
-            <img :src="song.cover || '/cover.png'" :alt="song.title" class="cover" />
+            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
             <div class="titles">
               <p class="title">{{ truncate(song.title) }}</p>
               <p class="artist">{{ truncate(song.artist) }}</p>
