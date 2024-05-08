@@ -12,8 +12,8 @@ codesign -s - --force --deep --timestamp --options runtime src-tauri/target/rele
 ```
 or
 ```zsh
-cargo tauri build
-cd target/release/bundle/dmg/
+# build first
+cd src-tauri/target/release/bundle/dmg/
 hdiutil attach -nobrowse -mountpoint /Volumes/vleer ./Vleer*.dmg
 cp -R /Volumes/vleer .
 hdiutil detach /Volumes/vleer
