@@ -38,5 +38,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUwRUMwRTVDODZENTA2NjEKUldSaEJ0V0dYQTdzNE5lVjNsV0VmQUtNajl2Z2hCcTA4cGdURTI1MFVadENka3V1SG1OQkhER2cK",
+      "endpoints": [
+        "https://updater.vleer.app/"
+      ]
+    }
   }
 }
