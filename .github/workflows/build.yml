@@ -65,7 +65,7 @@ jobs:
           path: src-tauri/target/release/bundle/msi/*.msi
 
       - name: Publish Windows Archives
-        if: matrix.platform == 'macos-latest'
+        if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
           name: windows-signature-archives
@@ -91,7 +91,7 @@ jobs:
           path: src-tauri/target/release/bundle/rpm/*.rpm
 
       - name: Publish Ubuntu Archives
-        if: matrix.platform == 'macos-latest'
+        if: matrix.platform == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu-signature-archives
