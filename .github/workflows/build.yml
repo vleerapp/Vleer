@@ -52,7 +52,7 @@ jobs:
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: macos-signature-archives
+          name: updater-files-macos
           path: |
             src-tauri/target/release/bundle/macos/*.tar.gz
             src-tauri/target/release/bundle/macos/*.tar.gz.sig
@@ -68,7 +68,7 @@ jobs:
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: windows-signature-archives
+          name: updater-files-windows
           path: | 
             src-tauri/target/release/bundle/msi/*.zip
             src-tauri/target/release/bundle/msi/*.zip.sig
@@ -94,7 +94,7 @@ jobs:
         if: matrix.platform == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-signature-archives
+          name: updater-files-ubuntu
           path: |
             src-tauri/target/release/bundle/appimage/*.tar.gz
             src-tauri/target/release/bundle/appimage/*.tar.gz.sig

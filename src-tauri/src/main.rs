@@ -6,12 +6,17 @@
 mod commands;
 mod discord_rpc;
 
+use tauri::Manager;
+use tauri_plugin_window_state::{Builder, StateFlags};
+
 fn main() {
     env_logger::init();
     let _ = discord_rpc::connect_rpc();
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(Builder::new()
+            .with_state_flags(StateFlags::all())
+            .build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
@@ -25,6 +30,9 @@ fn main() {
         .setup(|app| {
             tauri::async_runtime::block_on(async {
                 let _ = commands::check_for_updates(app.handle().clone()).await;
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.restore_state(StateFlags::all());
+                }
             });
             Ok(())
         })
