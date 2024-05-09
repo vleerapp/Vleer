@@ -14,10 +14,6 @@
           <button class="shuffle"></button>
           <button class="dots"></button>
         </div>
-        <!-- <div class="search-container">
-          <IconsSearch />
-          <input class="input" placeholder="Search Playlist" spellcheck="false" v-model="searchQuery" />
-        </div> -->
       </div>
       <div class="songs">
         <div class="songs-info">
