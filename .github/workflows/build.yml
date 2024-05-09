@@ -48,17 +48,26 @@ jobs:
           name: macos-build-dmg
           path: src-tauri/target/release/bundle/dmg/*.dmg
 
+      - name: Publish macOS Archives
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-signature-archives
+          path: src-tauri/target/release/bundle/macos/*.tar.gz, src-tauri/target/release/bundle/macos/*.tar.gz.sig
+
       - name: Publish Windows Artifact
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: windows-build-exe
-          path: src-tauri/target/release/bundle/nsis/*.exe
-      - uses: actions/upload-artifact@v3
-        if: matrix.platform == 'windows-latest'
-        with:
           name: windows-build-msi
           path: src-tauri/target/release/bundle/msi/*.msi
+
+      - name: Publish Windows Archives
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-signature-archives
+          path: src-tauri/target/release/bundle/msi/*.zip, src-tauri/target/release/bundle/msi/*.zip.sig
 
       - name: Publish Ubuntu Artifacts
         if: matrix.platform == 'ubuntu-latest'
@@ -76,3 +85,10 @@ jobs:
         with:
           name: ubuntu-build-rpm
           path: src-tauri/target/release/bundle/rpm/*.rpm
+
+      - name: Publish Ubuntu Archives
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu-signature-archives
+          path: src-tauri/target/release/bundle/appimage/*.tar.gz, src-tauri/target/release/bundle/appimage/*.tar.gz.sig
