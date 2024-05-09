@@ -53,7 +53,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macos-signature-archives
-          path: src-tauri/target/release/bundle/macos/*.tar.gz, src-tauri/target/release/bundle/macos/*.tar.gz.sig
+          path: |
+            src-tauri/target/release/bundle/macos/*.tar.gz
+            src-tauri/target/release/bundle/macos/*.tar.gz.sig
 
       - name: Publish Windows Artifact
         if: matrix.platform == 'windows-latest'
@@ -67,7 +69,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: windows-signature-archives
-          path: src-tauri/target/release/bundle/msi/*.zip, src-tauri/target/release/bundle/msi/*.zip.sig
+          path: | 
+            src-tauri/target/release/bundle/msi/*.zip
+            src-tauri/target/release/bundle/msi/*.zip.sig
 
       - name: Publish Ubuntu Artifacts
         if: matrix.platform == 'ubuntu-latest'
@@ -91,4 +95,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ubuntu-signature-archives
-          path: src-tauri/target/release/bundle/appimage/*.tar.gz, src-tauri/target/release/bundle/appimage/*.tar.gz.sig
+          path: |
+            src-tauri/target/release/bundle/appimage/*.tar.gz
+            src-tauri/target/release/bundle/appimage/*.tar.gz.sig
