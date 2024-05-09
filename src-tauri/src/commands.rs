@@ -86,10 +86,6 @@ pub async fn check_for_updates(app: AppHandle) {
     let updater = app.updater().unwrap();
     let response = updater.check().await;
 
-    if let Err(ref e) = updater.check().await {
-        println!("Error: {:?}", e);
-    }
-
     match response {
         Ok(Some(update)) => {
             let cur_ver = &update.current_version;

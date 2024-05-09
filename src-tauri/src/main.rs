@@ -24,12 +24,6 @@ fn main() {
         ])
         .setup(|app| {
             tauri::async_runtime::block_on(async {
-                // let app_handle = app.handle().clone();
-                // let updater = app_handle.updater().unwrap();
-                // let response = updater.check().await;
-                // if let Err(e) = &response {
-                //     println!("Error checking for updates: {:?}", e);
-                // }
                 let _ = commands::check_for_updates(app.handle().clone()).await;
             });
             Ok(())
