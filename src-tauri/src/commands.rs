@@ -3,12 +3,12 @@ use reqwest::Client;
 use rusty_ytdl::Video;
 use std::path::PathBuf;
 use tauri::async_runtime;
-use tauri::AppHandle;
 use tauri::Error as TauriError;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_dialog::MessageDialogKind;
 use tauri_plugin_updater::UpdaterExt;
 use tokio::time::Instant;
+use tauri::{AppHandle, Manager};
 
 #[tauri::command]
 pub async fn download(url: String, name: String) -> Result<(), TauriError> {
@@ -121,4 +121,16 @@ pub async fn check_for_updates(app: AppHandle) {
             println!("Failed to check for updates: {:?}", e);
         }
     }
+}
+
+
+pub fn show_window(app: &AppHandle) {
+    let windows = app.webview_windows();
+
+    windows
+        .values()
+        .next()
+        .expect("Sorry, no window found")
+        .set_focus()
+        .expect("Can't Bring Window to Focus");
 }

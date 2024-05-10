@@ -19,6 +19,9 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_window_state::Builder::new().build())
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            let _ = commands::show_window(app);
+        }))
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
