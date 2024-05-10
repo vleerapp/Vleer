@@ -3,6 +3,9 @@ import {
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
 import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
+import Database from "@tauri-apps/plugin-sql";
+
+const db = await Database.load("sqlite:songs.db");
 
 export const useMusicStore = defineStore("musicStore", {
   state: () =>
@@ -26,6 +29,7 @@ export const useMusicStore = defineStore("musicStore", {
       this.songsConfig = songs;
       this.player.audio.volume = 1;
       this.player.audio.preload = "auto";
+      // console.log(db);
     },
     replaceConfig(songs: SongsConfig) {
       this.songsConfig = songs

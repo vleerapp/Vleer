@@ -10,7 +10,6 @@ use tauri::Manager;
 use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 
 fn main() {
-    env_logger::init();
     let _ = discord_rpc::connect_rpc();
 
     tauri::Builder::default()
@@ -22,6 +21,7 @@ fn main() {
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let _ = commands::show_window(app);
         }))
+        .plugin(tauri_plugin_sql::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
@@ -31,6 +31,7 @@ fn main() {
         .setup(|app| {
             tauri::async_runtime::block_on(async {
                 let _ = commands::check_for_updates(app.handle().clone()).await;
+
                 if let Some(window) = app.get_window("main") {
                     let _ = window.restore_state(StateFlags::all());
                 }
@@ -38,8 +39,7 @@ fn main() {
             Ok(())
         })
         .on_window_event(|app, event| match event {
-            tauri::WindowEvent::CloseRequested { .. } |
-            tauri::WindowEvent::Destroyed => {
+            tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed => {
                 let _ = AppHandleExt::save_window_state(app.app_handle(), StateFlags::all());
             }
             _ => {}
