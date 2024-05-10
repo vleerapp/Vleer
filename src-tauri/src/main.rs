@@ -38,7 +38,8 @@ fn main() {
             Ok(())
         })
         .on_window_event(|app, event| match event {
-            tauri::WindowEvent::CloseRequested { .. } => {
+            tauri::WindowEvent::CloseRequested { .. } |
+            tauri::WindowEvent::Destroyed => {
                 let _ = AppHandleExt::save_window_state(app.app_handle(), StateFlags::all());
             }
             _ => {}
