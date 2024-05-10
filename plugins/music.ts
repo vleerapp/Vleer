@@ -34,7 +34,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         playlists: {}
       };
 
-      const songsResult = await db.query<Song[]>("SELECT * FROM songs");
+      const songsResult = await db.select<Song[]>("SELECT * FROM songs");
       if (songsResult && Array.isArray(songsResult)) {
         songsResult.forEach(song => {
           songsConfig.songs[song.id] = song;
@@ -43,7 +43,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         console.error('Failed to fetch songs:', songsResult);
       }
 
-      const playlistsResult = await db.query<any[]>("SELECT * FROM playlists");
+      const playlistsResult = await db.select<any[]>("SELECT * FROM playlists");
       if (playlistsResult && Array.isArray(playlistsResult)) {
         playlistsResult.forEach(playlist => {
           songsConfig.playlists[playlist.id] = {
@@ -55,7 +55,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         console.error('Failed to fetch playlists:', playlistsResult);
       }
 
-      const playlistSongsResult = await db.query<any[]>("SELECT * FROM playlist_songs");
+      const playlistSongsResult = await db.select<any[]>("SELECT * FROM playlist_songs");
       if (playlistSongsResult && Array.isArray(playlistSongsResult)) {
         playlistSongsResult.forEach(item => {
           if (songsConfig.playlists[item.playlist_id]) {
@@ -67,6 +67,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
 
       musicStore.init(songsConfig);
+    },
+    getSongs() {
+      return musicStore.songsConfig;
     },
     async addSongData(song: Song) {
       await db.execute(`INSERT INTO songs (id, title, artist, length, cover, date_added, cover_url, last_played) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
