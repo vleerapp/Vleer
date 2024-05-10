@@ -1,31 +1,18 @@
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Result as AnyhowResult};
 use reqwest::Client;
 use rusty_ytdl::Video;
 use std::path::PathBuf;
-use tauri::async_runtime;
-use tauri::Error as TauriError;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_dialog::DialogExt;
-use tauri_plugin_dialog::MessageDialogKind;
+use tauri::{AppHandle, Manager, async_runtime, Result as TauriResult};
+use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
 use tokio::time::Instant;
+use tokio::task::JoinHandle;
 
 #[tauri::command]
-pub async fn download(url: String, name: String) -> Result<(), TauriError> {
+pub async fn download(url: String, name: String) -> TauriResult<()> {
     let video = Video::new(url.clone()).map_err(|e| anyhow!(e.to_string()))?;
 
-    let mut base_path = PathBuf::new();
-    match std::env::consts::OS {
-        "macos" | "linux" => {
-            let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
-            base_path.push(format!("/users/{}/Music/Vleer", username));
-        }
-        "windows" => {
-            let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
-            base_path.push(format!("C:\\Users\\{}\\Music\\Vleer", username));
-        }
-        _ => {}
-    }
+    let base_path = get_path();
 
     let mut path = base_path.clone();
     path.push("Songs");
@@ -41,7 +28,24 @@ pub async fn download(url: String, name: String) -> Result<(), TauriError> {
 }
 
 #[tauri::command]
-pub async fn ping_urls(urls: Vec<String>) -> Result<Vec<(String, u128)>, TauriError> {
+pub fn get_path() -> PathBuf {
+    let mut path = PathBuf::new();
+    match std::env::consts::OS {
+        "macos" | "linux" => {
+            let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
+            path.push(format!("/users/{}/Music/Vleer", username));
+        }
+        "windows" => {
+            let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
+            path.push(format!("C:\\Users\\{}\\Music\\Vleer", username));
+        }
+        _ => {}
+    }
+    return path;
+}
+
+#[tauri::command]
+pub async fn ping_urls(urls: Vec<String>) -> TauriResult<Vec<(String, u128)>> {
     let client = Client::new();
     let results = ping_urls_helper(&client, &urls).await?;
     Ok(results)
@@ -50,8 +54,8 @@ pub async fn ping_urls(urls: Vec<String>) -> Result<Vec<(String, u128)>, TauriEr
 async fn ping_urls_helper(
     client: &Client,
     urls: &[String],
-) -> Result<Vec<(String, u128)>, TauriError> {
-    let mut handles = vec![];
+) -> AnyhowResult<Vec<(String, u128)>> {
+    let mut handles: Vec<JoinHandle<AnyhowResult<(String, u128)>>> = vec![];
 
     for url in urls.iter() {
         let url_clone = url.clone();
@@ -62,8 +66,8 @@ async fn ping_urls_helper(
             let result = client_clone.head(&url_clone).send().await;
             let latency = start.elapsed().as_millis();
             match result {
-                Ok(_) => (url_clone, latency),    // Use the cloned URL here
-                Err(_) => (url_clone, u128::MAX), // Use the cloned URL here
+                Ok(_) => Ok((url_clone, latency)),    // Use the cloned URL here
+                Err(_) => Ok((url_clone, u128::MAX)), // Use the cloned URL here
             }
         });
         handles.push(handle);
@@ -71,7 +75,7 @@ async fn ping_urls_helper(
 
     let mut results = Vec::new();
     for handle in handles {
-        if let Ok(result) = handle.await {
+        if let Ok(Ok(result)) = handle.await {
             results.push(result);
         }
     }

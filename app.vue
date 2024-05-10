@@ -6,6 +6,8 @@
 </template>
 
 <script lang="ts" setup>
+import Database from "@tauri-apps/plugin-sql";
+
 window.addEventListener('error', (e) => {
   if (e.target instanceof HTMLAudioElement) {
     const mediaError = e.target.error;

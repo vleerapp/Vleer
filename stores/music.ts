@@ -5,7 +5,7 @@ import {
 import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
 
-const db = await Database.load("sqlite:songs.db");
+const db = await Database.load("sqlite:data.db");
 
 export const useMusicStore = defineStore("musicStore", {
   state: () =>
@@ -25,11 +25,10 @@ export const useMusicStore = defineStore("musicStore", {
   } as MusicStore),
 
   actions: {
-    init(songs: SongsConfig) {
+    async init(songs: SongsConfig) {
       this.songsConfig = songs;
       this.player.audio.volume = 1;
       this.player.audio.preload = "auto";
-      // console.log(db);
     },
     replaceConfig(songs: SongsConfig) {
       this.songsConfig = songs

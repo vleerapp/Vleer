@@ -5,15 +5,13 @@ import {
   writeFile,
   exists,
   BaseDirectory,
-  mkdir,
-  writeTextFile,
-  readTextFile,
   remove,
 } from "@tauri-apps/plugin-fs";
-import type { EQSettings, Song, SongsConfig } from "~/types/types";
-import axios from 'axios';
+import type { Song, SongsConfig } from "~/types/types";
+import Database from "@tauri-apps/plugin-sql";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async (nuxtApp) => {
+  const db = await Database.load("sqlite:data.db");
   const musicStore = useMusicStore();
   const settingsStore = useSettingsStore();
 
@@ -31,79 +29,58 @@ export default defineNuxtPlugin((nuxtApp) => {
     queue: [] as string[],
     currentQueueIndex: 0,
     async init() {
-      const baseDirExists = await exists("Vleer", {
-        baseDir: BaseDirectory.Audio,
-      });
-
-      const songsDirExists = await exists("Vleer/Songs", {
-        baseDir: BaseDirectory.Audio,
-      });
-
-      const coverDirExists = await exists("Vleer/Covers", {
-        baseDir: BaseDirectory.Audio,
-      });
-
-      const songJsonExists = await exists("Vleer/songs.json", {
-        baseDir: BaseDirectory.Audio,
-      });
-
-      if (!baseDirExists) {
-        await mkdir("Vleer", { baseDir: BaseDirectory.Audio });
-      }
-
-      if (!songsDirExists) {
-        await mkdir("Vleer/Songs", { baseDir: BaseDirectory.Audio });
-      }
-
-      if (!coverDirExists) {
-        await mkdir("Vleer/Covers", { baseDir: BaseDirectory.Audio });
-      }
-
-      const defaultJson = {
+      const songsConfig: SongsConfig = {
         songs: {},
+        playlists: {}
       };
 
-      if (!songJsonExists) {
-        await writeTextFile(
-          "Vleer/songs.json",
-          JSON.stringify(defaultJson, null, 2),
-          {
-            baseDir: BaseDirectory.Audio,
-            createNew: true,
-          }
-        );
+      const songsResult = await db.query<Song[]>("SELECT * FROM songs");
+      if (songsResult && Array.isArray(songsResult)) {
+        songsResult.forEach(song => {
+          songsConfig.songs[song.id] = song;
+        });
+      } else {
+        console.error('Failed to fetch songs:', songsResult);
       }
 
-      const songsConfig = JSON.parse(
-        await readTextFile("Vleer/songs.json", { baseDir: BaseDirectory.Audio })
-      ) as SongsConfig;
+      const playlistsResult = await db.query<any[]>("SELECT * FROM playlists");
+      if (playlistsResult && Array.isArray(playlistsResult)) {
+        playlistsResult.forEach(playlist => {
+          songsConfig.playlists[playlist.id] = {
+            ...playlist,
+            songs: []
+          };
+        });
+      } else {
+        console.error('Failed to fetch playlists:', playlistsResult);
+      }
+
+      const playlistSongsResult = await db.query<any[]>("SELECT * FROM playlist_songs");
+      if (playlistSongsResult && Array.isArray(playlistSongsResult)) {
+        playlistSongsResult.forEach(item => {
+          if (songsConfig.playlists[item.playlist_id]) {
+            songsConfig.playlists[item.playlist_id].songs.push(item.song_id);
+          }
+        });
+      } else {
+        console.error('Failed to fetch playlist songs:', playlistSongsResult);
+      }
 
       musicStore.init(songsConfig);
     },
-    getSongs() {
-      return musicStore.songsConfig;
-    },
     async addSongData(song: Song) {
-      const songsConfig = JSON.parse(
-        await readTextFile("Vleer/songs.json", { baseDir: BaseDirectory.Audio })
-      ) as SongsConfig;
-
-      musicStore.replaceConfig(songsConfig);
+      await db.execute(`INSERT INTO songs (id, title, artist, length, cover, date_added, cover_url, last_played) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
+        song.id, song.title, song.artist, song.length, song.cover, song.date_added, song.coverURL, song.lastPlayed
+      ]);
 
       musicStore.addSongData(song);
-
-      const data = musicStore.getSongsData();
-
-      await writeTextFile("Vleer/songs.json", JSON.stringify(data, null, 2), {
-        baseDir: BaseDirectory.Audio,
-      });
     },
     async setSong(id: string) {
-      if (
-        await exists(`Vleer/Songs/${id}.webm`, {
-          baseDir: BaseDirectory.Audio,
-        })
-      ) {
+      const songExists = await exists(`Vleer/Songs/${id}.webm`, {
+        baseDir: BaseDirectory.Audio,
+      });
+
+      if (songExists) {
         const contents = await readFile(`Vleer/Songs/${id}.webm`, {
           baseDir: BaseDirectory.Audio,
         });
@@ -111,7 +88,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         await musicStore.setSongFromBuffer(contents);
         await this.ensureAudioContextAndFilters();
         const currentTime = new Date().toISOString();
-        musicStore.updateLastPlayed(id, currentTime);
+        await db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
       } else {
         settingsStore.settings.playerSettings.currentSong = "";
         await settingsStore.saveSettings();
@@ -278,7 +255,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       try {
         const data = await readFile(coverPath.path, { baseDir: BaseDirectory.Audio });
         await writeFile(newCoverPath, data, { baseDir: BaseDirectory.Audio });
-        musicStore.updatePlaylistCover(playlistId, newCoverPath);
+        await db.execute("UPDATE playlists SET cover = ? WHERE id = ?", [newCoverPath, playlistId]);
       } catch (error) {
         console.error('Failed to update playlist cover:', error);
         throw new Error('Failed to update playlist cover due to path or permission issues.');
@@ -312,3 +289,4 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
   };
 });
+

@@ -5,12 +5,58 @@
 
 mod commands;
 mod discord_rpc;
+mod migration;
 
 use tauri::Manager;
 use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
+use tauri_plugin_sql::{Migration, MigrationKind};
 
 fn main() {
     let _ = discord_rpc::connect_rpc();
+
+    let sql_commands = format!(
+        r#"
+        CREATE TABLE songs (
+            id TEXT PRIMARY KEY,
+            title TEXT,
+            artist TEXT,
+            length INTEGER,
+            cover TEXT,
+            date_added TEXT,
+            cover_url TEXT,
+            last_played TEXT
+        );
+        CREATE TABLE playlists (
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            date TEXT,
+            cover TEXT
+        );
+        CREATE TABLE playlist_songs (
+            playlist_id TEXT,
+            song_id TEXT,
+            FOREIGN KEY (playlist_id) REFERENCES playlists(id),
+            FOREIGN KEY (song_id) REFERENCES songs(id)
+        );
+        {}
+        {}
+        {}
+        "#,
+        migration::generate_songs_insert_sql(),
+        migration::generate_playlists_insert_sql(),
+        migration::generate_playlist_songs_insert_sql()
+    );
+
+    let sql_commands = Box::leak(Box::new(sql_commands));
+
+    let migrations = vec![
+        Migration {
+            version: 1,
+            description: "create_all_tables_and_import_initial_data",
+            sql: sql_commands,
+            kind: MigrationKind::Up,
+        }
+    ];
 
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
@@ -21,7 +67,11 @@ fn main() {
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let _ = commands::show_window(app);
         }))
-        .plugin(tauri_plugin_sql::Builder::default().build())
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations("sqlite:data.db", migrations)
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
