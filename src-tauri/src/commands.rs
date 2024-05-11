@@ -92,14 +92,13 @@ pub async fn check_for_updates(app: AppHandle) {
             let new_ver = &update.version;
             let mut msg = String::new();
             msg.extend([
-                &format!("XXX {new_ver} is now available -- you have {cur_ver}\n\n"),
-                "Would you like to install it now?\n\n",
-                "Release notes can be found at XXX",
+                &format!("New Version: {new_ver}\nCurrent Version: {cur_ver}\n\n"),
+                "Would you like to install it now?",
             ]);
 
             app.dialog()
                 .message(msg)
-                .title("A new version of XXX is available!")
+                .title("Update Available")
                 .ok_button_label("Yes")
                 .cancel_button_label("No")
                 .show(move |response| {
@@ -110,7 +109,7 @@ pub async fn check_for_updates(app: AppHandle) {
                         if let Err(e) = update.download_and_install(|_, _| {}, || {}).await {
                             println!("Error installing new update: {:?}", e);
                             app.dialog().message(
-                                "Failed to install new update. The new update can be downloaded from XXX"
+                                "Failed to install new update. The new update can be downloaded from Github"
                             ).kind(MessageDialogKind::Error).show(|_| {});
                         }
                     });
