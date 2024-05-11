@@ -6,7 +6,9 @@
 </template>
 
 <script lang="ts" setup>
-import Database from "@tauri-apps/plugin-sql";
+const { $music } = useNuxtApp();
+await $music.init();
+
 
 window.addEventListener('error', (e) => {
   if (e.target instanceof HTMLAudioElement) {
@@ -34,10 +36,6 @@ window.addEventListener('error', (e) => {
     }
   }
 }, true);
-
-const { $music } = useNuxtApp();
-
-await $music.init();
 
 const isTextInputFocused = ref(false);
 
