@@ -24,10 +24,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
 import axios from 'axios';
 import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
-import { useSettingsStore } from "~/stores/settings";
 
-const settingsStore = useSettingsStore();
-const { $music } = useNuxtApp();
+const { $music, $settings } = useNuxtApp();
 
 const searchTerm = ref("");
 const searchResults = ref<MusicSearchResponseItem[]>([]);
@@ -43,7 +41,7 @@ async function searchSongs() {
     return;
   }
 
-  let apiURL = settingsStore.getApiURL()
+  let apiURL = $settings.getApiURL()
 
   if (!apiURL) {
     apiURL = "https://pipedapi.r4fo.com";

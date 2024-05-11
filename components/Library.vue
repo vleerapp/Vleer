@@ -40,14 +40,13 @@ import { useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
 
 const { $music } = useNuxtApp();
-const musicStore = useMusicStore();
 const router = useRouter();
 
 const searchQuery = ref("");
 const playlists = ref<Playlist[]>([]);
 
 async function fetchPlaylists() {
-  const rawPlaylists = Object.values(musicStore.getSongsData().playlists);
+  const rawPlaylists = Object.values($music.getSongsData().playlists);
   const playlistsWithCovers = await Promise.all(rawPlaylists.map(async playlist => {
     const cover = await $music.getCoverURLFromID(playlist.id);
     return { ...playlist, cover: cover || '/cover.png' };
@@ -65,7 +64,7 @@ onMounted(() => {
   fetchPlaylists()
 }),
 
-watch(() => musicStore.getSongsData().playlists, async () => {
+watch(() => $music.getSongsData().playlists, async () => {
   await fetchPlaylists();
 }, { deep: true });
 
@@ -79,14 +78,14 @@ function truncate(text: string, length: number = 45) {
 
 async function createAndOpenPlaylist() {
   const newPlaylistId = uuidv4();
-  const newPlaylist = {
+  const newPlaylist: Playlist = {
     id: newPlaylistId,
     name: 'New Playlist',
     date: new Date().toISOString(),
     cover: '/cover.png',
     songs: []
   };
-  musicStore.createPlaylist(newPlaylist);
+  $music.createPlaylist(newPlaylist);
   await fetchPlaylists();
   router.push(`/${newPlaylistId}`);
 }

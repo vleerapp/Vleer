@@ -35,21 +35,19 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { type EQSettings } from '~/types/types';
-import { useSettingsStore } from "~/stores/settings";
 
-const settingsStore = useSettingsStore();
-const { $music } = useNuxtApp()
+const { $music, $settings } = useNuxtApp()
 
 const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 const eqGains = ref(new Array(frequencies.length).fill(0.0));
-const apiUrl = ref(settingsStore.getApiURL());
+const apiUrl = ref($settings.getApiURL());
 
 function updateApiURL() {
-  settingsStore.setApiURL(apiUrl.value);
+  $settings.setApiURL(apiUrl.value);
 }
 
 
-const eq = settingsStore.getEq()
+const eq = $settings.getEq()
 frequencies.forEach((freq, index) => {
   const freqKey = freq.toString();
   eqGains.value[index] = Number(parseFloat(eq[freqKey as keyof EQSettings] || 0).toFixed(1));
@@ -61,9 +59,9 @@ function updateEqGain(filterIndex: number, gain: number) {
   formattedGain = Number(formattedGain.toFixed(1));
   eqGains.value[filterIndex] = formattedGain;
   $music.setEqGain(filterIndex, formattedGain);
-  const eqSettingsMap = settingsStore.getEq();
+  const eqSettingsMap = $settings.getEq();
   eqSettingsMap[frequencies[filterIndex].toString() as keyof EQSettings] = formattedGain;
-  settingsStore.setEq(eqSettingsMap as EQSettings);
+  $settings.setEq(eqSettingsMap as EQSettings);
 }
 
 function formatFrequency(freq: number) {
@@ -79,7 +77,7 @@ function resetEQ() {
     $music.setEqGain(index, 0);
     eqSettingsMap[freq.toString() as keyof EQSettings] = "0";
   });
-  settingsStore.setEq(eqSettingsMap as EQSettings)
+  $settings.setEq(eqSettingsMap as EQSettings)
 }
 </script>
 

@@ -85,7 +85,6 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { useMusicStore } from '~/stores/music';
 import { computed, ref, watch, onMounted } from "vue";
 import type { Song, Playlist } from '~/types/types';
 import { open } from '@tauri-apps/plugin-dialog';
@@ -94,8 +93,7 @@ const { $music } = useNuxtApp();
 const route = useRoute();
 const playlistId = route.params.playlist.toString();
 
-const musicStore = useMusicStore();
-const playlist = ref(null);
+const playlist = ref<Playlist | null>(null);
 const playlistName = ref<string>(playlist.value?.name || '');
 const searchQuery = ref<string>('');
 
@@ -112,19 +110,14 @@ function toggleAddSongs() {
 }
 
 watchEffect(async () => {
-  const result = await musicStore.getPlaylistByID(playlistId);
-  if (result) {
-    playlist.value = result;
-  } else {
-    console.error('No playlist found with ID:', playlistId);
-  }
+  playlist.value = $music.getPlaylistByID(playlistId);
 });
 
 onMounted(async () => {
   playlistCover.value = await $music.getCoverURLFromID(playlistId);
   if (playlist.value?.songs) {
     songsDetails.value = await Promise.all(playlist.value.songs.map(songId => {
-      const songDetail = musicStore.getSongByID(songId);
+      const songDetail = $music.getSongByID(songId);
       return songDetail ? songDetail : null;
     }).filter((song): song is Song => song !== null));
   }
@@ -183,7 +176,7 @@ watch(addSearchQuery, async (newValue) => {
 }, { immediate: true });
 
 async function addSongToPlaylist(song: Song) {
-  musicStore.addSongToPlaylist(playlistId, song.id);
+  $music.addSongToPlaylist(playlistId, song.id);
 
   await fetchPlaylist();
 }
@@ -191,7 +184,7 @@ async function addSongToPlaylist(song: Song) {
 //////////////////////////////////////// for playlist songs
 
 async function fetchPlaylist() {
-  playlist.value = musicStore.getPlaylistByID(playlistId);
+  playlist.value = $music.getPlaylistByID(playlistId);
 }
 
 const filteredSongs = computed<Song[]>(() => {
@@ -221,7 +214,7 @@ const songsCountAndDuration = computed<string>(() => {
 
 const updatePlaylistName = () => {
   if (playlist.value?.name !== playlistName.value) {
-    musicStore.renamePlaylist(playlistId, playlistName.value);
+    $music.renamePlaylist(playlistId, playlistName.value);
   }
 };
 

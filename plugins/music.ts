@@ -7,7 +7,7 @@ import {
   BaseDirectory,
   remove,
 } from "@tauri-apps/plugin-fs";
-import type { Song, SongsConfig } from "~/types/types";
+import type { Song, SongsConfig, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
 
 export default defineNuxtPlugin(async (nuxtApp) => {
@@ -29,25 +29,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     queue: [] as string[],
     currentQueueIndex: 0,
     async init() {
-      const songsConfig: SongsConfig = {
-        songs: {},
-        playlists: {}
-      };
-
-      const songsResult = await db.select<Song[]>("SELECT * FROM songs");
-      songsResult.forEach(song => {
-        songsConfig.songs[song.id] = song;
-      });
-
-      const playlistsResult = await db.select<any[]>("SELECT * FROM playlists");
-      playlistsResult.forEach(playlist => {
-        songsConfig.playlists[playlist.id] = {
-          ...playlist,
-          songs: playlist.songs.split(',')
-        };
-      });
-
-      musicStore.init(songsConfig);
+      musicStore.init();
     },
     getSongs() {
       return musicStore.songsConfig;
@@ -74,7 +56,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         const currentTime = new Date().toISOString();
         await db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
       } else {
-        settingsStore.settings.playerSettings.currentSong = "";
+        settingsStore.setCurrentSong("");
         await settingsStore.saveSettings();
       }
     },
@@ -123,8 +105,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     },
     play() {
       const audio = musicStore.getAudio();
-      settingsStore.settings.playerSettings.currentSong =
-        musicStore.player.currentSongId;
+      settingsStore.setCurrentSong(musicStore.player.currentSongId);
       settingsStore.saveSettings();
       audio.play();
     },
@@ -193,7 +174,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       lastNode.connect(musicStore.player.audioContext!.destination);
     },
     async applyEqSettings() {
-      console.log(settingsStore.getEq());
       const eqSettings = settingsStore.getEq();
       musicStore.player.eqFilters.forEach((filter, index) => {
         const gain =
@@ -249,6 +229,27 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         this.play();
       }
     },
+    getSongsData(): SongsConfig {
+      return musicStore.getSongsData();
+    },
+    async createPlaylist(playlist: Playlist) {
+      musicStore.createPlaylist(playlist);
+    },
+    getPlaylistByID(id: string): Playlist {
+      return musicStore.getPlaylistByID(id);
+    },
+    getSongByID(id: string): Song {
+      return musicStore.getSongByID(id);
+    },
+    addSongToPlaylist(playlistId: string, songId: string){
+      musicStore.addSongToPlaylist(playlistId, songId);
+    },
+    renamePlaylist(playlistId: string, newName: string){
+      musicStore.renamePlaylist(playlistId, newName);
+    },
+    getLastUpdated() {
+      return musicStore.getLastUpdated();
+    }
   };
 
   musicStore.player.audio.addEventListener('ended', () => {

@@ -44,10 +44,8 @@
 <script lang="ts" setup>
 import { type Song } from "~/types/types";
 import { ref, onMounted, watch } from "vue";
-import { useMusicStore } from "~/stores/music";
 
 const { $music } = useNuxtApp();
-const musicStore = useMusicStore();
 
 const searchQuery = ref("");
 const songs = ref([]);
@@ -57,7 +55,7 @@ onMounted(async () => {
 });
 
 watch(
-  () => musicStore.lastUpdated,
+  () => $music.getLastUpdated(),
   async () => {
     await reloadSongs();
   }

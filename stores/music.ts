@@ -1,6 +1,3 @@
-import {
-  BaseDirectory,
-} from "@tauri-apps/plugin-fs";
 import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
 
@@ -63,7 +60,7 @@ export const useMusicStore = defineStore("musicStore", {
     getAudio(): HTMLAudioElement {
       return this.player.audio;
     },
-    getSongByID(id: string): Song | null {
+    getSongByID(id: string): Song {
       return this.songsConfig.songs[id] ?? null;
     },
     async updateLastPlayed(songId: string, lastPlayed: string) {
@@ -78,7 +75,7 @@ export const useMusicStore = defineStore("musicStore", {
       ]);
       this.songsConfig.playlists[playlist.id] = playlist;
     },
-    getPlaylistByID(id: string): Playlist | null {
+    getPlaylistByID(id: string): Playlist {
       return this.songsConfig.playlists[id] ?? null;
     },
     async renamePlaylist(playlistId: string, newName: string) {
@@ -93,5 +90,18 @@ export const useMusicStore = defineStore("musicStore", {
         this.songsConfig.playlists[playlistId].cover = newCoverPath;
       }
     },
+    async addSongToPlaylist(playlistId: string, songId: string) {
+      const playlist = this.songsConfig.playlists[playlistId];
+      if (playlist && this.songsConfig.songs[songId]) {
+        playlist.songs.push(songId);
+        await this.db.execute("UPDATE playlists SET songs = ? WHERE id = ?", [playlist.songs.join(','), playlistId]);
+      }
+    },
+    getLastUpdated() {
+      return this.lastUpdated;
+    },
+    setVolume(volume: number) {
+      this.player.audio.volume = volume;
+    }
   },
 });

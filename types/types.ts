@@ -12,7 +12,7 @@ export interface Song {
 export interface Playlist {
   id: string;
   name: string;
-  date: Date;
+  date: string;
   cover: string;
   songs: string[];
 }
