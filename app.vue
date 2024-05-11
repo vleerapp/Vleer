@@ -35,7 +35,7 @@ window.addEventListener('error', (e) => {
   }
 }, true);
 
-const { $music, $settings } = useNuxtApp();
+const { $music } = useNuxtApp();
 
 await $music.init();
 

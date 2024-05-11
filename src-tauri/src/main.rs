@@ -14,7 +14,7 @@ use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 fn main() {
     let _ = discord_rpc::connect_rpc();
 
-    let sql_commands = format!(
+    let migration_v1 = format!(
         r#"
     CREATE TABLE songs (
         id TEXT PRIMARY KEY,
@@ -37,17 +37,37 @@ fn main() {
     {}
     "#,
         migration::generate_songs_insert_sql(),
-        migration::generate_playlists_insert_sql()
+        migration::generate_playlists_insert_sql(),
     );
 
-    let sql_commands = Box::leak(Box::new(sql_commands));
+    let migration_v2 = format!(
+        r#"
+    CREATE TABLE settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    );
+    {}
+    "#,
+        migration::generate_settings_insert_sql(),
+    );
 
-    let migrations = vec![Migration {
-        version: 1,
-        description: "create_all_tables_and_import_initial_data",
-        sql: sql_commands,
-        kind: MigrationKind::Up,
-    }];
+    let sql_commands_v1 = Box::leak(Box::new(migration_v1));
+    let sql_commands_v2 = Box::leak(Box::new(migration_v2));
+
+    let migrations = vec![
+        Migration {
+            version: 1,
+            description: "create_songs_and_playlists_tables",
+            sql: sql_commands_v1,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 2,
+            description: "create_settings_table",
+            sql: sql_commands_v2,
+            kind: MigrationKind::Up,
+        },
+    ];
 
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())

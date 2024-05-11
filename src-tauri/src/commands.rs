@@ -12,7 +12,7 @@ use tokio::task::JoinHandle;
 pub async fn download(url: String, name: String) -> TauriResult<()> {
     let video = Video::new(url.clone()).map_err(|e| anyhow!(e.to_string()))?;
 
-    let base_path = get_path();
+    let base_path = get_music_path();
 
     let mut path = base_path.clone();
     path.push("Songs");
@@ -28,7 +28,7 @@ pub async fn download(url: String, name: String) -> TauriResult<()> {
 }
 
 #[tauri::command]
-pub fn get_path() -> PathBuf {
+pub fn get_music_path() -> PathBuf {
     let mut path = PathBuf::new();
     match std::env::consts::OS {
         "macos" | "linux" => {
@@ -38,6 +38,27 @@ pub fn get_path() -> PathBuf {
         "windows" => {
             let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
             path.push(format!("C:\\Users\\{}\\Music\\Vleer", username));
+        }
+        _ => {}
+    }
+    return path;
+}
+
+#[tauri::command]
+pub fn get_config_path() -> PathBuf {
+    let mut path = PathBuf::new();
+    match std::env::consts::OS {
+        "macos" => {
+            let home_dir = std::env::var("HOME").unwrap_or_else(|_| format!("/Users/{}", std::env::var("USER").unwrap_or_else(|_| "default".into())));
+            path.push(format!("{}/Library/Application Support/app.vleer", home_dir));
+        }
+        "linux" => {
+            let home_dir = std::env::var("HOME").unwrap_or_else(|_| format!("/home/{}", std::env::var("USER").unwrap_or_else(|_| "default".into())));
+            path.push(format!("{}/.config/app.vleer", home_dir));
+        }
+        "windows" => {
+            let app_data = std::env::var("APPDATA").unwrap_or_else(|_| format!("C:\\Users\\{}\\AppData\\Roaming", std::env::var("USERNAME").unwrap_or("default".into())));
+            path.push(format!("{}\\app.vleer", app_data));
         }
         _ => {}
     }

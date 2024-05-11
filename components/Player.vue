@@ -43,15 +43,17 @@
 
 <script lang="ts" setup>
 import { invoke } from "@tauri-apps/api/core";
+import { useSettingsStore } from "~/stores/settings"; 
 
-const { $music, $settings } = useNuxtApp();
+const settingsStore = useSettingsStore();
+const { $music } = useNuxtApp();
 
 const paused = ref(true)
 const looping = ref(false)
 const time = ref("00:00")
 const progress = ref($music.getAudio().currentTime)
 const audio = ref($music.getAudio())
-const volume = ref($settings.getVolume());
+const volume = ref(settingsStore.getVolume());
 setVolume()
 const coverUrl = ref('/cover.png');
 
@@ -148,12 +150,12 @@ watch(currentSong, async (newSong, oldSong) => {
 function mute() {
   volume.value = 0
   $music.setVolume(volume.value);
-  $settings.setVolume(volume.value)
+  settingsStore.setVolume(volume.value)
 }
 
 function setVolume() {
   $music.setVolume(volume.value);
-  $settings.setVolume(volume.value)
+  settingsStore.setVolume(volume.value)
 }
 
 function truncate(text: string, length: number = 30) {

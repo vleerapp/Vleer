@@ -193,7 +193,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       lastNode.connect(musicStore.player.audioContext!.destination);
     },
     async applyEqSettings() {
-      const eqSettings = (await settingsStore.getSettings()).eq;
+      console.log(settingsStore.getEq());
+      const eqSettings = settingsStore.getEq();
       musicStore.player.eqFilters.forEach((filter, index) => {
         const gain =
           eqSettings[filter.frequency.value.toString() as keyof EQSettings];
