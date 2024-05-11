@@ -8,55 +8,46 @@ mod discord_rpc;
 mod migration;
 
 use tauri::Manager;
-use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 
 fn main() {
     let _ = discord_rpc::connect_rpc();
 
     let sql_commands = format!(
         r#"
-        CREATE TABLE songs (
-            id TEXT PRIMARY KEY,
-            title TEXT,
-            artist TEXT,
-            length INTEGER,
-            cover TEXT,
-            date_added TEXT,
-            cover_url TEXT,
-            last_played TEXT
-        );
-        CREATE TABLE playlists (
-            id TEXT PRIMARY KEY,
-            name TEXT,
-            date TEXT,
-            cover TEXT
-        );
-        CREATE TABLE playlist_songs (
-            playlist_id TEXT,
-            song_id TEXT,
-            FOREIGN KEY (playlist_id) REFERENCES playlists(id),
-            FOREIGN KEY (song_id) REFERENCES songs(id)
-        );
-        {}
-        {}
-        {}
-        "#,
+    CREATE TABLE songs (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        artist TEXT,
+        length INTEGER,
+        cover TEXT,
+        date_added TEXT,
+        cover_url TEXT,
+        last_played TEXT
+    );
+    CREATE TABLE playlists (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        date TEXT,
+        cover TEXT,
+        songs TEXT
+    );
+    {}
+    {}
+    "#,
         migration::generate_songs_insert_sql(),
-        migration::generate_playlists_insert_sql(),
-        migration::generate_playlist_songs_insert_sql()
+        migration::generate_playlists_insert_sql()
     );
 
     let sql_commands = Box::leak(Box::new(sql_commands));
 
-    let migrations = vec![
-        Migration {
-            version: 1,
-            description: "create_all_tables_and_import_initial_data",
-            sql: sql_commands,
-            kind: MigrationKind::Up,
-        }
-    ];
+    let migrations = vec![Migration {
+        version: 1,
+        description: "create_all_tables_and_import_initial_data",
+        sql: sql_commands,
+        kind: MigrationKind::Up,
+    }];
 
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())

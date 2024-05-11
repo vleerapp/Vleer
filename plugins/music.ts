@@ -35,36 +35,17 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       };
 
       const songsResult = await db.select<Song[]>("SELECT * FROM songs");
-      if (songsResult && Array.isArray(songsResult)) {
-        songsResult.forEach(song => {
-          songsConfig.songs[song.id] = song;
-        });
-      } else {
-        console.error('Failed to fetch songs:', songsResult);
-      }
+      songsResult.forEach(song => {
+        songsConfig.songs[song.id] = song;
+      });
 
       const playlistsResult = await db.select<any[]>("SELECT * FROM playlists");
-      if (playlistsResult && Array.isArray(playlistsResult)) {
-        playlistsResult.forEach(playlist => {
-          songsConfig.playlists[playlist.id] = {
-            ...playlist,
-            songs: []
-          };
-        });
-      } else {
-        console.error('Failed to fetch playlists:', playlistsResult);
-      }
-
-      const playlistSongsResult = await db.select<any[]>("SELECT * FROM playlist_songs");
-      if (playlistSongsResult && Array.isArray(playlistSongsResult)) {
-        playlistSongsResult.forEach(item => {
-          if (songsConfig.playlists[item.playlist_id]) {
-            songsConfig.playlists[item.playlist_id].songs.push(item.song_id);
-          }
-        });
-      } else {
-        console.error('Failed to fetch playlist songs:', playlistSongsResult);
-      }
+      playlistsResult.forEach(playlist => {
+        songsConfig.playlists[playlist.id] = {
+          ...playlist,
+          songs: playlist.songs.split(',')
+        };
+      });
 
       musicStore.init(songsConfig);
     },
@@ -97,18 +78,48 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         await settingsStore.saveSettings();
       }
     },
-    async exists(id: string): Promise<boolean> {
-      return await exists(`Vleer/Songs/${id}.webm`, {
-        baseDir: BaseDirectory.Audio,
-      });
+    async updatePlaylistCover(playlistId: string, coverPath: any) {
+      if (!coverPath || typeof coverPath !== 'object' || typeof coverPath.path !== 'string') {
+        console.error('Invalid coverPath:', coverPath);
+        throw new TypeError('coverPath must be an object with a path string');
+      }
+      const extension = coverPath.path.split('.').pop();
+      const newCoverName = `${playlistId}.${extension}`;
+      const newCoverPath = `Vleer/Covers/${newCoverName}`;
+
+      const existingExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+      for (let ext of existingExtensions) {
+        const oldCoverPath = `Vleer/Covers/${playlistId}.${ext}`;
+        const coverExists = await exists(oldCoverPath, { baseDir: BaseDirectory.Audio });
+        if (coverExists) {
+          await remove(oldCoverPath, { baseDir: BaseDirectory.Audio });
+        }
+      }
+
+      try {
+        const data = await readFile(coverPath.path, { baseDir: BaseDirectory.Audio });
+        await writeFile(newCoverPath, data, { baseDir: BaseDirectory.Audio });
+        await db.execute("UPDATE playlists SET cover = ? WHERE id = ?", [newCoverPath, playlistId]);
+      } catch (error) {
+        console.error('Failed to update playlist cover:', error);
+        throw new Error('Failed to update playlist cover due to path or permission issues.');
+      }
     },
-    async getCoverURLFromID(id: string): Promise<string> {
-      const contents = await readFile(`Vleer/Covers/${id}.png`, {
-        baseDir: BaseDirectory.Audio,
-      });
-      const blob = new Blob([contents], { type: "image/png" });
-      const coverObjectURL = URL.createObjectURL(blob);
-      return coverObjectURL;
+    async getCoverURLFromID(playlistId: string): Promise<string> {
+      const extensions = ['png', 'jpg', 'jpeg', 'gif'];
+      for (let ext of extensions) {
+        const coverExists = await exists(`Vleer/Covers/${playlistId}.${ext}`, {
+          baseDir: BaseDirectory.Audio,
+        });
+        if (coverExists) {
+          const contents = await readFile(`Vleer/Covers/${playlistId}.${ext}`, {
+            baseDir: BaseDirectory.Audio,
+          });
+          const blob = new Blob([contents]);
+          return URL.createObjectURL(blob);
+        }
+      }
+      return "/cover.png";
     },
     play() {
       const audio = musicStore.getAudio();
@@ -236,49 +247,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         await this.setSong(this.queue[this.currentQueueIndex]);
         this.play();
       }
-    },
-    async updatePlaylistCover(playlistId: string, coverPath: any) {
-      if (!coverPath || typeof coverPath !== 'object' || typeof coverPath.path !== 'string') {
-        console.error('Invalid coverPath:', coverPath);
-        throw new TypeError('coverPath must be an object with a path string');
-      }
-      const extension = coverPath.path.split('.').pop();
-      const newCoverName = `${playlistId}.${extension}`;
-      const newCoverPath = `Vleer/Covers/${newCoverName}`;
-
-      const existingExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-      for (let ext of existingExtensions) {
-        const oldCoverPath = `Vleer/Covers/${playlistId}.${ext}`;
-        const coverExists = await exists(oldCoverPath, { baseDir: BaseDirectory.Audio });
-        if (coverExists) {
-          await remove(oldCoverPath, { baseDir: BaseDirectory.Audio });
-        }
-      }
-
-      try {
-        const data = await readFile(coverPath.path, { baseDir: BaseDirectory.Audio });
-        await writeFile(newCoverPath, data, { baseDir: BaseDirectory.Audio });
-        await db.execute("UPDATE playlists SET cover = ? WHERE id = ?", [newCoverPath, playlistId]);
-      } catch (error) {
-        console.error('Failed to update playlist cover:', error);
-        throw new Error('Failed to update playlist cover due to path or permission issues.');
-      }
-    },
-    async searchCoverByPlaylistId(playlistId: string): Promise<string> {
-      const extensions = ['png', 'jpg', 'jpeg', 'gif'];
-      for (let ext of extensions) {
-        const coverExists = await exists(`Vleer/Covers/${playlistId}.${ext}`, {
-          baseDir: BaseDirectory.Audio,
-        });
-        if (coverExists) {
-          const contents = await readFile(`Vleer/Covers/${playlistId}.${ext}`, {
-            baseDir: BaseDirectory.Audio,
-          });
-          const blob = new Blob([contents]);
-          return URL.createObjectURL(blob);
-        }
-      }
-      return "/cover.png";
     },
   };
 

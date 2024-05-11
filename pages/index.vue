@@ -65,6 +65,7 @@ watch(cards, (newVal, oldVal) => {
 
 onMounted(async () => {
   const loadedSongs = await $music.getSongs();
+  console.log(loadedSongs);
   const songArray = Object.values(loadedSongs.songs);
   await Promise.all(
     songArray.map(async (song) => {

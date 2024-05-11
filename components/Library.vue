@@ -49,7 +49,7 @@ const playlists = ref<Playlist[]>([]);
 async function fetchPlaylists() {
   const rawPlaylists = Object.values(musicStore.getSongsData().playlists);
   const playlistsWithCovers = await Promise.all(rawPlaylists.map(async playlist => {
-    const cover = await $music.searchCoverByPlaylistId(playlist.id);
+    const cover = await $music.getCoverURLFromID(playlist.id);
     return { ...playlist, cover: cover || '/cover.png' };
   }));
   playlists.value = playlistsWithCovers;

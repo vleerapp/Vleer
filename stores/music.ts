@@ -31,7 +31,10 @@ export const useMusicStore = defineStore("musicStore", {
 
       const playlists = await this.db.select<Playlist[]>("SELECT * FROM playlists");
       playlists.forEach(playlist => {
-        this.songsConfig.playlists[playlist.id] = playlist;
+        this.songsConfig.playlists[playlist.id] = {
+          ...playlist,
+          songs: playlist.songs.split(',')
+        };
       });
 
       this.player.audio.volume = 1;
@@ -70,19 +73,13 @@ export const useMusicStore = defineStore("musicStore", {
       }
     },
     async createPlaylist(playlist: Playlist) {
-      await this.db.execute("INSERT INTO playlists (id, name, cover) VALUES (?, ?, ?)", [
-        playlist.id, playlist.name, playlist.cover
+      await this.db.execute("INSERT INTO playlists (id, name, cover, songs) VALUES (?, ?, ?, ?)", [
+        playlist.id, playlist.name, playlist.cover, playlist.songs.join(',')
       ]);
       this.songsConfig.playlists[playlist.id] = playlist;
     },
     getPlaylistByID(id: string): Playlist | null {
       return this.songsConfig.playlists[id] ?? null;
-    },
-    async addSongToPlaylist(playlistId: string, songId: string) {
-      await this.db.execute("INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?, ?)", [playlistId, songId]);
-      if (this.songsConfig.playlists[playlistId] && this.songsConfig.songs[songId]) {
-        this.songsConfig.playlists[playlistId].songs.push(songId);
-      }
     },
     async renamePlaylist(playlistId: string, newName: string) {
       await this.db.execute("UPDATE playlists SET name = ? WHERE id = ?", [newName, playlistId]);

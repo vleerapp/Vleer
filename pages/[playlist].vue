@@ -121,7 +121,7 @@ watchEffect(async () => {
 });
 
 onMounted(async () => {
-  playlistCover.value = await $music.searchCoverByPlaylistId(playlistId);
+  playlistCover.value = await $music.getCoverURLFromID(playlistId);
   if (playlist.value?.songs) {
     songsDetails.value = await Promise.all(playlist.value.songs.map(songId => {
       const songDetail = musicStore.getSongByID(songId);

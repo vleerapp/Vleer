@@ -39,35 +39,14 @@ pub fn generate_playlists_insert_sql() -> String {
             let name = playlist["name"].as_str().unwrap_or_default().replace("'", "''");
             let date = playlist["date"].as_str().unwrap_or_default().replace("'", "''");
             let cover = playlist["cover"].as_str().unwrap_or_default().replace("'", "''");
+            let song_ids = playlist["songs"].as_array()
+                .map(|songs| songs.iter().filter_map(|s| s.as_str()).collect::<Vec<_>>().join(","))
+                .unwrap_or_default();
 
             inserts.push(format!(
-                "INSERT INTO playlists (id, name, date, cover) VALUES ('{}', '{}', '{}', '{}');",
-                id, name, date, cover
+                "INSERT INTO playlists (id, name, date, cover, songs) VALUES ('{}', '{}', '{}', '{}', '{}');",
+                id, name, date, cover, song_ids
             ));
-        }
-    }
-
-    inserts.join("\n")
-}
-
-pub fn generate_playlist_songs_insert_sql() -> String {
-    let path = commands::get_path().join("songs.json");
-    let data = fs::read_to_string(path).expect("Unable to read file");
-    let json: Value = serde_json::from_str(&data).expect("Unable to parse JSON");
-
-    let mut inserts = Vec::new();
-    if let Some(playlists) = json["playlists"].as_object() {
-        for (playlist_id, playlist) in playlists {
-            if let Some(song_ids) = playlist["songs"].as_array() {
-                for song_id in song_ids {
-                    if let Some(song_id_str) = song_id.as_str() {
-                        inserts.push(format!(
-                            "INSERT INTO playlist_songs (playlist_id, song_id) VALUES ('{}', '{}');",
-                            playlist_id, song_id_str
-                        ));
-                    }
-                }
-            }
         }
     }
 
