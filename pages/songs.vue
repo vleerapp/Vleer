@@ -16,7 +16,7 @@
       </div>
       <div class="items">
         <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)" class="song">
-          <img :src="song.coverURL" :alt="song.title" class="cover" />
+          <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
           <div class="titles">
             <p class="title">{{ truncate(song.title) }}</p>
             <p class="artist">{{ truncate(song.artist) }}</p>
@@ -52,8 +52,11 @@ const songsArray = ref<Song[]>([]);
 
 onMounted(async () => {
   const loadedSongs = $music.getSongs();
-  console.log(loadedSongs.songs);
-  songsArray.value = Object.values(loadedSongs.songs);
+  const songArray = Object.values(loadedSongs.songs);
+  songsArray.value = songArray;
+  await Promise.all(songArray.map(async (song) => {
+    song.coverURL = await $music.getCoverURLFromID(song.id);
+  }));
 });
 
 const filteredSongs = computed<Song[]>(() => {
