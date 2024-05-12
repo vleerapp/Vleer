@@ -52,7 +52,7 @@ const songsArray = ref<Song[]>([]);
 
 onMounted(async () => {
   const loadedSongs = $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
+  const songArray = Object.values(loadedSongs);
   songsArray.value = songArray;
   await Promise.all(songArray.map(async (song) => {
     song.coverURL = await $music.getCoverURLFromID(song.id);

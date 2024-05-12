@@ -2,7 +2,7 @@ use anyhow::{anyhow, Result as AnyhowResult};
 use reqwest::Client;
 use rusty_ytdl::Video;
 use std::path::PathBuf;
-use tauri::{AppHandle, Manager, async_runtime, Result as TauriResult};
+use tauri::{AppHandle, async_runtime, Result as TauriResult};
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
 use tokio::time::Instant;

@@ -32,7 +32,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       musicStore.init();
     },
     getSongs() {
-      return musicStore.songsConfig;
+      return Object.values(musicStore.songsConfig.songs);
+    },
+    getPlaylists() {
+      return Object.values(musicStore.songsConfig.playlists);
     },
     async addSongData(song: Song) {
       musicStore.addSongData(song);

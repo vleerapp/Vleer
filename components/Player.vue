@@ -51,7 +51,6 @@ const looping = ref(false)
 const time = ref("00:00")
 const progress = ref($music.getAudio().currentTime)
 const audio = ref($music.getAudio())
-console.log($settings.getVolume());
 const volume = ref($settings.getVolume());
 const coverUrl = ref('/cover.png');
 
