@@ -1,6 +1,8 @@
 import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
 
+const db = await Database.load("sqlite:data.db");
+
 export const useMusicStore = defineStore("musicStore", {
   state: () => ({
     songsConfig: {
@@ -56,6 +58,7 @@ export const useMusicStore = defineStore("musicStore", {
       this.player.audio.addEventListener("error", (e) => {
         console.error("Error with audio element:", e);
       });
+      this.lastUpdated = Date.now();
     },
     getAudio(): HTMLAudioElement {
       return this.player.audio;
@@ -74,6 +77,7 @@ export const useMusicStore = defineStore("musicStore", {
         playlist.id, playlist.name, playlist.cover, playlist.songs.join(',')
       ]);
       this.songsConfig.playlists[playlist.id] = playlist;
+      this.lastUpdated = Date.now();
     },
     getPlaylistByID(id: string): Playlist {
       return this.songsConfig.playlists[id] ?? null;
@@ -96,12 +100,83 @@ export const useMusicStore = defineStore("musicStore", {
         playlist.songs.push(songId);
         await this.db.execute("UPDATE playlists SET songs = ? WHERE id = ?", [playlist.songs.join(','), playlistId]);
       }
+      this.lastUpdated = Date.now();
     },
     getLastUpdated() {
       return this.lastUpdated;
     },
     setVolume(volume: number) {
       this.player.audio.volume = volume;
+      this.lastUpdated = Date.now();
+    },
+    async setSong(id: string, contents: any) {
+      this.player.currentSongId = id;
+      await this.setSongFromBuffer(contents);
+      await this.ensureAudioContextAndFilters();
+      const currentTime = new Date().toISOString();
+      await db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
+
+      this.lastUpdated = Date.now();
+    },
+    async ensureAudioContextAndFilters() {
+      if (!this.player.audioContext) {
+        this.player.audioContext = new AudioContext();
+        this.player.sourceNode =
+          this.player.audioContext.createMediaElementSource(
+            this.player.audio!
+          );
+        this.player.eqFilters = this.createEqFilters();
+        this.connectEqFilters();
+        await this.applyEqSettings(this.player.eqFilters);
+        if (this.player.audioContext.state === "suspended") {
+          await this.player.audioContext.resume();
+        }
+      } else if (this.player.audioContext.state === "suspended") {
+        await this.player.audioContext.resume();
+      }
+    },
+    createEqFilters(): BiquadFilterNode[] {
+      const frequencies = [
+        32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000,
+      ];
+      return frequencies.map((freq) => {
+        const filter = this.player.audioContext!.createBiquadFilter();
+        filter.type = "peaking";
+        filter.frequency.value = freq;
+        filter.Q.value = 1;
+        filter.gain.value = 0;
+        return filter;
+      });
+    },
+    connectEqFilters(): void {
+      let lastNode: AudioNode = this.player.sourceNode!;
+      this.player.eqFilters.forEach((filter) => {
+        lastNode.connect(filter);
+        lastNode = filter;
+      });
+      lastNode.connect(this.player.audioContext!.destination);
+    },
+    async applyEqSettings(eqSettings: any) {
+      this.player.eqFilters.forEach((filter, index) => {
+        const gain =
+          eqSettings[filter.frequency.value.toString() as keyof EQSettings];
+        if (gain !== undefined) {
+          this.setEqGain(index, parseInt(gain));
+        }
+      });
+    },
+    setEqGain(filterIndex: number, gain: number): void {
+      if (this.player.eqFilters[filterIndex]) {
+        this.player.eqFilters[filterIndex].gain.value = gain;
+
+        this.ensureAudioContextAndFilters();
+      }
+    },
+    play() {
+      this.player.audio.play()
+    },
+    getCurrentSong() {
+      return this.player.currentSongId;
     }
   },
 });

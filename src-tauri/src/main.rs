@@ -75,9 +75,6 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_window_state::Builder::new().build())
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            let _ = commands::show_window(app);
-        }))
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations("sqlite:data.db", migrations)

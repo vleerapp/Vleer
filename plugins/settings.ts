@@ -30,8 +30,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     getCurrentSong(): string {
       return store.settings.currentSong;
     },
-    setCurrentSong(song: string) {
-      store.settings.currentSong = song;
+    setCurrentSong(id: string) {
+      console.log(id);
+      store.settings.currentSong = id;
       store.saveSettings();
     },
     setApiURL(url: string) {
@@ -48,7 +49,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         const urls = instances.map((instance: { api_url: string }) => instance.api_url);
 
         const results = await window.__TAURI__.core.invoke('ping_urls', { urls });
-        console.log(results[0][0]);
         this.setApiURL(results[0][0])
         return results;
       } catch (error) {
@@ -67,6 +67,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         return [];
       }
     },
+    async saveSettings(){
+      await store.saveSettings();
+    }
   };
 
   return {

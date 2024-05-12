@@ -35,30 +35,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return musicStore.songsConfig;
     },
     async addSongData(song: Song) {
-      await db.execute(`INSERT INTO songs (id, title, artist, length, cover, date_added, cover_url, last_played) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
-        song.id, song.title, song.artist, song.length, song.cover, song.date_added, song.coverURL, song.lastPlayed
-      ]);
-
       musicStore.addSongData(song);
-    },
-    async setSong(id: string) {
-      const songExists = await exists(`Vleer/Songs/${id}.webm`, {
-        baseDir: BaseDirectory.Audio,
-      });
-
-      if (songExists) {
-        const contents = await readFile(`Vleer/Songs/${id}.webm`, {
-          baseDir: BaseDirectory.Audio,
-        });
-        musicStore.player.currentSongId = id;
-        await musicStore.setSongFromBuffer(contents);
-        await this.ensureAudioContextAndFilters();
-        const currentTime = new Date().toISOString();
-        await db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
-      } else {
-        settingsStore.setCurrentSong("");
-        await settingsStore.saveSettings();
-      }
     },
     async updatePlaylistCover(playlistId: string, coverPath: any) {
       if (!coverPath || typeof coverPath !== 'object' || typeof coverPath.path !== 'string') {
@@ -103,11 +80,15 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
       return "/cover.png";
     },
+    async setSong(id: string) {
+      const contents = await readFile(`Vleer/Songs/${id}.webm`, {
+        baseDir: BaseDirectory.Audio,
+      });
+      musicStore.setSong(id, contents);
+    },
     play() {
-      const audio = musicStore.getAudio();
-      settingsStore.setCurrentSong(musicStore.player.currentSongId);
-      settingsStore.saveSettings();
-      audio.play();
+      this.setVolume(settingsStore.getVolume())
+      musicStore.play();
     },
     pause() {
       const audio = musicStore.getAudio();
@@ -125,7 +106,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return musicStore.getAudio();
     },
     setVolume(volume: number) {
-      const audio = musicStore.getAudio();
+      const audio = this.getAudio();
       if (volume == 0) {
         audio.volume = 0;
         return;
@@ -152,43 +133,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
       return null;
     },
-    createEqFilters(): BiquadFilterNode[] {
-      const frequencies = [
-        32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000,
-      ];
-      return frequencies.map((freq) => {
-        const filter = musicStore.player.audioContext!.createBiquadFilter();
-        filter.type = "peaking";
-        filter.frequency.value = freq;
-        filter.Q.value = 1;
-        filter.gain.value = 0;
-        return filter;
-      });
-    },
-    connectEqFilters(): void {
-      let lastNode: AudioNode = musicStore.player.sourceNode!;
-      musicStore.player.eqFilters.forEach((filter) => {
-        lastNode.connect(filter);
-        lastNode = filter;
-      });
-      lastNode.connect(musicStore.player.audioContext!.destination);
-    },
     async applyEqSettings() {
-      const eqSettings = settingsStore.getEq();
-      musicStore.player.eqFilters.forEach((filter, index) => {
-        const gain =
-          eqSettings[filter.frequency.value.toString() as keyof EQSettings];
-        if (gain !== undefined) {
-          this.setEqGain(index, parseInt(gain));
-        }
-      });
+      const eqSettings = $settings.getEq();
+      await musicStore.applyEqSettings(eqSettings);
     },
     setEqGain(filterIndex: number, gain: number): void {
-      if (musicStore.player.eqFilters[filterIndex]) {
-        musicStore.player.eqFilters[filterIndex].gain.value = gain;
-
-        this.ensureAudioContextAndFilters();
-      }
+      musicStore.setEqGain(filterIndex, gain)
     },
     async ensureAudioContextAndFilters() {
       if (!musicStore.player.audioContext) {
@@ -197,8 +147,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
           musicStore.player.audioContext.createMediaElementSource(
             musicStore.player.audio!
           );
-        musicStore.player.eqFilters = this.createEqFilters();
-        this.connectEqFilters();
+        musicStore.player.eqFilters = musicStore.createEqFilters();
+        musicStore.connectEqFilters();
         await this.applyEqSettings();
         if (musicStore.player.audioContext.state === "suspended") {
           await musicStore.player.audioContext.resume();
@@ -241,10 +191,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     getSongByID(id: string): Song {
       return musicStore.getSongByID(id);
     },
-    addSongToPlaylist(playlistId: string, songId: string){
+    addSongToPlaylist(playlistId: string, songId: string) {
       musicStore.addSongToPlaylist(playlistId, songId);
     },
-    renamePlaylist(playlistId: string, newName: string){
+    renamePlaylist(playlistId: string, newName: string) {
       musicStore.renamePlaylist(playlistId, newName);
     },
     getLastUpdated() {

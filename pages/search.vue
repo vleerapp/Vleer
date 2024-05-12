@@ -118,7 +118,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       await $music.addSongData(songData)
 
       await $music.setSong(videoId)
-      $music.play();
+      $music.play()
     } catch (error) {
       console.error('Error downloading video as MP3:', error);
     }

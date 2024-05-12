@@ -4,6 +4,9 @@ use crate::commands;
 
 pub fn generate_songs_insert_sql() -> String {
     let path = commands::get_music_path().join("songs.json");
+    if !path.exists() {
+        return String::new();
+    }
     let data = fs::read_to_string(path).expect("Unable to read file");
     let json: Value = serde_json::from_str(&data).expect("Unable to parse JSON");
 
@@ -30,6 +33,9 @@ pub fn generate_songs_insert_sql() -> String {
 
 pub fn generate_playlists_insert_sql() -> String {
     let path = commands::get_music_path().join("songs.json");
+    if !path.exists() {
+        return String::new();
+    }
     let data = fs::read_to_string(path).expect("Unable to read file");
     let json: Value = serde_json::from_str(&data).expect("Unable to parse JSON");
 
