@@ -48,49 +48,24 @@ import { ref, onMounted, watch } from "vue";
 const { $music } = useNuxtApp();
 
 const searchQuery = ref("");
-const songs = ref([]);
+const songsArray = ref<Song[]>([]);
 
 onMounted(async () => {
-  await reloadSongs();
+  const loadedSongs = $music.getSongs();
+  console.log(loadedSongs.songs);
+  songsArray.value = Object.values(loadedSongs.songs);
 });
 
-watch(
-  () => $music.getLastUpdated(),
-  async () => {
-    await reloadSongs();
+const filteredSongs = computed<Song[]>(() => {
+  const songs = songsArray.value;
+  if (!searchQuery.value.trim()) {
+    return songs.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
   }
-);
-
-const filteredSongs = computed(() => {
-  return songs.value
-    .filter((song) =>
-      song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (searchQuery.value) {
-        return (
-          a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) -
-          b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase())
-        );
-      } else {
-        return (
-          new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
-        );
-      }
-    });
+  return songs.filter(song =>
+    song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
+  ).sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
 });
-
-async function reloadSongs() {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(
-    songArray.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
-  );
-  songs.value = songArray;
-}
 
 async function play(id: string, index: number) {
   const queueIds = filteredSongs.value.slice(index).map(song => song.id);
