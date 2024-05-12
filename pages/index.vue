@@ -33,28 +33,30 @@
 
 <script setup lang="ts">
 import { type Song } from "~/types/types";
-import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useNuxtApp } from '#imports';
 
 const { $music } = useNuxtApp();
 
-const songs = ref<Song[]>([]);
 const cards = ref(null);
 const maxCards = ref(5);
 const cardsWidth = ref(0);
-const cardMinWidth = 140; 
-const cardMaxWidth = 180; 
+const cardMinWidth = 180;
+const cardMaxWidth = 238;
 const cardGap = 16;
 
 const updateWidth = () => {
-  cardsWidth.value = cards.value?.clientWidth || 0;
-  updateMaxCards();
+  if (cards.value) {
+    cardsWidth.value = cards.value.clientWidth;
+    updateMaxCards();
+  }
 };
 
 const updateMaxCards = () => {
-  const maxPossible = Math.floor(cardsWidth.value / (cardMinWidth + cardGap));
-  const minPossible = Math.floor(cardsWidth.value / (cardMaxWidth + cardGap));
-  maxCards.value = maxPossible;
+  if (cardsWidth.value > 0) {
+    const maxPossible = Math.floor(cardsWidth.value / (cardMinWidth + cardGap));
+    maxCards.value = maxPossible;
+  }
 };
 
 watch(cards, (newVal, oldVal) => {
@@ -63,15 +65,15 @@ watch(cards, (newVal, oldVal) => {
   }
 });
 
+const computedSongs = computed(() => Object.values($music.getSongs().songs));
+const songs = ref([])
+songs.value = computedSongs.value;
+
 onMounted(async () => {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(
-    songArray.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
-  );
-  songs.value = songArray;
+  songs.value.forEach(async (song) => {
+    // song.coverURL = await $music.getCoverURLFromID(song.id);
+  });
+
   updateWidth();
   window.addEventListener('resize', updateWidth);
 });
@@ -81,11 +83,11 @@ onUnmounted(() => {
 });
 
 const sortedRecentlyPlayed = computed(() => {
-  return [...songs.value]
-    .filter(song => song.lastPlayed)
-    .sort((a, b) => new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime())
-    .slice(0, maxCards.value);
+  const filteredSongs = songs.value.filter(song => song.last_played);
+  const sortedSongs = filteredSongs.sort((a, b) => new Date(b.last_played).getTime() - new Date(a.last_played).getTime());
+  return sortedSongs.slice(0, maxCards.value);
 });
+
 
 async function play(id: string) {
   await $music.setSong(id);
