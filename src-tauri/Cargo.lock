@@ -6232,6 +6232,7 @@ dependencies = [
  "dotenv",
  "lazy_static",
  "log",
+ "regex",
  "reqwest 0.12.3",
  "rusty_ytdl",
  "serde",

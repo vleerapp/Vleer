@@ -17,7 +17,8 @@
             <div v-if="sortedPlaylists.value && sortedPlaylists.value.length > n" :key="sortedPlaylists.value[n].id"
               class="playlist">
               <NuxtLink :to="'/' + sortedPlaylists.value[n].id">
-                <img :src="sortedPlaylists.value[n].coverURL" height="64px" alt="playlist cover" class="cover">
+                <img :src="sortedPlaylists.value[n].coverURL || '/cover.png'" height="64px" alt="playlist cover"
+                  class="cover">
                 <p class="name">{{ truncate(sortedPlaylists.value[n].name) }}</p>
               </NuxtLink>
               <button class="play">
@@ -49,7 +50,7 @@
         <div class="title">Recently played</div>
         <div class="cards" ref="song_cards">
           <div v-for="song in sortedRecentlyPlayed" :key="song.id" @click="play(song.id)" class="song">
-            <img :src="song.coverURL" :alt="song.title" class="cover" />
+            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
             <div class="info">
               <p class="title" :title="song.title">{{ song.title }}</p>
               <p class="artist" :title="song.artist">{{ song.artist }}</p>
@@ -110,9 +111,7 @@ function truncate(text, length = 24) {
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 }
 
-
 const sortedPlaylists = computed(() => {
-  console.log(playlists);
   return playlists.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 });
 
@@ -125,8 +124,6 @@ const sortedRecentlyPlayed = computed(() => {
 onMounted(async () => {
   updateWidthSongs();
   updateWidthPlaylists();
-
-  console.log(sortedPlaylists.value);
 
   window.addEventListener('resize', updateWidthSongs);
   window.addEventListener('resize', updateWidthPlaylists);

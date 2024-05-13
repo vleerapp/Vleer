@@ -9,6 +9,7 @@ import {
 } from "@tauri-apps/plugin-fs";
 import type { Song, SongsConfig, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
+import { invoke } from "@tauri-apps/api/core";
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   const db = await Database.load("sqlite:data.db");
@@ -82,6 +83,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
       }
       return "/cover.png";
+    },
+    async getCoverFromID(songId: string) {
+      const contents = await readFile(`Vleer/Covers/${songId}.png`, {
+        baseDir: BaseDirectory.Audio,
+      });
+      return URL.createObjectURL(new Blob([contents]));
     },
     async setSong(id: string) {
       const contents = await readFile(`Vleer/Songs/${id}.webm`, {

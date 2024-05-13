@@ -40,6 +40,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       store.saveSettings();
     },
     getApiURL() {
+      if (!store.settings.apiURL) {
+        return "https://pipedapi.r4fo.com";
+      }
       return store.settings.apiURL;
     },
     async searchApiURL() {

@@ -1,6 +1,7 @@
 use serde_json::Value;
 use std::fs;
 use crate::commands;
+use regex::Regex;
 
 pub fn generate_songs_insert_sql() -> String {
     let path = commands::get_music_path().join("songs.json");
@@ -17,13 +18,13 @@ pub fn generate_songs_insert_sql() -> String {
             let artist = song["artist"].as_str().unwrap_or_default().replace("'", "''");
             let length = song["length"].as_i64().unwrap_or_default();
             let cover = song["cover"].as_str().unwrap_or_default().replace("'", "''");
+            let cover = Regex::new(r"^https?://[^/]+").unwrap().replace(&cover, "").to_string();
             let date_added = song["date_added"].as_str().unwrap_or_default().replace("'", "''");
-            let cover_url = song["coverURL"].as_str().unwrap_or_default().replace("'", "''");
             let last_played = song["lastPlayed"].as_str().unwrap_or_default().replace("'", "''");
 
             inserts.push(format!(
-                "INSERT INTO songs (id, title, artist, length, cover, date_added, cover_url, last_played) VALUES ('{}', '{}', '{}', {}, '{}', '{}', '{}', '{}');",
-                id, title, artist, length, cover, date_added, cover_url, last_played
+                "INSERT INTO songs (id, title, artist, length, cover, date_added, last_played) VALUES ('{}', '{}', '{}', {}, '{}', '{}', '{}');",
+                id, title, artist, length, cover, date_added, last_played
             ));
         }
     }

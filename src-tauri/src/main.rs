@@ -23,7 +23,6 @@ fn main() {
         length INTEGER,
         cover TEXT,
         date_added TEXT,
-        cover_url TEXT,
         last_played TEXT
     );
     CREATE TABLE playlists (
@@ -84,7 +83,8 @@ fn main() {
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
             commands::download,
-            commands::ping_urls
+            commands::ping_urls,
+            commands::get_music_path
         ])
         .setup(|app| {
             tauri::async_runtime::block_on(async {

@@ -29,6 +29,7 @@ discord-ipc-rp = "0.1.1"
 dotenv = "0.15.0"
 reqwest = "0.12.3"
 rusty_ytdl = "0.7.1"
+regex = "1.10.4"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

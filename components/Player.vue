@@ -69,10 +69,11 @@ audio.value.addEventListener('play', async () => {
     await invoke("update_activity", {
       state: currentSong.value.artist,
       details: currentSong.value.title,
-      largeImage: currentSong.value.cover,
+      largeImage: $settings.getApiURL() + currentSong.value.cover,
       largeImageText: currentSong.value.title,
       youtube_url: "https://youtube.com/watch?v=" + currentSong.value.id
     });
+    console.log($settings.getApiURL() + currentSong.value.cover);
   } catch (error) {
     console.error("Failed to update Discord activity:", error);
   }

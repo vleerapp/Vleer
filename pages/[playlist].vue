@@ -98,7 +98,7 @@ const playlistName = ref<string>(playlist.value?.name || '');
 const searchQuery = ref<string>('');
 
 const songsDetails = ref<Song[]>([]);
-const playlistCover = ref("");
+const playlistCover = ref("/cover.png");
 const addSongs = ref(false);
 
 const songs = ref<Song[]>([]); // for loading songs for the add search
@@ -116,10 +116,10 @@ watchEffect(async () => {
 onMounted(async () => {
   playlistCover.value = await $music.getCoverURLFromID(playlistId);
   if (playlist.value?.songs) {
-    songsDetails.value = await Promise.all(playlist.value.songs.map(songId => {
+    songsDetails.value = playlist.value.songs.map(songId => {
       const songDetail = $music.getSongByID(songId);
       return songDetail ? songDetail : null;
-    }).filter((song): song is Song => song !== null));
+    }).filter((song): song is Song => song !== null);
   }
 
   await loadSongs(); // for loading songs for the add search
@@ -129,14 +129,13 @@ onMounted(async () => {
 
 // for loading songs for the add search
 const loadSongs = async () => {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
+  const loadedSongs = $music.getSongs();
   await Promise.all(
-    songArray.map(async (song) => {
+    loadedSongs.map(async (song) => {
       song.coverURL = await $music.getCoverURLFromID(song.id);
     })
   );
-  songs.value = songArray;
+  songs.value = loadedSongs;
 };
 
 watch(addSearchQuery, async (newValue) => {

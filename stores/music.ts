@@ -1,5 +1,9 @@
 import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
+import {
+  readFile,
+  BaseDirectory,
+} from "@tauri-apps/plugin-fs";
 
 const db = await Database.load("sqlite:data.db");
 
@@ -24,8 +28,13 @@ export const useMusicStore = defineStore("musicStore", {
     async init() {
       this.db = await Database.load("sqlite:data.db");
       const songs = await this.db.select<Song[]>("SELECT * FROM songs");
-      songs.forEach(song => {
+      songs.forEach(async (song: Song) => {
         this.songsConfig.songs[song.id] = song;
+
+        const contents = await readFile(`Vleer/Covers/${song.id}.png`, {
+          baseDir: BaseDirectory.Audio,
+        });
+        song.coverURL = URL.createObjectURL(new Blob([contents]))
       });
 
       const playlists = await this.db.select<Playlist[]>("SELECT * FROM playlists");

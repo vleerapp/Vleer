@@ -43,10 +43,6 @@ async function searchSongs() {
 
   let apiURL = $settings.getApiURL()
 
-  if (!apiURL) {
-    apiURL = "https://pipedapi.r4fo.com";
-  }
-
   try {
     const response = await fetch(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
     const data = await response.json();
@@ -91,7 +87,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
 
     const songsConfig = $music.getSongs();
 
-    const songExists = Object.values(songsConfig.songs).some(song => song.id === videoId);
+    const songExists = Object.values(songsConfig).some(song => song.id === videoId);
 
     if (songExists) {
       console.log("Song already exists.");
@@ -103,7 +99,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       title: song.title,
       artist: song.uploaderName,
       length: song.duration,
-      cover: song.thumbnail,
+      cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
       date_added: formatDate(new Date())
     }
 
