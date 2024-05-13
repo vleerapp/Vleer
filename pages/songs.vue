@@ -48,16 +48,9 @@ import { ref, onMounted, watch } from "vue";
 const { $music } = useNuxtApp();
 
 const searchQuery = ref("");
-const songsArray = ref<Song[]>([]);
-
-onMounted(async () => {
-  const loadedSongs = $music.getSongs();
-  const songArray = Object.values(loadedSongs);
-  songsArray.value = songArray;
-});
+const songs = $music.getSongs();
 
 const filteredSongs = computed<Song[]>(() => {
-  const songs = songsArray.value;
   if (!searchQuery.value.trim()) {
     return songs.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
   }

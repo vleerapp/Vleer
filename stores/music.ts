@@ -5,8 +5,6 @@ import {
   BaseDirectory,
 } from "@tauri-apps/plugin-fs";
 
-const db = await Database.load("sqlite:data.db");
-
 export const useMusicStore = defineStore("musicStore", {
   state: () => ({
     songsConfig: {
