@@ -121,7 +121,7 @@ export const useMusicStore = defineStore("musicStore", {
       await this.setSongFromBuffer(contents);
       await this.ensureAudioContextAndFilters();
       const currentTime = new Date().toISOString();
-      await db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
+      await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
 
       this.lastUpdated = Date.now();
     },
