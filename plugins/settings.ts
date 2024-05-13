@@ -31,7 +31,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return store.settings.currentSong;
     },
     setCurrentSong(id: string) {
-      console.log(id);
       store.settings.currentSong = id;
       store.saveSettings();
     },

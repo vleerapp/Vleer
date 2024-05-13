@@ -66,14 +66,18 @@ audio.value.addEventListener('pause', async () => {
 audio.value.addEventListener('play', async () => {
   paused.value = false
   try {
+
+    const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.id)}&filter=music_songs`);
+    const data = await response.json();
+    const thumbnail = data.items[0].thumbnail;
+
     await invoke("update_activity", {
       state: currentSong.value.artist,
       details: currentSong.value.title,
-      largeImage: $settings.getApiURL() + currentSong.value.cover,
+      largeImage: thumbnail,
       largeImageText: currentSong.value.title,
       youtube_url: "https://youtube.com/watch?v=" + currentSong.value.id
     });
-    console.log($settings.getApiURL() + currentSong.value.cover);
   } catch (error) {
     console.error("Failed to update Discord activity:", error);
   }
