@@ -61,75 +61,76 @@
   </div>
 </template>
 
-<script>
+<script setup>
 const { $music } = useNuxtApp();
 
-export default {
-  data() {
-    return {
-      playlists: [],
-      songs: [],
-      playlist_cards: ref(null),
-      song_cards: ref(null),
-      maxCards: ref(5),
-      cardsWidth: ref(0),
-      cardMinWidth: 180,
-      cardMaxWidth: 238,
-      cardGap: 16
-    }
-  },
-  methods: {
-    updateWidthSongs() {
-      if (this.$refs.song_cards) {
-        const clientWidth = this.$refs.song_cards.clientWidth;
-        this.cardsWidth.value = clientWidth;
-        this.updateMaxCardsDirect(clientWidth);
-      }
-    },
-    updateMaxCardsDirect(clientWidth) {
-      if (clientWidth > 0) {
-        const maxPossible = Math.floor(clientWidth / (this.cardMinWidth + this.cardGap));
-        this.maxCards.value = maxPossible;
-      }
-    },
-    updateWidthPlaylists() {
-      if (this.$refs.playlist_cards) {
-        const width = this.$refs.playlist_cards.clientWidth;
-        const final = Math.round((width - 32) / 3);
-        this.$refs.playlist_cards.style.gridTemplateColumns = `repeat(3, ${final}px)`;
-      }
-    },
-    play(id) {
-      this.$music.setSong(id).then(() => {
-        this.$music.play();
-      });
-    },
-    truncate(text, length = 24) {
-      return text.length > length ? text.substring(0, length - 3) + '...' : text;
-    }
-  },
-  computed: {
-    sortedPlaylists() {
-      return this.playlists.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    },
-    sortedRecentlyPlayed() {
-      return this.songs.filter(song => song.last_played)
-        .sort((a, b) => new Date(b.last_played).getTime() - new Date(a.last_played).getTime())
-        .slice(0, this.maxCards);
-    }
-  },
-  mounted() {
-    this.playlists = $music.getPlaylists();
-    this.songs = $music.getSongs();
-    // this.updateWidthSongs();
-    // this.updateWidthPlaylists();
+const songs = $music.getSongs();
+const playlists = $music.getPlaylists();
 
-    console.log(this.sortedPlaylists.value);
+const playlist_cards = ref(null)
+const song_cards = ref(null)
+const maxCards = ref(5)
+const cardsWidth = ref(0)
+const cardMinWidth = 180
+const cardMaxWidth = 238
+const cardGap = 16
 
-    window.addEventListener('resize', this.updateWidthSongs);
-    window.addEventListener('resize', this.updateWidthPlaylists);
+function updateWidthSongs() {
+  if (song_cards.value && song_cards.value.clientWidth) {
+    const clientWidth = song_cards.value.clientWidth;
+    cardsWidth.value = clientWidth;
+    updateMaxCardsDirect(clientWidth);
   }
 }
+
+function updateMaxCardsDirect(clientWidth) {
+  if (clientWidth > 0) {
+    const maxPossible = Math.floor(clientWidth / (cardMinWidth + cardGap));
+    maxCards.value = maxPossible;
+  }
+}
+
+function updateWidthPlaylists() {
+  if (playlist_cards.value) {
+    const width = playlist_cards.value.clientWidth;
+    const final = Math.round((width - 32) / 3);
+    playlist_cards.value.style.gridTemplateColumns = `repeat(3, ${final}px)`;
+  }
+}
+
+function play(id) {
+  if ($music && $music.setSong && $music.play) {
+    $music.setSong(id).then(() => {
+      $music.play();
+    });
+  }
+}
+
+function truncate(text, length = 24) {
+  return text.length > length ? text.substring(0, length - 3) + '...' : text;
+}
+
+
+const sortedPlaylists = computed(() => {
+  console.log(playlists);
+  return playlists.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+});
+
+const sortedRecentlyPlayed = computed(() => {
+  return songs.filter(song => song.last_played)
+    .sort((a, b) => new Date(b.last_played).getTime() - new Date(a.last_played).getTime())
+    .slice(0, maxCards.value);
+});
+
+onMounted(async () => {
+  updateWidthSongs();
+  updateWidthPlaylists();
+
+  console.log(sortedPlaylists.value);
+
+  window.addEventListener('resize', updateWidthSongs);
+  window.addEventListener('resize', updateWidthPlaylists);
+})
 </script>
 
 <style scoped lang="scss">
