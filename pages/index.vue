@@ -125,7 +125,6 @@ const sortedRecentlyPlayed = computed(() => {
 });
 
 watch(() => musicStore.songsConfig.songs, (newSongs) => {
-  // console.log(musicStore.);
   songs = newSongs;
 }, { deep: true });
 

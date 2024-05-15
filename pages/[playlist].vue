@@ -122,19 +122,14 @@ onMounted(async () => {
     }).filter((song): song is Song => song !== null);
   }
 
-  await loadSongs(); // for loading songs for the add search
-  await fetchPlaylist();
+  loadSongs(); // for loading songs for the add search
+  fetchPlaylist();
 });
 
 
 // for loading songs for the add search
-const loadSongs = async () => {
+const loadSongs = () => {
   const loadedSongs = $music.getSongs();
-  await Promise.all(
-    loadedSongs.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
-  );
   songs.value = loadedSongs;
 };
 
@@ -174,15 +169,15 @@ watch(addSearchQuery, async (newValue) => {
   // }
 }, { immediate: true });
 
-async function addSongToPlaylist(song: Song) {
+function addSongToPlaylist(song: Song) {
   $music.addSongToPlaylist(playlistId, song.id);
 
-  await fetchPlaylist();
+  fetchPlaylist();
 }
 
 //////////////////////////////////////// for playlist songs
 
-async function fetchPlaylist() {
+function fetchPlaylist() {
   playlist.value = $music.getPlaylistByID(playlistId);
 }
 
@@ -226,10 +221,11 @@ async function playSong(songId: string) {
     console.error("No songs in playlist.");
     return;
   }
-  const startIndex = filteredSongs.value.findIndex(song => song.id === songId);
-  const queueIds = [...filteredSongs.value.slice(startIndex), ...filteredSongs.value.slice(0, startIndex)].map(song => song.id);
-  await $music.setQueue(queueIds);
+  // const startIndex = filteredSongs.value.findIndex(song => song.id === songId);
+  // const queueIds = [...filteredSongs.value.slice(startIndex), ...filteredSongs.value.slice(0, startIndex)].map(song => song.id);
+  // await $music.setQueue(queueIds);
   await $music.setSong(songId);
+  console.log("asdas")
   $music.play();
 }
 

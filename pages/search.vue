@@ -90,7 +90,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
     const songExists = Object.values(songsConfig).some(song => song.id === videoId);
 
     if (songExists) {
-      console.log("Song already exists.");
+      console.error("Song already exists.");
       return;
     }
 

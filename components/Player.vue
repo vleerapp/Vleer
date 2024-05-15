@@ -67,12 +67,18 @@ audio.value.addEventListener('play', async () => {
   paused.value = false
   try {
 
-    const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.id)}&filter=music_songs`);
-    const data = await response.json();
-    const thumbnail = data.items[0].thumbnail;
+    let thumbnail;
+    try {
+      const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.id)}&filter=music_songs`);
+      const data = await response.json();
+      thumbnail = data.items[0].thumbnail;
+    } catch (error) {
+      thumbnail = "https://discussions.apple.com/content/attachment/592590040"
+      console.error("Failed to fetch song thumbnail:", error);
+    }
 
     await invoke("update_activity", {
-      state: currentSong.value.artist,
+      state: "by " + currentSong.value.artist,
       details: currentSong.value.title,
       largeImage: thumbnail,
       largeImageText: currentSong.value.title,
@@ -130,9 +136,10 @@ function toggleLoop() {
 
 const currentSong = computed(() => {
   return $music.getCurrentSong() || {
+    id: 0,
     title: 'No song playing',
     artist: 'Unknown',
-    cover: '/cover.png'
+    cover: '/cover.png',
   };
 });
 

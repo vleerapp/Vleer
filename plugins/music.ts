@@ -208,7 +208,23 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     },
     getLastUpdated() {
       return musicStore.getLastUpdated();
-    }
+    },
+    async searchCoverByPlaylistId(playlistId: string): Promise<string> {
+      const extensions = ['png', 'jpg', 'jpeg', 'gif'];
+      for (let ext of extensions) {
+        const coverExists = await exists(`Vleer/Covers/${playlistId}.${ext}`, {
+          baseDir: BaseDirectory.Audio,
+        });
+        if (coverExists) {
+          const contents = await readFile(`Vleer/Covers/${playlistId}.${ext}`, {
+            baseDir: BaseDirectory.Audio,
+          });
+          const blob = new Blob([contents]);
+          return URL.createObjectURL(blob);
+        }
+      }
+      return "/cover.png";
+    },
   };
 
   musicStore.player.audio.addEventListener('ended', () => {
