@@ -63,9 +63,12 @@
 </template>
 
 <script setup>
-const { $music } = useNuxtApp();
+import { useMusicStore } from "~/stores/music";
 
-const songs = $music.getSongs();
+const { $music } = useNuxtApp();
+const musicStore = useMusicStore();
+
+let songs = $music.getSongs();
 const playlists = $music.getPlaylists();
 
 const playlist_cards = ref(null)
@@ -120,6 +123,11 @@ const sortedRecentlyPlayed = computed(() => {
     .sort((a, b) => new Date(b.last_played).getTime() - new Date(a.last_played).getTime())
     .slice(0, maxCards.value);
 });
+
+watch(() => musicStore.songsConfig.songs, (newSongs) => {
+  // console.log(musicStore.);
+  songs = newSongs;
+}, { deep: true });
 
 onMounted(async () => {
   updateWidthSongs();

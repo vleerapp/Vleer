@@ -94,7 +94,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       const contents = await readFile(`Vleer/Songs/${id}.webm`, {
         baseDir: BaseDirectory.Audio,
       });
-      musicStore.setSong(id, contents);
+      await musicStore.setSong(id, contents);
     },
     play() {
       this.setVolume(settingsStore.getVolume())

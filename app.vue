@@ -6,9 +6,8 @@
 </template>
 
 <script lang="ts" setup>
-const { $music } = useNuxtApp();
+const { $music, $settings } = useNuxtApp();
 await $music.init();
-
 
 window.addEventListener('error', (e) => {
   if (e.target instanceof HTMLAudioElement) {
@@ -40,6 +39,7 @@ window.addEventListener('error', (e) => {
 const isTextInputFocused = ref(false);
 
 onMounted(async () => {
+  await $settings.init();
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('focusin', updateFocus);
   document.addEventListener('focusout', updateFocus);

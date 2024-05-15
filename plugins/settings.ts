@@ -6,13 +6,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const { $music } = useNuxtApp();
 
   await store.getSettings();
-  await $music.init();
-
-  if (store.settings.currentSong != "") {
-    $music.setSong(store.settings.currentSong);
-  }
 
   const settings = {
+    async init() {
+      if (store.settings.currentSong != "") {
+        await $music.setSong(store.settings.currentSong);
+      }
+    },
     getVolume(): number {
       return store.settings.volume;
     },

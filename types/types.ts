@@ -1,3 +1,5 @@
+import Database from "@tauri-apps/plugin-sql";
+
 export interface Song {
   id: string;
   title: string;
@@ -34,6 +36,7 @@ export interface MusicStore {
   songsConfig: SongsConfig;
   player: Player;
   lastUpdated: number;
+  db: Database;
 }
 
 export interface MusicSearchResponseItem {
