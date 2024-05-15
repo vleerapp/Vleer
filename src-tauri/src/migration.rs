@@ -59,39 +59,43 @@ pub fn generate_playlists_insert_sql() -> String {
 
     inserts.join("\n")
 }
-
-fn load_settings_json() -> Value {
+fn load_settings_json() -> Option<Value> {
     let path = commands::get_config_path().join("settings.json");
+    if !path.exists() {
+        return None;
+    }
     let data = fs::read_to_string(path).expect("Unable to read settings file");
-    serde_json::from_str(&data).expect("Unable to parse settings JSON")
+    Some(serde_json::from_str(&data).expect("Unable to parse settings JSON"))
 }
 
 pub fn generate_settings_insert_sql() -> String {
-    let json = load_settings_json();
-    let player_settings = json["playerSettings"].as_object().expect("Expected 'playerSettings' to be an object");
+    if let Some(json) = load_settings_json() {
+        let player_settings = json["playerSettings"].as_object().expect("Expected 'playerSettings' to be an object");
 
-    let mut inserts = Vec::new();
-    for (key, value) in player_settings {
-        let value_str = match value {
-            Value::String(s) => s.replace("'", "''"), 
-            _ => value.to_string().replace("'", "''"),
-        };
-        inserts.push(format!(
-            "INSERT INTO settings (key, value) VALUES ('{}', '{}');",
-            key, value_str
-        ));
-    }
-
-
-    if let Some(eq) = player_settings.get("eq").and_then(|v| v.as_object()) {
-        for (freq, val) in eq {
-            let val_str = val.to_string().replace("'", "''");
+        let mut inserts = Vec::new();
+        for (key, value) in player_settings {
+            let value_str = match value {
+                Value::String(s) => s.replace("'", "''"), 
+                _ => value.to_string().replace("'", "''"),
+            };
             inserts.push(format!(
-                "INSERT INTO settings (key, value) VALUES ('eq_{}', '{}');",
-                freq, val_str
+                "INSERT INTO settings (key, value) VALUES ('{}', '{}');",
+                key, value_str
             ));
         }
-    }
 
-    inserts.join("\n")
+        if let Some(eq) = player_settings.get("eq").and_then(|v| v.as_object()) {
+            for (freq, val) in eq {
+                let val_str = val.to_string().replace("'", "''");
+                inserts.push(format!(
+                    "INSERT INTO settings (key, value) VALUES ('eq_{}', '{}');",
+                    freq, val_str
+                ));
+            }
+        }
+
+        inserts.join("\n")
+    } else {
+        String::new()
+    }
 }
