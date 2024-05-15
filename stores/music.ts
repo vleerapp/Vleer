@@ -25,7 +25,6 @@ export const useMusicStore = defineStore("musicStore", {
   actions: {
     async init() {
       this.db = await Database.load("sqlite:data.db");
-      console.log("idk");
       const songs = await this.db.select<Song[]>("SELECT * FROM songs");
       songs.forEach(async (song: Song) => {
         this.songsConfig.songs[song.id] = song;
@@ -119,8 +118,7 @@ export const useMusicStore = defineStore("musicStore", {
     },
     async setSong(id: string, contents: any) {
       this.player.currentSongId = id;
-      await this.setSongFromBuffer(contents);
-      // await this.ensureAudioContextAndFilters();
+      await this.setSongFromBuffer(contents);      
       const currentTime = new Date().toISOString();
       await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
 

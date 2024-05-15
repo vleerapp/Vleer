@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import Database from '@tauri-apps/plugin-sql';
+import type { EQSettings } from "~/types/types";
 
 export const useSettingsStore = defineStore("settingsStore", {
   state: () => ({

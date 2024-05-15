@@ -9,7 +9,6 @@ import {
 } from "@tauri-apps/plugin-fs";
 import type { Song, SongsConfig, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
-import { invoke } from "@tauri-apps/api/core";
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   const db = await Database.load("sqlite:data.db");
@@ -144,13 +143,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return null;
     },
     async applyEqSettings() {
-      const eqSettings = $settings.getEq();
+      const eqSettings = settingsStore.getEq();
       await musicStore.applyEqSettings(eqSettings);
     },
     setEqGain(filterIndex: number, gain: number): void {
       musicStore.setEqGain(filterIndex, gain)
     },
     async ensureAudioContextAndFilters() {
+      console.log("asd")
       if (!musicStore.player.audioContext) {
         musicStore.player.audioContext = new AudioContext();
         musicStore.player.sourceNode =
