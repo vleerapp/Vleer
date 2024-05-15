@@ -6,14 +6,9 @@
 </template>
 
 <script lang="ts" setup>
-/* import { register, unregister } from '@tauri-apps/plugin-global-shortcut'; */
+import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut';
 const { $music, $settings } = useNuxtApp();
 await $music.init();
-
-/* await unregister('Shift+MediaPlayPause');
-await register('Shift+MediaPlayPause', () => {
-  console.log('Shortcut triggered');
-}); */
 
 window.addEventListener('error', (e) => {
   if (e.target instanceof HTMLAudioElement) {
@@ -21,7 +16,7 @@ window.addEventListener('error', (e) => {
     if (mediaError) {
       console.error("Global error handler: Error with audio element:", mediaError);
       console.error("Global error handler: MediaError code:", mediaError.code);
-      switch(mediaError.code) {
+      switch (mediaError.code) {
         case mediaError.MEDIA_ERR_ABORTED:
           console.error("Global error handler: The fetching process for the media resource was aborted by the user agent at the user's request.");
           break;
@@ -45,16 +40,59 @@ window.addEventListener('error', (e) => {
 const isTextInputFocused = ref(false);
 
 onMounted(async () => {
-  await $settings.init();
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('focusin', updateFocus);
   document.addEventListener('focusout', updateFocus);
+
+  await $settings.init();
+
+  if (await isRegistered("MediaPlayPause")){
+    await unregister("MediaPlayPause")
+  }
+
+  await register('MediaPlayPause', (event) => {
+    if(event.state === "Pressed") {
+      $music.playPause()
+    }
+  });
+
+  if (await isRegistered("MediaTrackNext")) {
+    await unregister("MediaTrackNext")
+  }
+
+  await register('MediaTrackNext', (event) => {
+    if (event.state === "Pressed") {
+      $music.skip()
+    }
+  });
+
+  // if (await isRegistered("MediaTrackPrevious")) {
+  //   await unregister("MediaTrackPrevious")
+  // }
+
+  // await register('MediaTrackPrevious', (event) => {
+  //   if (event.state === "Pressed") {
+  //     $music.rewind();
+  //   }
+  // });
 });
 
-onUnmounted(() => {
+onUnmounted(async () => {
   document.removeEventListener('keydown', handleKeyDown);
   document.removeEventListener('focusin', updateFocus);
   document.removeEventListener('focusout', updateFocus);
+  
+  if (await isRegistered("MediaPlayPause")) {
+    await unregister("MediaPlayPause")
+  }
+
+  if (await isRegistered("MediaTrackNext")) {
+    await unregister("MediaTrackNext")
+  }
+
+  // if (await isRegistered("MediaTrackPrevious")) {
+  //   await unregister("MediaTrackPrevious")
+  // }
 });
 
 function handleKeyDown(event: KeyboardEvent) {
