@@ -6,8 +6,14 @@
 </template>
 
 <script lang="ts" setup>
+/* import { register, unregister } from '@tauri-apps/plugin-global-shortcut'; */
 const { $music, $settings } = useNuxtApp();
 await $music.init();
+
+/* await unregister('Shift+MediaPlayPause');
+await register('Shift+MediaPlayPause', () => {
+  console.log('Shortcut triggered');
+}); */
 
 window.addEventListener('error', (e) => {
   if (e.target instanceof HTMLAudioElement) {
