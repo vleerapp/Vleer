@@ -30,6 +30,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     currentQueueIndex: 0,
     async init() {
       await musicStore.init();
+      this.setVolume(settingsStore.getVolume())
     },
     getSongs() {
       return Object.values(musicStore.songsConfig.songs);
@@ -104,6 +105,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       audio.pause();
     },
     playPause() {
+      this.setVolume(settingsStore.getVolume())
       const audio = musicStore.getAudio();
       if (audio.paused) {
         audio.play();
