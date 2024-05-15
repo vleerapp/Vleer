@@ -25,8 +25,18 @@
           </div>
         </div>
         <div class="items">
-          <div v-for="(song, index) in filteredSongs" :key="song.id" @click="playSong(song.id)" class="song">
-            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
+          <div v-for="(song, index) in filteredSongs" :key="song.id" @click="playSong(song.id)" class="song"
+            @mouseover="hoveredSongId = song.id" @mouseleave="hoveredSongId = ''">
+            <div class="cover">
+              <svg v-show="hoveredSongId === song.id" width="14px" height="14px" viewBox="0 0 14 14" version="1.1"
+                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                <g id="Group">
+                  <path d="M0 0L14 0L14 14L0 14L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
+                  <path d="M2 14L2 0L12.5 7L2 14Z" id="Shape" fill="#FFFFFF" stroke="none" />
+                </g>
+              </svg>
+              <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="img" />
+            </div>
             <div class="titles">
               <p class="title">{{ truncate(song.title) }}</p>
               <p class="artist">{{ truncate(song.artist) }}</p>
@@ -100,6 +110,7 @@ const searchQuery = ref<string>('');
 const songsDetails = ref<Song[]>([]);
 const playlistCover = ref("/cover.png");
 const addSongs = ref(false);
+const hoveredSongId = ref("");
 
 const songs = ref<Song[]>([]); // for loading songs for the add search
 const addSearchQuery = ref(""); // for loading songs for the add search

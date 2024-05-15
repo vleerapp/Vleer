@@ -22,7 +22,7 @@ pub fn connect_rpc() -> Result<(), String> {
         return Err("Discord RPC is disabled".to_string());
     }
 
-    let mut drpc = DRPC_CLIENT.lock().unwrap();
+    let mut drpc = DRPC_CLIENT.lock().map_err(|e| e.to_string())?;
     if let Some(ref mut client) = *drpc {
         match client.connect() {
             Ok(_) => Ok(()),
@@ -40,9 +40,12 @@ pub fn clear_activity() -> Result<(), String> {
         return Err("Discord RPC is disabled".to_string());
     }
 
-    let mut drpc = DRPC_CLIENT.lock().unwrap();
+    let mut drpc = DRPC_CLIENT.lock().map_err(|e| e.to_string())?;
     if let Some(ref mut client) = *drpc {
-        client.clear_activity().map_err(|e| e.to_string())
+        match client.clear_activity() {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e.to_string()),
+        }
     } else {
         Err("Discord IPC client not initialized".to_string())
     }
@@ -62,25 +65,28 @@ pub fn update_activity(
     }
 
     thread::spawn(move || {
-        let mut drpc = DRPC_CLIENT.lock().unwrap();
-        if let Some(ref mut client) = *drpc {
-            let mut activity_builder = activity::Activity::new()
-                .state(&state)
-                .details(&details)
-                .assets(
-                    activity::Assets::new()
-                        .large_image(&large_image)
-                        .large_text(&large_image_text),
-                );
+        let mut drpc = DRPC_CLIENT.lock().map_err(|e| e.to_string());
+        if let Ok(mut drpc) = drpc {
+            if let Some(ref mut client) = *drpc {
+                let mut activity_builder = activity::Activity::new()
+                    .state(&state)
+                    .details(&details)
+                    .assets(
+                        activity::Assets::new()
+                            .large_image(&large_image)
+                            .large_text(&large_image_text),
+                    );
 
-            if let Some(ref url) = youtube_url {
-                let youtube_button = activity::Button::new("YouTube", url);
-                activity_builder = activity_builder.buttons(vec![youtube_button]);
+                if let Some(ref url) = youtube_url {
+                    let youtube_button = activity::Button::new("YouTube", url);
+                    activity_builder = activity_builder.buttons(vec![youtube_button]);
+                }
+
+                match client.set_activity(activity_builder) {
+                    Ok(_) => (),
+                    Err(e) => panic!("Failed to set activity: {}", e),
+                }
             }
-
-            client
-                .set_activity(activity_builder)
-                .expect("Failed to set activity");
         }
     });
     Ok(())
