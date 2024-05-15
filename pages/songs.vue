@@ -14,6 +14,7 @@
           <img src="/Length.svg" alt="" />
         </div>
       </div>
+      {{ currentSongId }}
       <div class="items">
         <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)" class="song">
           <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
@@ -46,9 +47,11 @@ import { type Song } from "~/types/types";
 import { ref, onMounted, watch } from "vue";
 
 const { $music } = useNuxtApp();
+const musicStore = useMusicStore();
 
 const searchQuery = ref("");
 const songs = $music.getSongs();
+// const currentSongId = ref(musicStore.)
 
 const filteredSongs = computed<Song[]>(() => {
   if (!searchQuery.value.trim()) {

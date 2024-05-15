@@ -221,12 +221,9 @@ async function playSong(songId: string) {
     console.error("No songs in playlist.");
     return;
   }
-  // const startIndex = filteredSongs.value.findIndex(song => song.id === songId);
-  // const queueIds = [...filteredSongs.value.slice(startIndex), ...filteredSongs.value.slice(0, startIndex)].map(song => song.id);
-  // await $music.setQueue(queueIds);
-  await $music.setSong(songId);
-  console.log("asdas")
-  $music.play();
+  const startIndex = filteredSongs.value.findIndex(song => song.id === songId);
+  const queueIds = [...filteredSongs.value.slice(startIndex), ...filteredSongs.value.slice(0, startIndex)].map(song => song.id);
+  await $music.setQueue(queueIds);
 }
 
 function truncate(text: string | null | undefined, length: number = 45): string {
