@@ -29,7 +29,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     queue: [] as string[],
     currentQueueIndex: 0,
     async init() {
-      musicStore.init();
+      await musicStore.init();
     },
     getSongs() {
       return Object.values(musicStore.songsConfig.songs);
@@ -150,7 +150,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       musicStore.setEqGain(filterIndex, gain)
     },
     async ensureAudioContextAndFilters() {
-      console.log("asd")
       if (!musicStore.player.audioContext) {
         musicStore.player.audioContext = new AudioContext();
         musicStore.player.sourceNode =
