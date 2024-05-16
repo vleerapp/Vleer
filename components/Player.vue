@@ -69,7 +69,7 @@ audio.value.addEventListener('play', async () => {
 
     let thumbnail;
     try {
-      const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.id)}&filter=music_songs`);
+      const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.title + currentSong.value.artist)}&filter=music_songs`);
       const data = await response.json();
       thumbnail = data.items[0].thumbnail;
     } catch (error) {
