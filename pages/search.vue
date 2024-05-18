@@ -24,6 +24,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
 import axios from 'axios';
 import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
+
 const { $music, $settings } = useNuxtApp();
 
 const searchTerm = ref("");
@@ -41,10 +42,6 @@ async function searchSongs() {
   }
 
   let apiURL = $settings.getApiURL()
-
-  if (!apiURL) {
-    apiURL = "https://pipedapi.r4fo.com";
-  }
 
   try {
     const response = await fetch(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
@@ -90,10 +87,10 @@ async function handleSongClick(song: MusicSearchResponseItem) {
 
     const songsConfig = $music.getSongs();
 
-    const songExists = Object.values(songsConfig.songs).some(song => song.id === videoId);
+    const songExists = Object.values(songsConfig).some(song => song.id === videoId);
 
     if (songExists) {
-      console.log("Song already exists.");
+      console.error("Song already exists.");
       return;
     }
 
@@ -102,7 +99,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       title: song.title,
       artist: song.uploaderName,
       length: song.duration,
-      cover: song.thumbnail,
+      cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
       date_added: formatDate(new Date())
     }
 
@@ -117,7 +114,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       await $music.addSongData(songData)
 
       await $music.setSong(videoId)
-      $music.play();
+      $music.play()
     } catch (error) {
       console.error('Error downloading video as MP3:', error);
     }

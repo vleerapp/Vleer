@@ -1,4 +1,3 @@
-import re from "~/dist/_nuxt/BJ90lMuY";
 import { useSettingsStore } from "~/stores/settings";
 import type { EQSettings } from "~/types/types";
 
@@ -7,32 +6,32 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const { $music } = useNuxtApp();
 
   await store.getSettings();
-  await $music.init();
-
-  if (store.settings.playerSettings.currentSong != "") {
-    $music.setSong(store.settings.playerSettings.currentSong);
-  }
 
   const settings = {
+    async init() {
+      if (store.settings.currentSong != "") {
+        await $music.setSong(store.settings.currentSong);
+      }
+    },
     getVolume(): number {
-      return store.settings.playerSettings.volume;
+      return store.settings.volume;
     },
     setVolume(volume: number) {
-      store.settings.playerSettings.volume = volume;
+      store.settings.volume = volume;
       store.saveSettings();
     },
     getEq(): EQSettings {
-      return store.settings.playerSettings.eq;
+      return store.settings.eq;
     },
     setEq(eq: EQSettings) {
-      store.settings.playerSettings.eq = eq;
+      store.settings.eq = eq;
       store.saveSettings();
     },
     getCurrentSong(): string {
-      return store.settings.playerSettings.currentSong;
+      return store.settings.currentSong;
     },
-    setCurrentSong(song: string) {
-      store.settings.playerSettings.currentSong = song;
+    setCurrentSong(id: string) {
+      store.settings.currentSong = id;
       store.saveSettings();
     },
     setApiURL(url: string) {
@@ -40,6 +39,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       store.saveSettings();
     },
     getApiURL() {
+      if (!store.settings.apiURL) {
+        return "https://pipedapi.r4fo.com";
+      }
       return store.settings.apiURL;
     },
     async searchApiURL() {
@@ -49,7 +51,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         const urls = instances.map((instance: { api_url: string }) => instance.api_url);
 
         const results = await window.__TAURI__.core.invoke('ping_urls', { urls });
-        console.log(results[0][0]);
         this.setApiURL(results[0][0])
         return results;
       } catch (error) {
@@ -68,6 +69,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         return [];
       }
     },
+    async saveSettings(){
+      await store.saveSettings();
+    }
   };
 
   return {

@@ -26,7 +26,48 @@
   gap: 14px;
 }
 
+.playlists .cards {
+  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(2, 64px);
+
+  .playlist {
+    background-color: v.$element;
+    height: 64px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    position: relative;
+
+    .play {
+      opacity: 0;
+      position: absolute;
+      display: grid;
+      width: 36px;
+      height: 36px;
+      background-color: v.$accent;
+      border: none;
+      outline: none;
+      right: 14px;
+      place-items: center;
+      transition: opacity .3s;
+    }
+
+    .play:hover{
+      background-color: v.$accent_hover;
+    }
+  }
+  
+  .playlist:hover .play{
+    opacity: 1;
+  }
+}
+
+
 .recently-played {
+  margin-top: 32px;
+
   .cards {
     width: 100%;
     padding-bottom: 10px;

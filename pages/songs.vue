@@ -15,8 +15,19 @@
         </div>
       </div>
       <div class="items">
-        <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)" class="song">
-          <img :src="song.coverURL" :alt="song.title" class="cover" />
+        <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)"
+          :class="['song', { playing: currentSong.id === song.id }]" @mouseover="hoveredSongId = song.id"
+          @mouseleave="hoveredSongId = ''">
+          <div class="cover">
+            <svg v-show="hoveredSongId === song.id" width="14px" height="14px" viewBox="0 0 14 14" version="1.1"
+              xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+              <g id="Group">
+                <path d="M0 0L14 0L14 14L0 14L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
+                <path d="M2 14L2 0L12.5 7L2 14Z" id="Shape" fill="#FFFFFF" stroke="none" />
+              </g>
+            </svg>
+            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="img" />
+          </div>
           <div class="titles">
             <p class="title">{{ truncate(song.title) }}</p>
             <p class="artist">{{ truncate(song.artist) }}</p>
@@ -44,55 +55,22 @@
 <script lang="ts" setup>
 import { type Song } from "~/types/types";
 import { ref, onMounted, watch } from "vue";
-import { useMusicStore } from "~/stores/music";
 
 const { $music } = useNuxtApp();
-const musicStore = useMusicStore();
 
 const searchQuery = ref("");
-const songs = ref([]);
+const songs = $music.getSongs();
+const hoveredSongId = ref("");
 
-onMounted(async () => {
-  await reloadSongs();
-});
-
-watch(
-  () => musicStore.lastUpdated,
-  async () => {
-    await reloadSongs();
+const filteredSongs = computed<Song[]>(() => {
+  if (!searchQuery.value.trim()) {
+    return songs.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
   }
-);
-
-const filteredSongs = computed(() => {
-  return songs.value
-    .filter((song) =>
-      song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (searchQuery.value) {
-        return (
-          a.title.toLowerCase().indexOf(searchQuery.value.toLowerCase()) -
-          b.title.toLowerCase().indexOf(searchQuery.value.toLowerCase())
-        );
-      } else {
-        return (
-          new Date(b.date_added).getTime() - new Date(a.date_added).getTime()
-        );
-      }
-    });
+  return songs.filter(song =>
+    song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
+  ).sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
 });
-
-async function reloadSongs() {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(
-    songArray.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
-  );
-  songs.value = songArray;
-}
 
 async function play(id: string, index: number) {
   const queueIds = filteredSongs.value.slice(index).map(song => song.id);
@@ -116,6 +94,12 @@ function formatDuration(duration: number) {
   const seconds = duration % 60;
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
+
+const currentSong = computed(() => {
+  return $music.getCurrentSong() || { id: 0 };
+});
+
+watch(currentSong, () => {});
 </script>
 
 <style scoped lang="scss">
