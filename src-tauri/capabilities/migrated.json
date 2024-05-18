@@ -30,8 +30,12 @@
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
+    "global-shortcut:allow-unregister-all",
     "window-state:allow-restore-state",
     "window-state:allow-save-window-state",
+    "sql:allow-load",
+    "sql:allow-select",
+    "sql:allow-execute",
     {
       "identifier": "fs:allow-audio-read-recursive",
       "allow": [

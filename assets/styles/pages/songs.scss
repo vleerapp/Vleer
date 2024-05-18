@@ -75,11 +75,22 @@
   .song {
     height: 36px;
     display: flex;
-    widows: 100%;
 
-    .cover {
+    .cover, .cover .img {
       height: 36px;
       width: 36px;
+    }
+
+    .cover{
+      position: relative;
+    }
+
+    .cover svg{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
     }
 
     .titles {
@@ -99,6 +110,10 @@
     .lenght {
       color: v.$text;
     }
+  }
+
+  .song:hover .cover .img {
+    filter: brightness(0.6);
   }
 }
 

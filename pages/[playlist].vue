@@ -25,8 +25,18 @@
           </div>
         </div>
         <div class="items">
-          <div v-for="(song, index) in filteredSongs" :key="song.id" @click="playSong(song.id)" class="song">
-            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
+          <div v-for="(song, index) in filteredSongs" :key="song.id" @click="playSong(song.id)" class="song"
+            @mouseover="hoveredSongId = song.id" @mouseleave="hoveredSongId = ''">
+            <div class="cover">
+              <svg v-show="hoveredSongId === song.id" width="14px" height="14px" viewBox="0 0 14 14" version="1.1"
+                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                <g id="Group">
+                  <path d="M0 0L14 0L14 14L0 14L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
+                  <path d="M2 14L2 0L12.5 7L2 14Z" id="Shape" fill="#FFFFFF" stroke="none" />
+                </g>
+              </svg>
+              <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="img" />
+            </div>
             <div class="titles">
               <p class="title">{{ truncate(song.title) }}</p>
               <p class="artist">{{ truncate(song.artist) }}</p>
@@ -85,7 +95,6 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { useMusicStore } from '~/stores/music';
 import { computed, ref, watch, onMounted } from "vue";
 import type { Song, Playlist } from '~/types/types';
 import { open } from '@tauri-apps/plugin-dialog';
@@ -94,14 +103,14 @@ const { $music } = useNuxtApp();
 const route = useRoute();
 const playlistId = route.params.playlist.toString();
 
-const musicStore = useMusicStore();
-const playlist = ref(null);
+const playlist = ref<Playlist | null>(null);
 const playlistName = ref<string>(playlist.value?.name || '');
 const searchQuery = ref<string>('');
 
 const songsDetails = ref<Song[]>([]);
-const playlistCover = ref("");
+const playlistCover = ref("/cover.png");
 const addSongs = ref(false);
+const hoveredSongId = ref("");
 
 const songs = ref<Song[]>([]); // for loading songs for the add search
 const addSearchQuery = ref(""); // for loading songs for the add search
@@ -112,38 +121,27 @@ function toggleAddSongs() {
 }
 
 watchEffect(async () => {
-  const result = await musicStore.getPlaylistByID(playlistId);
-  if (result) {
-    playlist.value = result;
-  } else {
-    console.error('No playlist found with ID:', playlistId);
-  }
+  playlist.value = $music.getPlaylistByID(playlistId);
 });
 
 onMounted(async () => {
-  playlistCover.value = await $music.searchCoverByPlaylistId(playlistId);
+  playlistCover.value = await $music.getCoverURLFromID(playlistId);
   if (playlist.value?.songs) {
-    songsDetails.value = await Promise.all(playlist.value.songs.map(songId => {
-      const songDetail = musicStore.getSongByID(songId);
+    songsDetails.value = playlist.value.songs.map(songId => {
+      const songDetail = $music.getSongByID(songId);
       return songDetail ? songDetail : null;
-    }).filter((song): song is Song => song !== null));
+    }).filter((song): song is Song => song !== null);
   }
 
-  await loadSongs(); // for loading songs for the add search
-  await fetchPlaylist();
+  loadSongs(); // for loading songs for the add search
+  fetchPlaylist();
 });
 
 
 // for loading songs for the add search
-const loadSongs = async () => {
-  const loadedSongs = await $music.getSongs();
-  const songArray = Object.values(loadedSongs.songs);
-  await Promise.all(
-    songArray.map(async (song) => {
-      song.coverURL = await $music.getCoverURLFromID(song.id);
-    })
-  );
-  songs.value = songArray;
+const loadSongs = () => {
+  const loadedSongs = $music.getSongs();
+  songs.value = loadedSongs;
 };
 
 watch(addSearchQuery, async (newValue) => {
@@ -182,16 +180,16 @@ watch(addSearchQuery, async (newValue) => {
   // }
 }, { immediate: true });
 
-async function addSongToPlaylist(song: Song) {
-  musicStore.addSongToPlaylist(playlistId, song.id);
+function addSongToPlaylist(song: Song) {
+  $music.addSongToPlaylist(playlistId, song.id);
 
-  await fetchPlaylist();
+  fetchPlaylist();
 }
 
 //////////////////////////////////////// for playlist songs
 
-async function fetchPlaylist() {
-  playlist.value = musicStore.getPlaylistByID(playlistId);
+function fetchPlaylist() {
+  playlist.value = $music.getPlaylistByID(playlistId);
 }
 
 const filteredSongs = computed<Song[]>(() => {
@@ -221,7 +219,7 @@ const songsCountAndDuration = computed<string>(() => {
 
 const updatePlaylistName = () => {
   if (playlist.value?.name !== playlistName.value) {
-    musicStore.renamePlaylist(playlistId, playlistName.value);
+    $music.renamePlaylist(playlistId, playlistName.value);
   }
 };
 
@@ -237,8 +235,6 @@ async function playSong(songId: string) {
   const startIndex = filteredSongs.value.findIndex(song => song.id === songId);
   const queueIds = [...filteredSongs.value.slice(startIndex), ...filteredSongs.value.slice(0, startIndex)].map(song => song.id);
   await $music.setQueue(queueIds);
-  await $music.setSong(songId);
-  $music.play();
 }
 
 function truncate(text: string | null | undefined, length: number = 45): string {
