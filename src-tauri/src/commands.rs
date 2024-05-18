@@ -2,6 +2,7 @@ use anyhow::{anyhow, Result as AnyhowResult};
 use reqwest::Client;
 use rusty_ytdl::Video;
 use std::path::PathBuf;
+use std::fs;
 use tauri::{AppHandle, async_runtime, Result as TauriResult};
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
@@ -31,9 +32,13 @@ pub async fn download(url: String, name: String) -> TauriResult<()> {
 pub fn get_music_path() -> PathBuf {
     let mut path = PathBuf::new();
     match std::env::consts::OS {
-        "macos" | "linux" => {
+        "macos" => {
             let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
             path.push(format!("/users/{}/Music/Vleer", username));
+        }
+        "linux" => {
+            let username = std::env::var("USER").unwrap_or_else(|_| "default".into());
+            path.push(format!("/home/{}/Music/Vleer", username));
         }
         "windows" => {
             let username = std::env::var("USERNAME").unwrap_or_else(|_| "default".into());
@@ -41,6 +46,20 @@ pub fn get_music_path() -> PathBuf {
         }
         _ => {}
     }
+    if !path.exists() {
+        fs::create_dir_all(&path).expect("Failed to create music directory");
+    }
+    path.push("Songs");
+    if !path.exists() {
+        fs::create_dir_all(&path).expect("Failed to create Songs directory");
+    }
+    path.pop();
+
+    path.push("Covers");
+    if !path.exists() {
+        fs::create_dir_all(&path).expect("Failed to create Covers directory");
+    }
+    path.pop();
     return path;
 }
 
