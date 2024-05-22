@@ -29,15 +29,12 @@ const { $music, $settings } = useNuxtApp();
 
 const searchTerm = ref("");
 const searchResults = ref<MusicSearchResponseItem[]>([]);
-const isLoading = ref(false);
 let searchTimeout: ReturnType<typeof setTimeout>;
 
 async function searchSongs() {
-  isLoading.value = true;
 
   if (searchTerm.value === "") {
     searchResults.value = [];
-    isLoading.value = false;
     return;
   }
 
@@ -61,8 +58,6 @@ async function searchSongs() {
     console.error("Failed to fetch songs:", error, apiURL, searchTerm.value);
     searchResults.value = [];
   }
-
-  isLoading.value = false;
 }
 
 function handleInput() {

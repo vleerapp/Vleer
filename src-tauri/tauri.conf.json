@@ -1,6 +1,6 @@
 {
   "productName": "Vleer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "identifier": "app.vleer",
   "build": {
     "beforeDevCommand": "pnpm nuxt dev",

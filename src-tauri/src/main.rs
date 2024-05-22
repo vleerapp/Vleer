@@ -14,9 +14,8 @@ use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 fn main() {
     let _ = discord_rpc::connect_rpc();
 
-    let migration_v1 = format!(
-        r#"
-    CREATE TABLE songs (
+    let migration_v1 = r#"
+    CREATE TABLE IF NOT EXISTS songs (
         id TEXT PRIMARY KEY,
         title TEXT,
         artist TEXT,
@@ -25,45 +24,41 @@ fn main() {
         date_added TEXT,
         last_played TEXT
     );
-    CREATE TABLE playlists (
+    CREATE TABLE IF NOT EXISTS playlists (
         id TEXT PRIMARY KEY,
         name TEXT,
         date TEXT,
         cover TEXT,
         songs TEXT
     );
-    {}
-    {}
-    "#,
-        migration::generate_songs_insert_sql(),
-        migration::generate_playlists_insert_sql(),
-    );
+    "#;
 
-    let migration_v2 = format!(
-        r#"
-    CREATE TABLE settings (
+    let migration_v2 = r#"
+    CREATE TABLE IF NOT EXISTS settings (
         key TEXT PRIMARY KEY,
         value TEXT
     );
-    {}
-    "#,
-        migration::generate_settings_insert_sql(),
+    "#;
+
+    let migration_v1_data = format!(
+        "{}\n{}",
+        migration::generate_songs_insert_sql(),
+        migration::generate_playlists_insert_sql()
     );
 
-    let sql_commands_v1 = Box::leak(Box::new(migration_v1));
-    let sql_commands_v2 = Box::leak(Box::new(migration_v2));
+    let migration_v2_data = migration::generate_settings_insert_sql();
 
     let migrations = vec![
         Migration {
             version: 1,
             description: "create_songs_and_playlists_tables",
-            sql: sql_commands_v1,
+            sql: Box::leak(format!("{}\n{}", migration_v1, migration_v1_data).into_boxed_str()),
             kind: MigrationKind::Up,
         },
         Migration {
             version: 2,
             description: "create_settings_table",
-            sql: sql_commands_v2,
+            sql: Box::leak(format!("{}\n{}", migration_v2, migration_v2_data).into_boxed_str()),
             kind: MigrationKind::Up,
         },
     ];
