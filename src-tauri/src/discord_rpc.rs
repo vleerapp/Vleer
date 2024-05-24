@@ -65,7 +65,7 @@ pub fn update_activity(
     }
 
     thread::spawn(move || {
-        let mut drpc = DRPC_CLIENT.lock().map_err(|e| e.to_string());
+        let drpc = DRPC_CLIENT.lock().map_err(|e| e.to_string());
         if let Ok(mut drpc) = drpc {
             if let Some(ref mut client) = *drpc {
                 let mut activity_builder = activity::Activity::new()
