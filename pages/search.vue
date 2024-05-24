@@ -99,7 +99,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
     }
 
     try {
-      await invoke('download', { url: "https://youtube.com" + song.url, name: videoId + ".webm" });
+      await invoke('download', { id: videoId });
 
       const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
       const data = new Uint8Array(response.data);
@@ -111,7 +111,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       await $music.setSong(videoId)
       $music.play()
     } catch (error) {
-      console.error('Error downloading video as MP3:', error);
+      console.error('Error downloading video as WAV:', error);
     }
   } catch (error) {
     console.error("Failed to handle song click:", error);
