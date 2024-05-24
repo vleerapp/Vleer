@@ -111,7 +111,7 @@ async function handleSongClick(song: MusicSearchResponseItem) {
       await $music.setSong(videoId)
       $music.play()
     } catch (error) {
-      console.error('Error downloading video as WAV:', error);
+      console.error('Error downloading video as mp3:', error);
     }
   } catch (error) {
     console.error("Failed to handle song click:", error);

@@ -14,7 +14,7 @@ use std::io::copy;
 pub async fn download(id: String) -> TauriResult<()> {
     let client = Client::new();
     let response = client
-        .get(format!("https://api.wireway.ch/wave/audioStream/{}", id))
+        .get(format!("https://api.wireway.ch/wave/audioStreamMp3/{}", id))
         .send()
         .await
         .map_err(|e| anyhow!(e.to_string()))?;
@@ -23,7 +23,7 @@ pub async fn download(id: String) -> TauriResult<()> {
 
     let mut path = base_path.clone();
     path.push("Songs");
-    path.push(id + ".wav");
+    path.push(id + ".mp3");
 
     let mut file = File::create(&path).map_err(|e| anyhow!(e.to_string()))?;
     let content = response.bytes().await.map_err(|e| anyhow!(e.to_string()))?;

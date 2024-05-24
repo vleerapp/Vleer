@@ -102,9 +102,9 @@ function updateWidthPlaylists() {
   }
 }
 
-function play(id) {
+async function play(id) {
   if ($music && $music.setSong && $music.play) {
-    $music.setSong(id).then(() => {
+    await $music.setSong(id).then(() => {
       $music.play();
     });
   }

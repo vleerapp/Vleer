@@ -91,17 +91,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return URL.createObjectURL(new Blob([contents]));
     },
     async setSong(id: string) {
-      let contents;
-      try {
-        contents = await readFile(`Vleer/Songs/${id}.wav`, {
-          baseDir: BaseDirectory.Audio,
-        });
-      } catch (error) {
-        console.warn(`.wav file not found for id ${id}, trying .webm`);
-        contents = await readFile(`Vleer/Songs/${id}.webm`, {
-          baseDir: BaseDirectory.Audio,
-        });
-      }
+      const contents = await readFile(`Vleer/Songs/${id}.mp3`, {
+        baseDir: BaseDirectory.Audio,
+      });
       await musicStore.setSong(id, contents);
     },
     play() {

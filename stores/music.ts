@@ -56,16 +56,12 @@ export const useMusicStore = defineStore("musicStore", {
     getSongsData(): SongsConfig {
       return this.songsConfig;
     },
-    async setSongFromBuffer(buffer: any, format: 'wav' | 'webm' = 'wav') {
-      const mimeType = format === 'wav' ? 'audio/wav' : 'audio/webm';
-      const blob = new Blob([buffer], { type: mimeType });
+    async setSongFromBuffer(buffer: any) {
+      const blob = new Blob([buffer], { type: "audio/mp3" });
       const url = URL.createObjectURL(blob);
       this.player.audio.currentTime = 0;
       this.player.audio.src = url;
-      await this.player.audio.load();
-      this.player.audio.addEventListener("error", (e) => {
-        console.error("Error with audio element:", e);
-      });
+      this.player.audio.load();
       this.lastUpdated = Date.now();
     },
     getAudio(): HTMLAudioElement {
@@ -119,7 +115,7 @@ export const useMusicStore = defineStore("musicStore", {
     },
     async setSong(id: string, contents: any) {
       this.player.currentSongId = id;
-      await this.setSongFromBuffer(contents);      
+      await this.setSongFromBuffer(contents);
       const currentTime = new Date().toISOString();
       await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
 
