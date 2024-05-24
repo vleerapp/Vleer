@@ -29,7 +29,6 @@ pub async fn download(id: String) -> TauriResult<()> {
     let content = response.bytes().await.map_err(|e| anyhow!(e.to_string()))?;
     copy(&mut content.as_ref(), &mut file).map_err(|e| anyhow!(e.to_string()))?;
 
-    println!("Downloaded: {}", path.display());
     Ok(())
 }
 

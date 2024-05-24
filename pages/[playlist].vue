@@ -104,7 +104,12 @@ const route = useRoute();
 const playlistId = route.params.playlist.toString();
 
 const playlist = ref<Playlist | null>(null);
-const playlistName = ref<string>(playlist.value?.name || '');
+const playlistName = ref<string>('');
+watchEffect(() => {
+  if (playlist.value) {
+    playlistName.value = playlist.value.name;
+  }
+});
 const searchQuery = ref<string>('');
 
 const songsDetails = ref<Song[]>([]);
