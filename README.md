@@ -20,3 +20,14 @@ hdiutil detach /Volumes/vleer
 codesign -s - ./vleer/Vleer.app/Contents/MacOS/vleer
 hdiutil create -format UDZO -srcfolder ./vleer Vleer-signed.dmg
 ```
+
+
+To convert all webm files to mp3:
+```pwsh
+# windows
+for %i in (*.webm) do ffmpeg -i "%i" "%~ni.mp3"
+```
+```zsh
+# unix (linux/mac)
+for i in *.webm; do ffmpeg -i "$i" "${i%.webm}.mp3"; done
+```
