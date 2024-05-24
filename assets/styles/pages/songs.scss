@@ -76,16 +76,17 @@
     height: 36px;
     display: flex;
 
-    .cover, .cover .img {
+    .cover,
+    .cover .img {
       height: 36px;
       width: 36px;
     }
 
-    .cover{
+    .cover {
       position: relative;
     }
 
-    .cover svg{
+    .cover svg {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -114,6 +115,30 @@
 
   .song:hover .cover .img {
     filter: brightness(0.6);
+  }
+
+  .playing .playing-indicator {
+    display: flex;
+  }
+
+  .playing-indicator {
+    display: none;
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    flex-direction: row;
+    gap: 2px;
+    
+    .bar {
+      width: 4px;
+      height: 22px;
+      background-color: white;
+      transition: height 0.1s;
+      align-self: flex-end;
+    }
   }
 }
 

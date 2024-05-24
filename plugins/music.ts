@@ -23,8 +23,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
   });
 
-  musicStore.player.audio.onplay = () => music.ensureAudioContextAndFilters();
-
   const music = {
     queue: [] as string[],
     currentQueueIndex: 0,
@@ -97,6 +95,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       await musicStore.setSong(id, contents);
     },
     play() {
+      this.ensureAudioContextAndFilters()
       this.setVolume(settingsStore.getVolume())
       musicStore.play();
     },
@@ -154,13 +153,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     async ensureAudioContextAndFilters() {
       if (!musicStore.player.audioContext) {
         musicStore.player.audioContext = new AudioContext();
-        musicStore.player.sourceNode =
-          musicStore.player.audioContext.createMediaElementSource(
-            musicStore.player.audio!
-          );
+        musicStore.player.sourceNode = musicStore.player.audioContext.createMediaElementSource(musicStore.player.audio);
+        musicStore.player.analyser = musicStore.player.audioContext.createAnalyser();
+        musicStore.player.sourceNode.connect(musicStore.player.analyser);
+        musicStore.player.analyser.connect(musicStore.player.audioContext.destination);
+        musicStore.player.analyser.fftSize = 256;
         musicStore.player.eqFilters = musicStore.createEqFilters();
         musicStore.connectEqFilters();
-        await this.applyEqSettings();
+        await musicStore.applyEqSettings(musicStore.player.eqFilters);
         if (musicStore.player.audioContext.state === "suspended") {
           await musicStore.player.audioContext.resume();
         }
@@ -226,6 +226,15 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
       }
       return "/cover.png";
+    },
+    getAudioContext() {
+      return musicStore.player.audioContext;
+    },
+    getAnalyser() {
+      return musicStore.player.analyser;
+    },
+    setAnalyser(analyser: AnalyserNode) {
+      musicStore.player.analyser = analyser;
     },
   };
 

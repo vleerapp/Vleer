@@ -29,6 +29,7 @@ export interface Player {
   currentSongId: string;
   audioContext: AudioContext | null;
   sourceNode: MediaElementAudioSourceNode | null;
+  analyser: AnalyserNode | null;
   eqFilters: BiquadFilterNode[];
 }
 

@@ -19,6 +19,12 @@
           :class="['song', { playing: currentSong.id === song.id }]" @mouseover="hoveredSongId = song.id"
           @mouseleave="hoveredSongId = ''">
           <div class="cover">
+            <div class="playing-indicator">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
             <svg v-show="hoveredSongId === song.id" width="14px" height="14px" viewBox="0 0 14 14" version="1.1"
               xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
               <g id="Group">
@@ -75,6 +81,8 @@ const filteredSongs = computed<Song[]>(() => {
 async function play(id: string, index: number) {
   const queueIds = filteredSongs.value.slice(index).map(song => song.id);
   await $music.setQueue(queueIds);
+  await $music.ensureAudioContextAndFilters();
+  startVisualizer();
 }
 
 function truncate(text: string, length: number = 45) {
@@ -100,6 +108,32 @@ const currentSong = computed(() => {
 });
 
 watch(currentSong, () => {});
+
+function startVisualizer() {
+  let animationFrameId: number;
+
+  function draw() {
+    const bars = document.querySelectorAll('.playing-indicator .bar');
+    bars.forEach((bar) => {
+      let height = Math.random() * 100; // Full range from 0 to 100
+      bar.style.height = `${height}%`; // Use percentage to cover full height
+    });
+    animationFrameId = requestAnimationFrame(draw);
+  }
+
+  function stop() {
+    cancelAnimationFrame(animationFrameId);
+  }
+
+  const audio = $music.getAudio();
+  audio.addEventListener('play', draw);
+  audio.addEventListener('pause', stop);
+  audio.addEventListener('ended', stop);
+
+  if (!audio.paused) {
+    draw();
+  }
+}
 </script>
 
 <style scoped lang="scss">

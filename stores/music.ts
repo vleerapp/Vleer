@@ -16,6 +16,7 @@ export const useMusicStore = defineStore("musicStore", {
       currentSongId: "",
       audioContext: null,
       sourceNode: null,
+      analyser: null,
       eqFilters: []
     },
     lastUpdated: Date.now(),
@@ -121,23 +122,6 @@ export const useMusicStore = defineStore("musicStore", {
 
       this.lastUpdated = Date.now();
     },
-    async ensureAudioContextAndFilters() {
-      if (!this.player.audioContext) {
-        this.player.audioContext = new AudioContext();
-        this.player.sourceNode =
-          this.player.audioContext.createMediaElementSource(
-            this.player.audio!
-          );
-        this.player.eqFilters = this.createEqFilters();
-        this.connectEqFilters();
-        await this.applyEqSettings(this.player.eqFilters);
-        if (this.player.audioContext.state === "suspended") {
-          await this.player.audioContext.resume();
-        }
-      } else if (this.player.audioContext.state === "suspended") {
-        await this.player.audioContext.resume();
-      }
-    },
     createEqFilters(): BiquadFilterNode[] {
       const frequencies = [
         32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000,
@@ -171,8 +155,6 @@ export const useMusicStore = defineStore("musicStore", {
     setEqGain(filterIndex: number, gain: number): void {
       if (this.player.eqFilters[filterIndex]) {
         this.player.eqFilters[filterIndex].gain.value = gain;
-
-        this.ensureAudioContextAndFilters();
       }
     },
     play() {
