@@ -1,6 +1,5 @@
 use anyhow::{anyhow, Result as AnyhowResult};
 use reqwest::Client;
-use rusty_ytdl::Video;
 use std::path::PathBuf;
 use std::fs;
 use tauri::{AppHandle, async_runtime, Result as TauriResult};
@@ -8,21 +7,27 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
 use tokio::time::Instant;
 use tokio::task::JoinHandle;
+use std::fs::File;
+use std::io::copy;
 
 #[tauri::command]
-pub async fn download(url: String, name: String) -> TauriResult<()> {
-    let video = Video::new(url.clone()).map_err(|e| anyhow!(e.to_string()))?;
+pub async fn download(id: String) -> TauriResult<()> {
+    let client = Client::new();
+    let response = client
+        .get(format!("https://api.wireway.ch/wave/audioStream/{}", id))
+        .send()
+        .await
+        .map_err(|e| anyhow!(e.to_string()))?;
 
     let base_path = get_music_path();
 
     let mut path = base_path.clone();
     path.push("Songs");
-    path.push(&name);
+    path.push(id + ".wav");
 
-    video
-        .download(&path)
-        .await
-        .map_err(|e| anyhow!(e.to_string()))?;
+    let mut file = File::create(&path).map_err(|e| anyhow!(e.to_string()))?;
+    let content = response.bytes().await.map_err(|e| anyhow!(e.to_string()))?;
+    copy(&mut content.as_ref(), &mut file).map_err(|e| anyhow!(e.to_string()))?;
 
     println!("Downloaded: {}", path.display());
     Ok(())

@@ -1,6 +1,6 @@
 [package]
 name = "vleer"
-version = "0.1.0"
+version = "0.1.1"
 description = "Vleer"
 authors = ["pandadev", "waradu"]
 edition = "2021"
@@ -26,7 +26,7 @@ anyhow = "1.0"
 discord-ipc-rp = "0.1.1"
 dotenv = "0.15.0"
 reqwest = "0.12.3"
-rusty_ytdl = "0.7.1"
+rusty_ytdl = "0.7.2"
 regex = "1.10.4"
 
 [features]

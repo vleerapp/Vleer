@@ -56,8 +56,9 @@ export const useMusicStore = defineStore("musicStore", {
     getSongsData(): SongsConfig {
       return this.songsConfig;
     },
-    async setSongFromBuffer(buffer: any) {
-      const blob = new Blob([buffer], { type: "audio/webm" });
+    async setSongFromBuffer(buffer: any, format: 'wav' | 'webm' = 'wav') {
+      const mimeType = format === 'wav' ? 'audio/wav' : 'audio/webm';
+      const blob = new Blob([buffer], { type: mimeType });
       const url = URL.createObjectURL(blob);
       this.player.audio.currentTime = 0;
       this.player.audio.src = url;

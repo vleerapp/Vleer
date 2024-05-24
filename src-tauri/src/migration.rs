@@ -59,6 +59,7 @@ pub fn generate_playlists_insert_sql() -> String {
 
     inserts.join("\n")
 }
+
 fn load_settings_json() -> Option<Value> {
     let path = commands::get_config_path().join("settings.json");
     if !path.exists() {
