@@ -24,7 +24,7 @@ Find more options by clicking the Sponsor ❤️ button on the top of this page.
 
 ## 🤝 Contributing
 
-To get Verve set up on your machine, you'll need to have Rust and Yarn installed. Then, follow these steps:
+To get Vleer set up on your machine, you'll need to have Rust and pnpm installed. Then, follow these steps:
 
 1. Clone the project using `git clone https://github.com/vleerapp/Vleer.git`
 2. Change into the project directory: `cd Vleer`
