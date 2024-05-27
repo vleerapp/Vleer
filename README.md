@@ -37,7 +37,9 @@ To get Vleer set up on your machine, you'll need to have Rust and pnpm installed
 pnpm build
 ```
 
-Don't worry, it will fail at the end because it can not detect a Private key, but the installer files will be built regardless of that.
+Don't worry, it will fail at the end because it can not detect a Private key, but the installer files will be generated regardless of that.
+
+You can find them in `src-tauri/target/release/bundle`.
 
 Checkout the [Issues section](https://github.com/vleerapp/Vleer/issues).
 
