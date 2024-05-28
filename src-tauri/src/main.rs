@@ -10,6 +10,13 @@ mod migration;
 use tauri::Manager;
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
+use serde::Serialize;
+
+#[derive(Clone, Serialize)]
+struct Payload {
+  args: Vec<String>,
+  cwd: String,
+}
 
 fn main() {
     let _ = discord_rpc::connect_rpc();
@@ -75,6 +82,11 @@ fn main() {
                 .add_migrations("sqlite:data.db", migrations)
                 .build(),
         )
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            println!("{}, {argv:?}, {cwd}", app.package_info().name);
+
+            app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
+        }))
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
@@ -83,13 +95,15 @@ fn main() {
             commands::get_music_path
         ])
         .setup(|app| {
+            if let Some(window) = app.get_window("main") {
+                let _ = window.restore_state(StateFlags::all());
+                window.show().unwrap();
+            }
+
             tauri::async_runtime::block_on(async {
                 let _ = commands::check_for_updates(app.handle().clone()).await;
-
-                if let Some(window) = app.get_window("main") {
-                    let _ = window.restore_state(StateFlags::all());
-                }
             });
+
             Ok(())
         })
         .on_window_event(|app, event| match event {

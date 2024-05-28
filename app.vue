@@ -66,15 +66,15 @@ onMounted(async () => {
     }
   });
 
-  // if (await isRegistered("MediaTrackPrevious")) {
-  //   await unregister("MediaTrackPrevious")
-  // }
+  if (await isRegistered("MediaTrackPrevious")) {
+    await unregister("MediaTrackPrevious")
+  }
 
-  // await register('MediaTrackPrevious', (event) => {
-  //   if (event.state === "Pressed") {
-  //     $music.rewind();
-  //   }
-  // });
+  await register('MediaTrackPrevious', (event) => {
+    if (event.state === "Pressed") {
+      $music.rewind();
+    }
+  });
 });
 
 onUnmounted(async () => {
