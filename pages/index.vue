@@ -129,11 +129,12 @@ watch(() => musicStore.songsConfig.songs, (newSongs) => {
 }, { deep: true });
 
 onMounted(async () => {
+  window.addEventListener('resize', updateWidthSongs);
+  window.addEventListener('resize', updateWidthPlaylists);
+  
   updateWidthSongs();
   updateWidthPlaylists();
 
-  window.addEventListener('resize', updateWidthSongs);
-  window.addEventListener('resize', updateWidthPlaylists);
 })
 </script>
 
