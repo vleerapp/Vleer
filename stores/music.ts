@@ -142,9 +142,7 @@ export const useMusicStore = defineStore("musicStore", {
       this.lastUpdated = Date.now();
     },
     createEqFilters(): BiquadFilterNode[] {
-      const frequencies = [
-        32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000,
-      ];
+      const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
       return frequencies.map((freq) => {
         const filter = this.player.audioContext!.createBiquadFilter();
         filter.type = "peaking";
@@ -154,22 +152,35 @@ export const useMusicStore = defineStore("musicStore", {
         return filter;
       });
     },
+
     connectEqFilters(): void {
-      let lastNode: AudioNode = this.player.sourceNode!;
+      if (!this.player.sourceNode || !this.player.audioContext) return;
+
+      this.player.sourceNode.disconnect();
+      let lastNode: AudioNode = this.player.sourceNode;
       this.player.eqFilters.forEach((filter) => {
         lastNode.connect(filter);
         lastNode = filter;
       });
-      lastNode.connect(this.player.audioContext!.destination);
+      lastNode.connect(this.player.audioContext.destination);
     },
+
     async applyEqSettings(eqSettings: any) {
+      if (!this.player.audioContext) {
+        this.player.audioContext = new AudioContext();
+        this.player.sourceNode = this.player.audioContext.createMediaElementSource(this.player.audio);
+        this.player.eqFilters = this.createEqFilters();
+      }
+
       this.player.eqFilters.forEach((filter, index) => {
-        const gain =
-          eqSettings[filter.frequency.value.toString()];
+        const freq = filter.frequency.value;
+        const gain = eqSettings[freq.toString()];
         if (gain !== undefined) {
-          this.setEqGain(index, parseInt(gain));
+          filter.gain.setValueAtTime(parseFloat(gain), this.player.audioContext!.currentTime);
         }
       });
+
+      this.connectEqFilters();
     },
     setEqGain(filterIndex: number, gain: number): void {
       if (this.player.eqFilters[filterIndex]) {

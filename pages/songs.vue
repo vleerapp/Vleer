@@ -111,18 +111,33 @@ watch(currentSong, () => {});
 
 function startVisualizer() {
   let animationFrameId: number;
+  const maxHeight = 22;
+  const minHeight = 4;
+  const pausedHeight = 2;
+  const animationSpeed = 0.2;
+  const bars = Array.from({ length: 4 }, () => ({
+    height: Math.random() * (maxHeight - minHeight) + minHeight,
+    direction: Math.random() < 0.5 ? 1 : -1
+  }));
 
   function draw() {
-    const bars = document.querySelectorAll('.playing-indicator .bar');
-    bars.forEach((bar) => {
-      let height = Math.random() * 100; // Full range from 0 to 100
-      bar.style.height = `${height}%`; // Use percentage to cover full height
+    const barElements = document.querySelectorAll('.playing-indicator .bar');
+    bars.forEach((bar, index) => {
+      bar.height += bar.direction * animationSpeed;
+      if (bar.height > maxHeight || bar.height < minHeight) {
+        bar.direction *= -1;
+      }
+      (barElements[index] as HTMLElement).style.height = `${bar.height}px`;
     });
     animationFrameId = requestAnimationFrame(draw);
   }
 
   function stop() {
     cancelAnimationFrame(animationFrameId);
+    const barElements = document.querySelectorAll('.playing-indicator .bar');
+    barElements.forEach((bar) => {
+      (bar as HTMLElement).style.height = `${pausedHeight}px`;
+    });
   }
 
   const audio = $music.getAudio();
@@ -132,6 +147,8 @@ function startVisualizer() {
 
   if (!audio.paused) {
     draw();
+  } else {
+    stop();
   }
 }
 </script>

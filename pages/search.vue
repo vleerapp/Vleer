@@ -160,12 +160,12 @@ async function addToLibrary(song: MusicSearchResponseItem) {
 
     try {
       await invoke('download', { id: videoId });
-
+      
       const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
       const data = new Uint8Array(response.data);
-
+      
       await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-
+      
       await $music.addSongData(songData)
     } catch (error) {
       console.error('Error downloading video as mp3:', error);

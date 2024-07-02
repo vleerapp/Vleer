@@ -106,7 +106,14 @@ audio.value.addEventListener('timeupdate', () => {
   progress.value = (audio.value.currentTime / audio.value.duration) * 100;
 })
 
-function play() {
+async function initializeAudioContext() {
+  if (!$music.getAudioContext()) {
+    await $music.applyEqSettings();
+  }
+}
+
+async function play() {
+  await initializeAudioContext();
   $music.play();
 }
 
@@ -146,6 +153,7 @@ const currentSong = computed(() => {
 
 watch(currentSong, async (newSong, oldSong) => {
   if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
+    await initializeAudioContext();
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
     } catch (error) {
