@@ -40,7 +40,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     },
     getApiURL() {
       if (!store.settings.apiURL) {
-        return "https://pipedapi.r4fo.com";
+        return "https://pipedapi.wireway.ch";
       }
       return store.settings.apiURL;
     },
