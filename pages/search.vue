@@ -17,6 +17,12 @@
                 <div class="title">{{ truncate(searchResults[0].title) }}</div>
                 <div class="artist">{{ searchResults[0].uploaderName }}</div>
               </div>
+              <div @click="play(searchResults[0])" class="play">
+                <svg width="11.083252px" height="14px" viewBox="0 0 11.083252 14" version="1.1"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 0L0 14L11.083252 7L0 0Z" id="Shape" fill="#000000" stroke="none" />
+                </svg>
+              </div>
               <ContextMenu :x="menuX" :y="menuY" :show="showMenu" :menuItems="menuItems" @close="closeContextMenu" />
             </div>
           </div>
@@ -24,11 +30,12 @@
           <div class="songs">
             <p class="songs-title">Songs</p>
             <div class="content">
-              <div v-for="(song, index) in searchResults.slice(1, 6)" :key="song.url.split('v=')[1]"
+              <div @contextmenu.prevent="showContextMenu($event, song)"
+                v-for="(song, index) in searchResults.slice(1, 6)" :key="song.url.split('v=')[1]"
                 :class="['song', { playing: currentSong.id === song.url.split('v=')[1] }]"
                 @mouseover="hoveredSongId = song.url.split('v=')[1]" @mouseleave="hoveredSongId = ''">
                 <div class="inline-songs">
-                  <div class="cover">
+                  <div @click="play(song)" class="cover">
                     <div class="playing-indicator">
                       <div class="bar"></div>
                       <div class="bar"></div>
@@ -53,6 +60,7 @@
                 </div>
                 <p class="lenght">{{ formatDuration(song.duration) }}</p>
               </div>
+              <ContextMenu :x="menuX" :y="menuY" :show="showMenu" :menuItems="menuItems" @close="closeContextMenu" />
             </div>
           </div>
         </div>
@@ -122,6 +130,52 @@ function handleInput() {
 }
 
 async function addToLibrary(song: MusicSearchResponseItem) {
+  try {
+    const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
+
+    if (!match || !match[1]) {
+      console.error("No valid ID found in the URL.");
+      return;
+    }
+
+    const videoId = match[1];
+
+    const songsConfig = $music.getSongs();
+
+    const songExists = Object.values(songsConfig).some(song => song.id === videoId);
+
+    if (songExists) {
+      console.error("Song already exists.");
+      return;
+    }
+
+    var songData: Song = {
+      id: videoId,
+      title: song.title,
+      artist: song.uploaderName,
+      length: song.duration,
+      cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
+      date_added: formatDate(new Date())
+    }
+
+    try {
+      await invoke('download', { id: videoId });
+
+      const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
+      const data = new Uint8Array(response.data);
+
+      await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
+
+      await $music.addSongData(songData)
+    } catch (error) {
+      console.error('Error downloading video as mp3:', error);
+    }
+  } catch (error) {
+    console.error("Failed to handle song click:", error);
+  }
+}
+
+async function play(song: MusicSearchResponseItem) {
   try {
     const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
 
