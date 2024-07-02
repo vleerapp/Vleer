@@ -2,7 +2,7 @@
 
 .element {
   padding: 24px !important;
-  padding-bottom: 0px !important; 
+  padding-bottom: 0px !important;
 }
 
 .search-container {
@@ -40,25 +40,129 @@
   height: 100%;
 }
 
-.cover-image {
-  width: 100px; 
-  height: auto;
+.results {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  .inline {
+    display: flex;
+    gap: 32px;
+  }
 }
 
-.first-result .cover-image {
-  width: 200px;
+.top-result {
+  p {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .content {
+    padding: 16px;
+    background-color: v.$element;
+    width: min-content;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 14px;
+    width: 332px;
+    height: 216px;
+
+    .cover {
+      width: 134px;
+    }
+
+    .artist {
+      color: v.$text;
+    }
+  }
 }
 
-.first-result {
-  font-size: 1.2em; 
-}
+.songs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 
-ul{
-  padding-top: 48px;
-}
+  .songs-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
 
-li {
-  list-style-type: none; 
-  margin-bottom: 10px;
-  cursor: pointer;
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .song {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+
+      .inline-songs {
+        display: flex;
+        align-self: left;
+      }
+
+      .cover,
+      .cover img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .cover {
+        position: relative;
+      }
+
+      .cover svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+
+      .titles {
+        align-items: center;
+        display: flex;
+        gap: 14px;
+        margin-left: 8px;
+
+      }
+
+      .artist,
+      .lenght {
+        color: v.$text;
+      }
+    }
+
+    .song:hover .cover .img {
+      filter: brightness(0.6);
+    }
+
+    .playing .playing-indicator {
+      display: flex;
+    }
+
+    .playing-indicator {
+      display: none;
+      width: 22px;
+      height: 22px;
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform: translate(-50%, 50%);
+      flex-direction: row;
+      gap: 2px;
+
+      .bar {
+        width: 4px;
+        height: 22px;
+        background-color: white;
+        transition: height 0.1s;
+        align-self: flex-end;
+      }
+    }
+  }
 }

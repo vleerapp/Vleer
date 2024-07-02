@@ -123,14 +123,13 @@ const sortedPlaylists = computed(() => {
 const sortedRecentlyPlayed = ref([]);
 
 watch(() => [musicStore.getLastUpdated(), maxCards.value], () => {
-  console.log(musicStore.sortedRecentlyPlayed.value);
   sortedRecentlyPlayed.value = musicStore.sortedRecentlyPlayed.value.slice(0, maxCards.value);
 }, { immediate: true });
 
 onMounted(async () => {
   window.addEventListener('resize', updateWidthSongs);
-  window.addEventListener('resize', updateWidthPlaylists);
-  
+  window.addEventListener('resize', updateWidthPlaylists)
+
   updateWidthSongs();
   updateWidthPlaylists();
 })
