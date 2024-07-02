@@ -125,7 +125,11 @@ export const useMusicStore = defineStore("musicStore", {
       this.player.audio.volume = volume;
       this.lastUpdated = Date.now();
     },
-    async setSong(id: string, contents: any) {
+    async setSong(id: string) {
+      const contents = await readFile(`Vleer/Songs/${id}.mp3`, {
+        baseDir: BaseDirectory.Audio,
+      });
+
       this.player.currentSongId = id;
       await this.setSongFromBuffer(contents);
       const currentTime = new Date().toISOString();
@@ -178,17 +182,25 @@ export const useMusicStore = defineStore("musicStore", {
       this.queue = queue;
       this.currentQueueIndex = 0;
       const settingsStore = useSettingsStore();
-      settingsStore.setQueue(queue); // Save the queue to settings
+      settingsStore.setQueue(queue);
       if (this.queue.length > 0) {
         await this.setSong(this.queue[0]);
         this.play();
       }
     },
-    getQueue() {
-      return this.queue;
+    async skip() {
+      if (this.currentQueueIndex < this.queue.length - 1) {
+        this.currentQueueIndex++;
+        await this.setSong(this.queue[this.currentQueueIndex]);
+        this.play();
+      }
     },
-    getCurrentIndex() {
-      return this.currentQueueIndex;
-    }
+    async rewind() {
+      if (this.currentQueueIndex > 0) {
+        this.currentQueueIndex--;
+        await this.setSong(this.queue[this.currentQueueIndex]);
+        this.play();
+      }
+    },
   },
 });
