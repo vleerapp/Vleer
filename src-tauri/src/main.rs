@@ -47,6 +47,10 @@ fn main() {
     );
     "#;
 
+    let migration_v3 = r#"
+    INSERT INTO settings (key, value) VALUES ('api_url', 'https://pipedapi.wireway.ch');
+    "#;
+
     let migration_v1_data = format!(
         "{}\n{}",
         migration::generate_songs_insert_sql(),
@@ -66,6 +70,12 @@ fn main() {
             version: 2,
             description: "create_settings_table",
             sql: Box::leak(format!("{}\n{}", migration_v2, migration_v2_data).into_boxed_str()),
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 3,
+            description: "insert_default_api_url",
+            sql: migration_v3,
             kind: MigrationKind::Up,
         },
     ];

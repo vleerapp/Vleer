@@ -74,25 +74,33 @@ pub fn generate_settings_insert_sql() -> String {
         let player_settings = json["playerSettings"].as_object().expect("Expected 'playerSettings' to be an object");
 
         let mut inserts = Vec::new();
-        for (key, value) in player_settings {
-            let value_str = match value {
-                Value::String(s) => s.replace("'", "''"), 
-                _ => value.to_string().replace("'", "''"),
-            };
-            inserts.push(format!(
-                "INSERT INTO settings (key, value) VALUES ('{}', '{}');",
-                key, value_str
-            ));
-        }
+        let mut eq_settings = serde_json::Map::new();
 
-        if let Some(eq) = player_settings.get("eq").and_then(|v| v.as_object()) {
-            for (freq, val) in eq {
-                let val_str = val.to_string().replace("'", "''");
+        for (key, value) in player_settings {
+            if key == "eq" {
+                if let Some(eq) = value.as_object() {
+                    for (freq, val) in eq {
+                        eq_settings.insert(freq.clone(), val.clone());
+                    }
+                }
+            } else {
+                let value_str = match value {
+                    Value::String(s) => s.replace("'", "''"), 
+                    _ => value.to_string().replace("'", "''"),
+                };
                 inserts.push(format!(
-                    "INSERT INTO settings (key, value) VALUES ('eq_{}', '{}');",
-                    freq, val_str
+                    "INSERT INTO settings (key, value) VALUES ('{}', '{}');",
+                    key, value_str
                 ));
             }
+        }
+
+        if !eq_settings.is_empty() {
+            let eq_json = serde_json::to_string(&eq_settings).unwrap().replace("'", "''");
+            inserts.push(format!(
+                "INSERT INTO settings (key, value) VALUES ('eq', '{}');",
+                eq_json
+            ));
         }
 
         inserts.join("\n")

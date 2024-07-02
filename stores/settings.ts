@@ -27,26 +27,24 @@ export const useSettingsStore = defineStore("settingsStore", {
       const db = await Database.load("sqlite:data.db");
       const results = await db.select<any[]>("SELECT key, value FROM settings");
       results.forEach(({ key, value }) => {
-        if (key === 'eq') {
-          this.settings.eq = JSON.parse(value);
-        } else {
-          try {
-            this.settings[key] = JSON.parse(value);
-          } catch {
-            this.settings[key] = value;
-          }
+        try {
+          this.settings[key] = JSON.parse(value);
+        } catch {
+          this.settings[key] = value;
         }
       });
+
+      const apiUrlSetting = results.find(({ key }) => key === 'api_url');
+      if (apiUrlSetting) {
+        this.settings.apiURL = apiUrlSetting.value;
+      }
+
+      console.log(this.settings.eq);
     },
     async saveSettings() {
       const db = await Database.load("sqlite:data.db");
-      for (const [key, value] of Object.entries(this.settings)) {
-        let valueToStore = value;
-        if (typeof value === 'object') {
-          valueToStore = JSON.stringify(value);
-        }
-        await db.execute("UPDATE settings SET value = ? WHERE key = ?", [valueToStore, key]);
-      }
+      const eqSettingsJson = JSON.stringify(this.settings.eq);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['eq', eqSettingsJson]);
     },
     getVolume(): number {
       return this.settings.volume;
