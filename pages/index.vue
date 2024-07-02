@@ -64,11 +64,13 @@
 
 <script setup>
 import { useMusicStore } from "~/stores/music";
+import { onMounted, computed } from 'vue';
+import { useNuxtApp } from '#app';
+import music from "~/plugins/music";
 
 const { $music } = useNuxtApp();
 const musicStore = useMusicStore();
 
-let songs = $music.getSongs();
 const playlists = $music.getPlaylists();
 
 const playlist_cards = ref(null)
@@ -118,15 +120,12 @@ const sortedPlaylists = computed(() => {
   return playlists.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 });
 
-const sortedRecentlyPlayed = computed(() => {
-  return songs.filter(song => song.last_played)
-    .sort((a, b) => new Date(b.last_played).getTime() - new Date(a.last_played).getTime())
-    .slice(0, maxCards.value);
-});
+const sortedRecentlyPlayed = ref([]);
 
-watch(() => musicStore.songsConfig.songs, (newSongs) => {
-  songs = newSongs;
-}, { deep: true });
+watch(() => [musicStore.getLastUpdated(), maxCards.value], () => {
+  console.log(musicStore.sortedRecentlyPlayed.value);
+  sortedRecentlyPlayed.value = musicStore.sortedRecentlyPlayed.value.slice(0, maxCards.value);
+}, { immediate: true });
 
 onMounted(async () => {
   window.addEventListener('resize', updateWidthSongs);
@@ -134,7 +133,6 @@ onMounted(async () => {
   
   updateWidthSongs();
   updateWidthPlaylists();
-
 })
 </script>
 

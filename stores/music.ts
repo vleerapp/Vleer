@@ -6,6 +6,7 @@ import {
 } from "@tauri-apps/plugin-fs";
 import { defineStore } from 'pinia';
 import { useSettingsStore } from './settings';
+import { computed } from 'vue';
 
 export const useMusicStore = defineStore("musicStore", {
   state: () => ({
@@ -164,7 +165,7 @@ export const useMusicStore = defineStore("musicStore", {
     async applyEqSettings(eqSettings: any) {
       this.player.eqFilters.forEach((filter, index) => {
         const gain =
-          eqSettings[filter.frequency.value.toString() as keyof EQSettings];
+          eqSettings[filter.frequency.value.toString()];
         if (gain !== undefined) {
           this.setEqGain(index, parseInt(gain));
         }
@@ -205,5 +206,16 @@ export const useMusicStore = defineStore("musicStore", {
         this.play();
       }
     },
+  },
+  getters: {
+    sortedRecentlyPlayed: (state) => {
+      return computed(() => Object.values(state.songsConfig.songs)
+        .sort((a, b) => {
+          if (!a.lastPlayed) return 1;
+          if (!b.lastPlayed) return -1;
+          return new Date(b.lastPlayed).getTime() - new Date(a.lastPlayed).getTime();
+        })
+      );
+    }
   },
 });
