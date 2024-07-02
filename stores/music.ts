@@ -4,6 +4,8 @@ import {
   readFile,
   BaseDirectory,
 } from "@tauri-apps/plugin-fs";
+import { defineStore } from 'pinia';
+import { useSettingsStore } from './settings';
 
 export const useMusicStore = defineStore("musicStore", {
   state: () => ({
@@ -21,11 +23,20 @@ export const useMusicStore = defineStore("musicStore", {
     },
     lastUpdated: Date.now(),
     db: null as Database | null,
+    queue: [] as string[],
+    currentQueueIndex: 0,
   } as MusicStore),
 
   actions: {
     async init() {
       this.db = await Database.load("sqlite:data.db");
+      const settingsStore = useSettingsStore();
+      await settingsStore.getSettings();
+      this.queue = settingsStore.getQueue();
+      if (this.queue.length > 0) {
+        await this.setSong(this.queue[0]);
+      }
+
       const songs = await this.db.select<Song[]>("SELECT * FROM songs");
       songs.forEach(async (song: Song) => {
         this.songsConfig.songs[song.id] = song;
@@ -162,6 +173,22 @@ export const useMusicStore = defineStore("musicStore", {
     },
     getCurrentSong() {
       return this.player.currentSongId;
+    },
+    async setQueue(queue: string[]) {
+      this.queue = queue;
+      this.currentQueueIndex = 0;
+      const settingsStore = useSettingsStore();
+      settingsStore.setQueue(queue); // Save the queue to settings
+      if (this.queue.length > 0) {
+        await this.setSong(this.queue[0]);
+        this.play();
+      }
+    },
+    getQueue() {
+      return this.queue;
+    },
+    getCurrentIndex() {
+      return this.currentQueueIndex;
     }
   },
 });

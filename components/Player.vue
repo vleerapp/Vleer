@@ -65,8 +65,9 @@ audio.value.addEventListener('pause', async () => {
 
 audio.value.addEventListener('play', async () => {
   paused.value = false
-  try {
 
+  $settings.setCurrentSong(currentSong.value.id);
+  try {
     let thumbnail;
     try {
       const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.title + currentSong.value.artist)}&filter=music_songs`);

@@ -19,7 +19,8 @@ export const useSettingsStore = defineStore("settingsStore", {
         "8000": "0.0",
         "16000": "0.0"
       },
-      apiURL: ""
+      apiURL: "",
+      queue: [] as string[]
     }
   }),
   actions: {
@@ -33,18 +34,14 @@ export const useSettingsStore = defineStore("settingsStore", {
           this.settings[key] = value;
         }
       });
-
-      const apiUrlSetting = results.find(({ key }) => key === 'api_url');
-      if (apiUrlSetting) {
-        this.settings.apiURL = apiUrlSetting.value;
-      }
-
-      console.log(this.settings.eq);
     },
     async saveSettings() {
       const db = await Database.load("sqlite:data.db");
-      const eqSettingsJson = JSON.stringify(this.settings.eq);
-      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['eq', eqSettingsJson]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['eq', JSON.stringify(this.settings.eq)]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['volume', this.settings.volume.toString()]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['apiURL', this.settings.apiURL]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['currentSong', this.settings.currentSong]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['queue', JSON.stringify(this.settings.queue)]);
     },
     getVolume(): number {
       return this.settings.volume;
@@ -73,6 +70,13 @@ export const useSettingsStore = defineStore("settingsStore", {
     },
     getApiURL(): string {
       return this.settings.apiURL;
+    },
+    setQueue(queue: string[]) {
+      this.settings.queue = queue;
+      this.saveSettings();
+    },
+    getQueue(): string[] {
+      return this.settings.queue;
     },
     async searchApiURL() {
       try {

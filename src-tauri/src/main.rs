@@ -48,7 +48,8 @@ fn main() {
     "#;
 
     let migration_v3 = r#"
-    INSERT INTO settings (key, value) VALUES ('api_url', 'https://pipedapi.wireway.ch');
+    INSERT INTO settings (key, value) VALUES ('apiURL', 'https://pipedapi.wireway.ch');
+    INSERT INTO settings (key, value) VALUES ('volume', '50');
     "#;
 
     let migration_v1_data = format!(
@@ -74,7 +75,7 @@ fn main() {
         },
         Migration {
             version: 3,
-            description: "insert_default_api_url",
+            description: "insert_default_apiURL",
             sql: migration_v3,
             kind: MigrationKind::Up,
         },
