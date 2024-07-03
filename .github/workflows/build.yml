@@ -1,4 +1,4 @@
-name: "build"
+name: "Nightly Builds"
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: macos-build-dmg
+          name: build-macos-dmg
           path: src-tauri/target/release/bundle/dmg/*.dmg
 
       - name: Publish macOS Updater Files
@@ -61,7 +61,7 @@ jobs:
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: windows-build-msi
+          name: build-windows-msi
           path: src-tauri/target/release/bundle/msi/*.msi
 
       - name: Publish Windows Updater Files
@@ -77,17 +77,17 @@ jobs:
         if: matrix.platform == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-build-deb
+          name: build-ubuntu-deb
           path: src-tauri/target/release/bundle/deb/*.deb
       - uses: actions/upload-artifact@v3
         if: matrix.platform == 'ubuntu-latest'
         with:
-          name: ubuntu-build-appimage
+          name: build-ubuntu-appimage
           path: src-tauri/target/release/bundle/appimage/*.AppImage
       - uses: actions/upload-artifact@v3
         if: matrix.platform == 'ubuntu-latest'
         with:
-          name: ubuntu-build-rpm
+          name: build-ubuntu-rpm
           path: src-tauri/target/release/bundle/rpm/*.rpm
 
       - name: Publish Ubuntu Updater Files
