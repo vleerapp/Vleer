@@ -16,16 +16,32 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const settingsStore = useSettingsStore();
 
   musicStore.player.audio.addEventListener("error", (e) => {
-    const mediaError = e.target.error;
-    if (mediaError) {
-      console.error("Error with audio element:", mediaError);
-      console.error("MediaError code:", mediaError.code);
+    if (e.target) {
+      const mediaError = e.target.error;
+      if (mediaError) {
+        console.error("Error with audio element:", mediaError);
+        switch (mediaError.code) {
+          case mediaError.MEDIA_ERR_ABORTED:
+            console.error("You aborted the media playback.");
+            break;
+          case mediaError.MEDIA_ERR_NETWORK:
+            console.error("A network error caused the media download to fail.");
+            break;
+          case mediaError.MEDIA_ERR_DECODE:
+            console.error("The media playback was aborted due to a corruption problem or because the media used features your browser did not support.");
+            break;
+          case mediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            console.error("The media source is not supported. Error code:", mediaError.code);
+            break;
+          default:
+            console.error("An unknown error occurred.");
+            break;
+        }
+      }
     }
   });
 
   const music = {
-    queue: [] as string[],
-    currentQueueIndex: 0,
     async init() {
       await musicStore.init();
       this.setVolume(settingsStore.getVolume())
@@ -89,10 +105,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return URL.createObjectURL(new Blob([contents]));
     },
     async setSong(id: string) {
-      const contents = await readFile(`Vleer/Songs/${id}.mp3`, {
-        baseDir: BaseDirectory.Audio,
-      });
-      await musicStore.setSong(id, contents);
+      await musicStore.setSong(id);
     },
     play() {
       this.ensureAudioContextAndFilters()
@@ -169,26 +182,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
     },
     async setQueue(songIds: string[]) {
-      this.queue = songIds;
-      this.currentQueueIndex = 0;
-      if (this.queue.length > 0) {
-        await this.setSong(this.queue[0]);
-        this.play();
-      }
+      musicStore.setQueue(songIds)
     },
     async skip() {
-      if (this.currentQueueIndex < this.queue.length - 1) {
-        this.currentQueueIndex++;
-        await this.setSong(this.queue[this.currentQueueIndex]);
-        this.play();
-      }
+      musicStore.skip()
     },
     async rewind() {
-      if (this.currentQueueIndex > 0) {
-        this.currentQueueIndex--;
-        await this.setSong(this.queue[this.currentQueueIndex]);
-        this.play();
-      }
+      musicStore.rewind()
     },
     getSongsData(): SongsConfig {
       return musicStore.getSongsData();
@@ -248,4 +248,3 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     },
   };
 });
-

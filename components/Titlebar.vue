@@ -21,8 +21,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div data-tauri-drag-region class="titlebar">
-    <p class="titlebar-text"></p>
+  <div class="titlebar">
+    <div class="drag-region" data-tauri-drag-region></div>
     <div class="window-controls" id="window-controls">
       <button class="button minimize" @click="async () => getCurrent().minimize()">
         <img src="/minimize.svg" alt="minimize">

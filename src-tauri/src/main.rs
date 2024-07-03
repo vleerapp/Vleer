@@ -7,16 +7,16 @@ mod commands;
 mod discord_rpc;
 mod migration;
 
-use tauri::Manager;
 use tauri_plugin_sql::{Migration, MigrationKind};
-use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 use serde::Serialize;
+// use tauri::Manager;
+// use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 
-#[derive(Clone, Serialize)]
-struct Payload {
-  args: Vec<String>,
-  cwd: String,
-}
+// #[derive(Clone, Serialize)]
+// struct Payload {
+//   args: Vec<String>,
+//   cwd: String,
+// }
 
 fn main() {
     let _ = discord_rpc::connect_rpc();
@@ -47,6 +47,11 @@ fn main() {
     );
     "#;
 
+    let migration_v3 = r#"
+    INSERT INTO settings (key, value) VALUES ('apiURL', 'https://pipedapi.wireway.ch');
+    INSERT INTO settings (key, value) VALUES ('volume', '50');
+    "#;
+
     let migration_v1_data = format!(
         "{}\n{}",
         migration::generate_songs_insert_sql(),
@@ -68,6 +73,12 @@ fn main() {
             sql: Box::leak(format!("{}\n{}", migration_v2, migration_v2_data).into_boxed_str()),
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 3,
+            description: "insert_default_apiURL",
+            sql: migration_v3,
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()
@@ -75,18 +86,18 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .plugin(tauri_plugin_window_state::Builder::new().build())
+        // .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations("sqlite:data.db", migrations)
                 .build(),
         )
-        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-            println!("{}, {argv:?}, {cwd}", app.package_info().name);
+        // .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+        //     println!("{}, {argv:?}, {cwd}", app.package_info().name);
 
-            app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
-        }))
+        //     app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
+        // }))
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
@@ -95,10 +106,10 @@ fn main() {
             commands::get_music_path
         ])
         .setup(|app| {
-            if let Some(window) = app.get_window("main") {
-                let _ = window.restore_state(StateFlags::all());
-                window.show().unwrap();
-            }
+            // if let Some(window) = app.get_window("main") {
+            //     let _ = window.restore_state(StateFlags::all());
+            //     window.show().unwrap();
+            // }
 
             tauri::async_runtime::block_on(async {
                 let _ = commands::check_for_updates(app.handle().clone()).await;
@@ -106,12 +117,12 @@ fn main() {
 
             Ok(())
         })
-        .on_window_event(|app, event| match event {
-            tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed => {
-                let _ = AppHandleExt::save_window_state(app.app_handle(), StateFlags::all());
-            }
-            _ => {}
-        })
+        // .on_window_event(|app, event| match event {
+        //     tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed => {
+        //         let _ = AppHandleExt::save_window_state(app.app_handle(), StateFlags::all());
+        //     }
+        //     _ => {}
+        // })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

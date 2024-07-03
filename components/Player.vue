@@ -65,11 +65,12 @@ audio.value.addEventListener('pause', async () => {
 
 audio.value.addEventListener('play', async () => {
   paused.value = false
-  try {
 
+  $settings.setCurrentSong(currentSong.value.id);
+  try {
     let thumbnail;
     try {
-      const response = await fetch(`${$settings.getApiURL()}/search?q=${encodeURIComponent(currentSong.value.title + currentSong.value.artist)}&filter=music_songs`);
+      const response = await fetch(`https://api.wireway.ch/wave/thumbnail/${encodeURIComponent(currentSong.value.id)}`);
       const data = await response.json();
       thumbnail = data.items[0].thumbnail;
     } catch (error) {
@@ -105,7 +106,14 @@ audio.value.addEventListener('timeupdate', () => {
   progress.value = (audio.value.currentTime / audio.value.duration) * 100;
 })
 
-function play() {
+async function initializeAudioContext() {
+  if (!$music.getAudioContext()) {
+    await $music.applyEqSettings();
+  }
+}
+
+async function play() {
+  await initializeAudioContext();
   $music.play();
 }
 
@@ -145,6 +153,7 @@ const currentSong = computed(() => {
 
 watch(currentSong, async (newSong, oldSong) => {
   if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
+    await initializeAudioContext();
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
     } catch (error) {

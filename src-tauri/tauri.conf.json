@@ -3,10 +3,10 @@
   "version": "0.1.1",
   "identifier": "app.vleer",
   "build": {
-    "beforeDevCommand": "pnpm nuxt dev",
-    "beforeBuildCommand": "pnpm nuxt generate",
+    "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
-    "frontendDist": "../dist"
+    "beforeDevCommand": "pnpm nuxt dev",
+    "beforeBuildCommand": "pnpm nuxt generate"
   },
   "app": {
     "windows": [
@@ -14,13 +14,14 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "fullscreen": false,
-        "height": 860,
+        "height": 880,
         "resizable": true,
         "title": "Vleer",
-        "width": 1530,
+        "width": 1580,
         "minHeight": 600,
         "minWidth": 800,
-        "decorations": false
+        "decorations": false,
+        "center": true
       }
     ],
     "security": {
@@ -29,6 +30,7 @@
     "withGlobalTauri": true
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": "all",
     "icon": [
@@ -46,5 +48,6 @@
         "https://updater.vleer.app"
       ]
     }
-  }
+  },
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json"
 }

@@ -19,7 +19,8 @@ export const useSettingsStore = defineStore("settingsStore", {
         "8000": "0.0",
         "16000": "0.0"
       },
-      apiURL: ""
+      apiURL: "",
+      queue: [] as string[]
     }
   }),
   actions: {
@@ -27,26 +28,20 @@ export const useSettingsStore = defineStore("settingsStore", {
       const db = await Database.load("sqlite:data.db");
       const results = await db.select<any[]>("SELECT key, value FROM settings");
       results.forEach(({ key, value }) => {
-        if (key === 'eq') {
-          this.settings.eq = JSON.parse(value);
-        } else {
-          try {
-            this.settings[key] = JSON.parse(value);
-          } catch {
-            this.settings[key] = value;
-          }
+        try {
+          this.settings[key] = JSON.parse(value);
+        } catch {
+          this.settings[key] = value;
         }
       });
     },
     async saveSettings() {
       const db = await Database.load("sqlite:data.db");
-      for (const [key, value] of Object.entries(this.settings)) {
-        let valueToStore = value;
-        if (typeof value === 'object') {
-          valueToStore = JSON.stringify(value);
-        }
-        await db.execute("UPDATE settings SET value = ? WHERE key = ?", [valueToStore, key]);
-      }
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['eq', JSON.stringify(this.settings.eq)]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['volume', this.settings.volume.toString()]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['apiURL', this.settings.apiURL]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['currentSong', this.settings.currentSong]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['queue', JSON.stringify(this.settings.queue)]);
     },
     getVolume(): number {
       return this.settings.volume;
@@ -75,6 +70,13 @@ export const useSettingsStore = defineStore("settingsStore", {
     },
     getApiURL(): string {
       return this.settings.apiURL;
+    },
+    setQueue(queue: string[]) {
+      this.settings.queue = queue;
+      this.saveSettings();
+    },
+    getQueue(): string[] {
+      return this.settings.queue;
     },
     async searchApiURL() {
       try {

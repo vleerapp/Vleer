@@ -14,35 +14,31 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
     },
     getVolume(): number {
-      return store.settings.volume;
+      return store.getVolume()
     },
     setVolume(volume: number) {
-      store.settings.volume = volume;
-      store.saveSettings();
+      store.setVolume(volume)
     },
     getEq(): EQSettings {
-      return store.settings.eq;
+      return store.getEq();
     },
     setEq(eq: EQSettings) {
-      store.settings.eq = eq;
-      store.saveSettings();
+      store.setEq(eq)
     },
     getCurrentSong(): string {
-      return store.settings.currentSong;
+      return store.getCurrentSong();
     },
     setCurrentSong(id: string) {
-      store.settings.currentSong = id;
-      store.saveSettings();
+      store.setCurrentSong(id)
     },
     setApiURL(url: string) {
-      store.settings.apiURL = url;
-      store.saveSettings();
+      store.setApiURL(url)
     },
     getApiURL() {
-      if (!store.settings.apiURL) {
-        return "https://pipedapi.r4fo.com";
+      if (!store.getApiURL()) {
+        return "https://pipedapi.wireway.ch";
       }
-      return store.settings.apiURL;
+      return store.getApiURL();
     },
     async searchApiURL() {
       try {

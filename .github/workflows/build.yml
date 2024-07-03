@@ -48,14 +48,14 @@ jobs:
           name: macos-build-dmg
           path: src-tauri/target/release/bundle/dmg/*.dmg
 
-      - name: Publish macOS Archives
+      - name: Publish macOS Updater Files
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v3
         with:
           name: updater-files-macos
           path: |
-            src-tauri/target/release/bundle/macos/*.tar.gz
-            src-tauri/target/release/bundle/macos/*.tar.gz.sig
+            src-tauri/target/release/bundle/macos/*.app.tar.gz
+            src-tauri/target/release/bundle/macos/*.app.tar.gz.sig
 
       - name: Publish Windows Artifact
         if: matrix.platform == 'windows-latest'
@@ -64,14 +64,14 @@ jobs:
           name: windows-build-msi
           path: src-tauri/target/release/bundle/msi/*.msi
 
-      - name: Publish Windows Archives
+      - name: Publish Windows Updater Files
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
           name: updater-files-windows
           path: | 
-            src-tauri/target/release/bundle/msi/*.zip
-            src-tauri/target/release/bundle/msi/*.zip.sig
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/msi/*.msi.sig
 
       - name: Publish Ubuntu Artifacts
         if: matrix.platform == 'ubuntu-latest'
@@ -90,11 +90,11 @@ jobs:
           name: ubuntu-build-rpm
           path: src-tauri/target/release/bundle/rpm/*.rpm
 
-      - name: Publish Ubuntu Archives
+      - name: Publish Ubuntu Updater Files
         if: matrix.platform == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
         with:
           name: updater-files-ubuntu
           path: |
-            src-tauri/target/release/bundle/appimage/*.tar.gz
-            src-tauri/target/release/bundle/appimage/*.tar.gz.sig
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/appimage/*.AppImage.sig
