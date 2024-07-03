@@ -3,10 +3,10 @@
   "version": "0.1.1",
   "identifier": "app.vleer",
   "build": {
-    "beforeDevCommand": "pnpm nuxt dev",
-    "beforeBuildCommand": "pnpm nuxt generate",
+    "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
-    "frontendDist": "../dist"
+    "beforeDevCommand": "pnpm nuxt dev",
+    "beforeBuildCommand": "pnpm nuxt generate"
   },
   "app": {
     "windows": [
@@ -29,6 +29,7 @@
     "withGlobalTauri": true
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": "all",
     "icon": [
@@ -46,5 +47,6 @@
         "https://updater.vleer.app"
       ]
     }
-  }
+  },
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json"
 }
