@@ -133,30 +133,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async-executor"
-version = "1.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b10202063978b3351199d68f8b22c4e47e4b1b822f8d43fd862d5ea8c006b29a"
-dependencies = [
- "async-task",
- "concurrent-queue",
- "fastrand",
- "futures-lite",
- "slab",
-]
-
-[[package]]
-name = "async-fs"
-version = "2.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebcd09b382f40fcd159c2d695175b2ae620ffa5f3bd6f664131efff4e8b9e04a"
-dependencies = [
- "async-lock 3.3.0",
- "blocking",
- "futures-lite",
-]
-
-[[package]]
 name = "async-io"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4554,21 +4530,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tauri-plugin-single-instance"
-version = "2.0.0-beta.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e73933f612c30376526e7e5098f5d2202ff95312de7f181786b49d3a38b69b18"
-dependencies = [
- "log",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "windows-sys 0.52.0",
- "zbus",
-]
-
-[[package]]
 name = "tauri-plugin-sql"
 version = "2.0.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5283,7 +5244,6 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-global-shortcut",
  "tauri-plugin-os",
- "tauri-plugin-single-instance",
  "tauri-plugin-sql",
  "tauri-plugin-updater",
  "tokio",
@@ -5993,15 +5953,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c9ff46f2a25abd690ed072054733e0bc3157e3d4c45f41bd183dce09c2ff8ab9"
 dependencies = [
  "async-broadcast",
- "async-executor",
- "async-fs",
- "async-io",
- "async-lock 3.3.0",
  "async-process",
  "async-recursion",
- "async-task",
  "async-trait",
- "blocking",
  "derivative",
  "enumflags2",
  "event-listener 5.3.0",

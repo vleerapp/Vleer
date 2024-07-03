@@ -7,16 +7,16 @@ mod commands;
 mod discord_rpc;
 mod migration;
 
-use tauri::Manager;
 use tauri_plugin_sql::{Migration, MigrationKind};
-use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 use serde::Serialize;
+// use tauri::Manager;
+// use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 
-#[derive(Clone, Serialize)]
-struct Payload {
-  args: Vec<String>,
-  cwd: String,
-}
+// #[derive(Clone, Serialize)]
+// struct Payload {
+//   args: Vec<String>,
+//   cwd: String,
+// }
 
 fn main() {
     let _ = discord_rpc::connect_rpc();
