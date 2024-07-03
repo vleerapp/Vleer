@@ -31,6 +31,7 @@
 html,
 body,
 #__nuxt {
+  overflow-x: hidden;
   background-color: v.$background;
   color: white;
   width: 100%;
