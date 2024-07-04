@@ -5,7 +5,8 @@
 Vleer is a lightweight and fast privacy first music app replacing your traditional Spotify or Apple Music. It serves the purpose for people that don't have enough money or don't want to pay monthly subscriptions, this is why Vleer is completely free and will stay that way.
 
 🚧 Despite undergoing a major rewrite since January 2024, Vleer is already showing great promises in terms of functionality. We are actively seeking contributors to help us continue improving the project. If you are interested in contributing, we welcome your participation.
-
+### Legal disclaimer
+We do not hold any responsibility for any copyright infringements or misuse of downloaded content. Users are responsible for ensuring they have the rights to download and use any material. Use this app at your own risk.
 #### [⬇️ Download Vleer](https://github.com/vleerapp/Vleer/releases)
 
 ## 📦 Preview
