@@ -46,12 +46,12 @@ onMounted(async () => {
 
   await $settings.init();
 
-  if (await isRegistered("MediaPlayPause")){
+  if (await isRegistered("MediaPlayPause")) {
     await unregister("MediaPlayPause")
   }
 
   await register('MediaPlayPause', (event) => {
-    if(event.state === "Pressed") {
+    if (event.state === "Pressed") {
       $music.playPause()
     }
   });
@@ -81,7 +81,7 @@ onUnmounted(async () => {
   document.removeEventListener('keydown', handleKeyDown);
   document.removeEventListener('focusin', updateFocus);
   document.removeEventListener('focusout', updateFocus);
-  
+
   if (await isRegistered("MediaPlayPause")) {
     await unregister("MediaPlayPause")
   }

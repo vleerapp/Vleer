@@ -23,7 +23,7 @@
     "@tauri-apps/plugin-global-shortcut": "2.0.0-beta.6",
     "@tauri-apps/plugin-os": "2.0.0-beta.6",
     "@tauri-apps/plugin-sql": "2.0.0-beta.6",
-    "@tauri-apps/plugin-updater": "^2.0.0-beta.6",
+    "@tauri-apps/plugin-updater": "^2.0.0-beta.7",
     "axios": "1.7.2",
     "pinia": "^2.1.7",
     "uuid": "10.0.0",
