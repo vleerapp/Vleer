@@ -4602,6 +4602,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-prevent-default"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "38be0ac8fcc5fa03422409fc506015b01dc29cc8a3a72572c68d41e6f10f4491"
+dependencies = [
+ "bitflags 2.6.0",
+ "tauri",
+]
+
+[[package]]
 name = "tauri-plugin-sql"
 version = "2.0.0-beta.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5289,6 +5299,7 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-global-shortcut",
  "tauri-plugin-os",
+ "tauri-plugin-prevent-default",
  "tauri-plugin-sql",
  "tauri-plugin-updater",
  "tokio",

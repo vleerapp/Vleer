@@ -8,15 +8,7 @@ mod discord_rpc;
 mod migration;
 
 use tauri_plugin_sql::{Migration, MigrationKind};
-use serde::Serialize;
-// use tauri::Manager;
-// use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
-
-// #[derive(Clone, Serialize)]
-// struct Payload {
-//   args: Vec<String>,
-//   cwd: String,
-// }
+use tauri_plugin_prevent_default::Flags;
 
 fn main() {
     let _ = discord_rpc::connect_rpc();
@@ -86,18 +78,15 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        // .plugin(tauri_plugin_window_state::Builder::new().build())
+        .plugin(tauri_plugin_prevent_default::Builder::new()
+  .with_flags(Flags::all().difference(Flags::CONTEXT_MENU))
+  .build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations("sqlite:data.db", migrations)
                 .build(),
         )
-        // .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-        //     println!("{}, {argv:?}, {cwd}", app.package_info().name);
-
-        //     app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
-        // }))
         .invoke_handler(tauri::generate_handler![
             discord_rpc::update_activity,
             discord_rpc::clear_activity,
@@ -106,23 +95,12 @@ fn main() {
             commands::get_music_path
         ])
         .setup(|app| {
-            // if let Some(window) = app.get_window("main") {
-            //     let _ = window.restore_state(StateFlags::all());
-            //     window.show().unwrap();
-            // }
-
             tauri::async_runtime::block_on(async {
                 let _ = commands::check_for_updates(app.handle().clone()).await;
             });
 
             Ok(())
         })
-        // .on_window_event(|app, event| match event {
-        //     tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed => {
-        //         let _ = AppHandleExt::save_window_state(app.app_handle(), StateFlags::all());
-        //     }
-        //     _ => {}
-        // })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
