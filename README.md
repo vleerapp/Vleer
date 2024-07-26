@@ -1,13 +1,33 @@
-# Vleer 
+<div align="center">
+   <img align="center" width="128px" src="src-tauri/icons/128x128@2x.png" />
+	<h1 align="center"><b>Vleer</b></h1>
+	<p align="center">
+		Explore high-quality music with Vleer a fast, simple,<br> and reliable app, tailored to your preferences.
+    <br />
+    <a href="https://vleer.app"><strong>vleer.app »</strong></a>
+    <br />
+    <br />
+    <b>Download for </b>
+    macOS (<a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">Apple Silicon</a> |
+      <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">Intel</a>) ·
+		Linux (<a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.AppImage">AppImage</a> |
+       <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.deb">deb</a> |
+      <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.rpm">rpm</a>)
+      ·
+		Windows (<a href="https://github.com/vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.msi">msi</a>)
+    <br />
+    <br />
+    (Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a>)
+  </p>
+</div>
 
-![Vleer banner](https://github.com/vleerapp/Vleer/assets/70103896/f4a619ab-4f4c-4c2f-babe-79a4555a93c5)
+## 📀 What is Vleer?
 
 Vleer is a lightweight and fast privacy first music app replacing your traditional Spotify or Apple Music. It serves the purpose for people that don't have enough money or don't want to pay monthly subscriptions, this is why Vleer is completely free and will stay that way.
 
 🚧 Despite undergoing a major rewrite since January 2024, Vleer is already showing great promises in terms of functionality. We are actively seeking contributors to help us continue improving the project. If you are interested in contributing, we welcome your participation.
 ### Legal disclaimer
 We do not hold any responsibility for any copyright infringements or misuse of downloaded content. Users are responsible for ensuring they have the rights to download and use any material. Use this app at your own risk.
-#### [⬇️ Download Vleer](https://github.com/vleerapp/Vleer/releases)
 
 ## 📦 Preview
 
