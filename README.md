@@ -2,7 +2,7 @@
    <img align="center" width="128px" src="src-tauri/icons/128x128@2x.png" />
 	<h1 align="center"><b>Vleer</b></h1>
 	<p align="center">
-		Explore high-quality music with Vleer a fast, simple,<br> and reliable app, tailored to your preferences.
+		Explore high-quality music with Vleer a fast, simple, and reliable app, tailored to your preferences.
     <br />
     <a href="https://vleer.app"><strong>vleer.app »</strong></a>
     <br />
