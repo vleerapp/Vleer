@@ -17,13 +17,23 @@
 		Windows (<a href="https://github.com/vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.msi">msi</a>)
     <br />
     <br />
-    (Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a>)
+   <sup>(Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a>) </sup>
   </p>
 </div>
+
+![Vleer banner](https://github.com/vleerapp/Vleer/assets/70103896/f4a619ab-4f4c-4c2f-babe-79a4555a93c5)
 
 > \[!IMPORTANT]
 >
 > **Star Us**, You will receive all release notifications from GitHub without any delay \~ ⭐️
+
+<details>
+  <summary><kbd>Star History</kbd></summary>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=vleerapp/vleer&theme=dark&type=Date">
+    <img width="100%" src="https://api.star-history.com/svg?repos=vleerapp/vleer&type=Date">
+  </picture>
+</details>
 
 ## 📀 What is Vleer?
 
@@ -33,7 +43,13 @@ Vleer is a lightweight and fast privacy first music app replacing your tradition
 ### Legal disclaimer
 We do not hold any responsibility for any copyright infringements or misuse of downloaded content. Users are responsible for ensuring they have the rights to download and use any material. Use this app at your own risk.
 
-## 📦 Preview
+## 📦 Features
+
+- [X] Playlists
+- [X] Offline music
+- [X] Equalizer
+- [X] Wave API
+- [ ] Music streaming
 
 ![Vleer preview gif](https://github.com/vleerapp/Vleer/assets/70103896/aa9a0be4-0f3f-4cef-b2c4-b9b21602885b)
 
@@ -47,27 +63,43 @@ Please note that Vleer is and will always be free to use. Your donation is entir
 
 Find more options by clicking the Sponsor ❤️ button on the top of this page.
 
-## 🤝 Contributing
+## ⌨️ Local development
 
-To get Vleer set up on your machine, you'll need to have Rust and pnpm installed. Then, follow these steps:
+You can use GitHub Codespaces for online development:
 
-1. Clone the project using `git clone https://github.com/vleerapp/Vleer.git`
-2. Change into the project directory: `cd Vleer`
-3. Install dependencies: `pnpm i`
-4. Run the development server: `pnpm dev`
+[![][codespaces-shield]][codespaces-link]
 
-## 🛠️ Building for Production
+Or to get Vleer set up on your machine, you'll need to have Rust and pnpm installed. Then, follow these steps:
 
 ```zsh
-pnpm build
+git clone https://github.com/vleerapp/Vleer.git
+cd Vleer
+pnpm i
+pnpm dev
 ```
 
-Don't worry, it will fail at the end because it can not detect a Private key, but the installer files will be generated regardless of that.
+<details>
+  <summary><kbd>🔨 Building for production</kbd></summary>
+To build for production simply execute:
+<br>
+  <pre>pnpm build</pre>
 
-You can find them in `src-tauri/target/release/bundle`.
+> \[!NOTE]
+>
+> Don't worry, it will fail at the end because it can not detect a Private key, but the installer files will be generated regardless of that.
+> 
+> You can find them in `src-tauri/target/release/bundle`.
+</details>
 
-Checkout the [Issues section](https://github.com/vleerapp/Vleer/issues).
+> \[!TIP]
+>
+> If you are interested in contributing code, feel free to check out our GitHub [Issues](https://github.com/vleerapp/Vleer/issues).
 
 ## 📝 License
 
 Vleer is licensed under the Creative Commons Attribution-Noncommercial-Share Alike. See the [LICENSE file](./LICENCE) for more information.
+
+
+
+[codespaces-link]: https://codespaces.new/vleerapp/vleer
+[codespaces-shield]: https://github.com/codespaces/badge.svg
