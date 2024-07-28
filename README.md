@@ -21,6 +21,10 @@
   </p>
 </div>
 
+> \[!IMPORTANT]
+>
+> **Star Us**, You will receive all release notifications from GitHub without any delay \~ ⭐️
+
 ## 📀 What is Vleer?
 
 Vleer is a lightweight and fast privacy first music app replacing your traditional Spotify or Apple Music. It serves the purpose for people that don't have enough money or don't want to pay monthly subscriptions, this is why Vleer is completely free and will stay that way.
