@@ -81,22 +81,23 @@ pnpm i
 pnpm dev
 ```
 
-<details>
-  <summary><kbd>🔨 Building for production</kbd></summary>
+> \[!TIP]
+>
+> If you are interested in contributing code, feel free to check out our GitHub [Issues](https://github.com/vleerapp/Vleer/issues).
+
+## 🔨 Building for production
+
 To build for production simply execute:
-<br>
-  <pre>pnpm build</pre>
+
+```zsh
+pnpm build
+```
 
 > \[!NOTE]
 >
 > Don't worry, it will fail at the end because it can not detect a Private key, but the installer files will be generated regardless of that.
 > 
 > You can find them in `src-tauri/target/release/bundle`.
-</details>
-
-> \[!TIP]
->
-> If you are interested in contributing code, feel free to check out our GitHub [Issues](https://github.com/vleerapp/Vleer/issues).
 
 ## 📝 License
 
