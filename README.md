@@ -37,11 +37,14 @@
 
 ## 📀 What is Vleer?
 
-Vleer is a lightweight and fast privacy first music app replacing your traditional Spotify or Apple Music. It serves the purpose for people that don't have enough money or don't want to pay monthly subscriptions, this is why Vleer is completely free and will stay that way.
+Vleer is a lightweight, fast, privacy-first music app, offering a free alternative to Spotify or Apple Music. Ideal for those who can't afford or don't want to pay for these shitty subscriptions.
 
-🚧 Despite undergoing a major rewrite since January 2024, Vleer is already showing great promises in terms of functionality. We are actively seeking contributors to help us continue improving the project. If you are interested in contributing, we welcome your participation.
-### Legal disclaimer
-We do not hold any responsibility for any copyright infringements or misuse of downloaded content. Users are responsible for ensuring they have the rights to download and use any material. Use this app at your own risk.
+🚧 Despite a major rewrite since January 2024, Vleer is already showing great promise. We are actively seeking contributors to help improve the project. If you're interested, we welcome your participation.
+
+> \[!WARNING]
+>
+> **Legal disclaimer** 
+> We do not assume responsibility for copyright infringements or misuse of downloaded content. Users must ensure they have the rights to download and use any material. Use at your own risk.
 
 ## 📦 Features
 
@@ -53,15 +56,15 @@ We do not hold any responsibility for any copyright infringements or misuse of d
 
 ![Vleer preview gif](https://github.com/vleerapp/Vleer/assets/70103896/aa9a0be4-0f3f-4cef-b2c4-b9b21602885b)
 
+<sup>If you have ideas for features to include, please write a feature request [here](https://github.com/vleerapp/vleer/issues).</sup>
+
 ## ❤️ Donations & Support
 
-Vleer is an open-source project, and we rely on the support of our community to continue developing and improving the app. Although Vleer is free to use, we welcome donations from those who have found it to be a valuable app and would like to contribute to its development.
+Vleer is open-source and free to use. We appreciate donations to support ongoing development and improvements. Your contributions are voluntary and help us enhance the app for everyone.
 
-Please note that Vleer is and will always be free to use. Your donation is entirely voluntary and is not required to use the app.
+<a href="https://buymeacoffee.com/pandadev_"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black"/></a>
 
-<a href="https://buymeacoffee.com/pandadev_"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-323842?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white"/></a>
-
-Find more options by clicking the Sponsor ❤️ button on the top of this page.
+More options available via the Sponsor ❤️ button above.
 
 ## ⌨️ Local development
 
@@ -98,8 +101,6 @@ To build for production simply execute:
 ## 📝 License
 
 Vleer is licensed under the Creative Commons Attribution-Noncommercial-Share Alike. See the [LICENSE file](./LICENCE) for more information.
-
-
 
 [codespaces-link]: https://codespaces.new/vleerapp/vleer
 [codespaces-shield]: https://github.com/codespaces/badge.svg
