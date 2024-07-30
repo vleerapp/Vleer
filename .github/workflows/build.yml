@@ -9,11 +9,19 @@ on:
       - main
 
 jobs:
-  publish-tauri:
+  test-tauri:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - platform: "macos-latest"
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest"
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-latest"
+            args: ""
+          - platform: "windows-latest"
+            args: ""
 
     runs-on: ${{ matrix.platform }}
     env:
@@ -28,6 +36,8 @@ jobs:
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -53,22 +63,26 @@ jobs:
         run: npm install -g pnpm && pnpm install
 
       - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: ${{ matrix.args }}
 
       - name: Publish macOS Artifact
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: build-macos-dmg
-          path: src-tauri/target/release/bundle/dmg/*.dmg
+          name: build-macos-dmg-${{ matrix.args == '--target aarch64-apple-darwin' && 'arm64' || 'x86_64' }}
+          path: src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/*.dmg
 
       - name: Publish macOS Updater Files
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: updater-files-macos
+          name: updater-files-macos-${{ matrix.args == '--target aarch64-apple-darwin' && 'arm64' || 'x86_64' }}
           path: |
-            src-tauri/target/release/bundle/macos/*.app.tar.gz
-            src-tauri/target/release/bundle/macos/*.app.tar.gz.sig
+            src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app.tar.gz
+            src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app.tar.gz.sig
 
       - name: Publish Windows Artifact
         if: matrix.platform == 'windows-latest'
