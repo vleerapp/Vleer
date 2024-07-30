@@ -45,7 +45,7 @@ jobs:
           workspaces: "./src-tauri -> target"
 
       - name: pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -70,14 +70,14 @@ jobs:
 
       - name: Publish macOS Artifact
         if: matrix.platform == 'macos-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-macos-dmg-${{ matrix.args == '--target aarch64-apple-darwin' && 'arm64' || 'x86_64' }}
           path: src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/*.dmg
 
       - name: Publish macOS Updater Files
         if: matrix.platform == 'macos-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: updater-files-macos-${{ matrix.args == '--target aarch64-apple-darwin' && 'arm64' || 'x86_64' }}
           path: |
@@ -86,14 +86,14 @@ jobs:
 
       - name: Publish Windows Artifact
         if: matrix.platform == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-windows-msi
           path: src-tauri/target/release/bundle/msi/*.msi
 
       - name: Publish Windows Updater Files
         if: matrix.platform == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: updater-files-windows
           path: | 
@@ -102,16 +102,16 @@ jobs:
 
       - name: Publish Ubuntu Artifacts
         if: matrix.platform == 'ubuntu-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-ubuntu-deb
           path: src-tauri/target/release/bundle/deb/*.deb
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: matrix.platform == 'ubuntu-latest'
         with:
           name: build-ubuntu-appimage
           path: src-tauri/target/release/bundle/appimage/*.AppImage
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: matrix.platform == 'ubuntu-latest'
         with:
           name: build-ubuntu-rpm
@@ -119,7 +119,7 @@ jobs:
 
       - name: Publish Ubuntu Updater Files
         if: matrix.platform == 'ubuntu-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: updater-files-ubuntu
           path: |
