@@ -3,15 +3,14 @@
     windows_subsystem = "windows"
 )]
 
-mod commands;
-mod discord_rpc;
-mod migration;
+mod utils;
+mod db;
 
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_prevent_default::Flags;
 
 fn main() {
-    let _ = discord_rpc::connect_rpc();
+    let _ = utils::discord_rpc::connect_rpc();
 
     let migration_v1 = r#"
     CREATE TABLE IF NOT EXISTS songs (
@@ -46,11 +45,11 @@ fn main() {
 
     let migration_v1_data = format!(
         "{}\n{}",
-        migration::generate_songs_insert_sql(),
-        migration::generate_playlists_insert_sql()
+        db::migration::generate_songs_insert_sql(),
+        db::migration::generate_playlists_insert_sql()
     );
 
-    let migration_v2_data = migration::generate_settings_insert_sql();
+    let migration_v2_data = db::migration::generate_settings_insert_sql();
 
     let migrations = vec![
         Migration {
@@ -88,15 +87,15 @@ fn main() {
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
-            discord_rpc::update_activity,
-            discord_rpc::clear_activity,
-            commands::download,
-            commands::ping_urls,
-            commands::get_music_path
+            utils::discord_rpc::update_activity,
+            utils::discord_rpc::clear_activity,
+            utils::commands::download,
+            utils::commands::ping_urls,
+            utils::commands::get_music_path
         ])
         .setup(|app| {
             tauri::async_runtime::block_on(async {
-                let _ = commands::check_for_updates(app.handle().clone()).await;
+                let _ = utils::updater::check_for_updates(app.handle().clone()).await;
             });
 
             Ok(())

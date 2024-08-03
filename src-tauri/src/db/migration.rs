@@ -1,7 +1,7 @@
 use serde_json::Value;
 use std::fs;
-use crate::commands;
 use regex::Regex;
+use crate::utils::commands;
 
 pub fn generate_songs_insert_sql() -> String {
     let path = commands::get_music_path().join("songs.json");
