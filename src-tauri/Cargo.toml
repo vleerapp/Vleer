@@ -8,17 +8,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta.18", features = [] }
+tauri-build = { version = "2.0.0-rc.0", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta.23", features = ["devtools", "unstable"] }
-tauri-plugin-os = "2.0.0-beta.7"
-tauri-plugin-fs = "2.0.0-beta.10"
-tauri-plugin-dialog = "2.0.0-beta.10"
-tauri-plugin-updater = "2.0.0-beta.9"
-tauri-plugin-global-shortcut = "2.0.0-beta.7"
-tauri-plugin-sql = {version = "2.0.0-beta.8", features = ["sqlite"] }
-tauri-plugin-prevent-default = "0.1"
+tauri = { version = "2.0.0-rc.0", features = ["devtools", "unstable"] }
+tauri-plugin-os = "2.0.0-rc.0"
+tauri-plugin-fs = "2.0.0-rc.0"
+tauri-plugin-dialog = "2.0.0-rc.0"
+tauri-plugin-updater = "2.0.0-rc.0"
+tauri-plugin-global-shortcut = "2.0.0-rc.0"
+tauri-plugin-sql = {version = "2.0.0-rc.0", features = ["sqlite"] }
+tauri-plugin-prevent-default = "0.3"
 serde_json = "1.0"
 serde = "1.0"
 lazy_static = "1.4"
@@ -28,8 +28,6 @@ discord-ipc-rp = "0.1.1"
 dotenv = "0.15.0"
 reqwest = "0.12.3"
 regex = "1.10.4"
-# tauri-plugin-single-instance = "2.0.0-beta.10"
-# tauri-plugin-window-state = "2.0.0-beta.10"
 # rusty_ytdl = "0.7.2"
 
 [features]
