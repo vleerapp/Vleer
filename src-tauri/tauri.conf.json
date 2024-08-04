@@ -47,6 +47,11 @@
       "endpoints": [
         "https://updater.vleer.app"
       ]
+    },
+    "sql": {
+      "preload": [
+        "sqlite:data.db"
+      ]
     }
   },
   "$schema": "../node_modules/@tauri-apps/cli/schema.json"
