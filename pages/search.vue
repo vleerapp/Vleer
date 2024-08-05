@@ -101,21 +101,19 @@ async function searchSongs() {
   let apiURL = $settings.getApiURL()
 
   try {
-    const response = await fetch(`${apiURL}/search?q=${encodeURIComponent(searchTerm.value)}&filter=music_songs`);
+    const response = await fetch(`https://api.wireway.ch/wave/ytmusicsearch?q=${encodeURIComponent(searchTerm.value)}`);
     const data = await response.json();
-    searchResults.value = data.items
-      .filter(item => item.type !== 'channel')
-      .map(item => ({
-        url: item.url,
-        title: item.title,
-        thumbnail: item.thumbnail,
-        uploaderName: item.uploaderName,
-        uploaderAvatar: item.uploaderAvatar,
-        duration: item.duration,
-        durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`
-      }));
+    searchResults.value = data.items.map((item: any) => ({
+      url: `https://www.youtube.com/watch?v=${item.id}`,
+      title: item.title,
+      thumbnail: `https://api.wireway.ch/wave/thumbnail/${item.id}`,
+      uploaderName: item.uploaderName,
+      uploaderAvatar: '',
+      duration: item.duration,
+      durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`
+    }));
   } catch (error) {
-    console.error("Failed to fetch songs:", error, apiURL, searchTerm.value);
+    console.error("Failed to fetch songs:", error, searchTerm.value);
     searchResults.value = [];
   }
 }
