@@ -219,8 +219,8 @@ pub fn load_migrations() -> Vec<Migration> {
     "#;
 
     let migration_v3 = r#"
-    INSERT INTO settings (key, value) VALUES ('apiURL', 'https://pipedapi.wireway.ch');
-    INSERT INTO settings (key, value) VALUES ('volume', '50');
+    INSERT OR IGNORE INTO settings (key, value) VALUES ('apiURL', 'https://pipedapi.wireway.ch');
+    INSERT OR IGNORE INTO settings (key, value) VALUES ('volume', '50');
     "#;
 
     vec![
