@@ -1,25 +1,52 @@
 <div align="center">
-   <img align="center" width="128px" src="src-tauri/icons/128x128@2x.png" />
-	<h1 align="center"><b>Vleer</b></h1>
-	<p align="center">
-		Explore high-quality music with Vleer a fast, simple, and reliable app, tailored to your preferences.
-    <br />
-    <a href="https://vleer.app"><strong>vleer.app »</strong></a>
-    <br />
-    <br />
-    <b>Download for </b>
-    macOS (<a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">Apple Silicon</a> |
-      <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">Intel</a>) ·
-		Linux (<a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.AppImage">AppImage</a> |
-       <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.deb">deb</a> |
-      <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.rpm">rpm</a>)
-      ·
-		Windows (<a href="https://github.com/vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.msi">msi</a>)
-    <br />
-    <br />
-   <sup>(Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a>) </sup>
-  </p>
+
+<img width="128px" src="src-tauri/icons/128x128@2x.png" />
+<h1><b>Vleer</b></h1>
+
+Explore high-quality music with Vleer a fast, simple, and reliable app, tailored to your preferences.
+<br>
+<a href="https://vleer.app"><strong>vleer.app »</strong></a>
+
+<br>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Download for</td>
+      <td>
+        <a href="https://github.com/vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.msi">
+          <img src="./public/windows.png"> Windows
+        </a>
+      </td>
+      <td>
+        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="./assets/apple-dark.png">
+            <img src="./public/apple-dark.png">
+          </picture> macOS (Silicon)
+        </a>
+      </td>
+      <td>
+        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="./assets/apple-dark.png">
+            <img src="./public/apple-dark.png">
+          </picture> macOS (Intel)
+        </a>
+      </td>
+      <td>
+        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.AppImage">
+          <img src="./public/linux.png"> Linux
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<sup>Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a> </sup>
 </div>
+
+<br>
 
 ![Vleer banner](https://github.com/vleerapp/Vleer/assets/70103896/f4a619ab-4f4c-4c2f-babe-79a4555a93c5)
 
@@ -43,7 +70,7 @@ Vleer is a lightweight, fast, privacy-first music app, offering a free alternati
 
 > \[!WARNING]
 >
-> **Legal disclaimer** 
+> **Legal disclaimer**
 > We do not assume responsibility for copyright infringements or misuse of downloaded content. Users must ensure they have the rights to download and use any material. Use at your own risk.
 
 ## 📦 Features
@@ -96,7 +123,7 @@ pnpm build
 > \[!NOTE]
 >
 > Don't worry, it will fail at the end because it can not detect a Private key, but the installer files will be generated regardless of that.
-> 
+>
 > You can find them in `src-tauri/target/release/bundle`.
 
 ## 📝 License
