@@ -7,8 +7,6 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
 <br>
 <a href="https://vleer.app"><strong>vleer.app »</strong></a>
 
-<br>
-
 <table>
   <tbody>
     <tr>
@@ -21,16 +19,14 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
       <td>
         <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">
           <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="./assets/apple-dark.png">
-            <img src="./public/apple-dark.png">
+            <img src="./public/apple.png">
           </picture> macOS (Silicon)
         </a>
       </td>
       <td>
         <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">
           <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="./assets/apple-dark.png">
-            <img src="./public/apple-dark.png">
+            <img src="./public/apple.png">
           </picture> macOS (Intel)
         </a>
       </td>
