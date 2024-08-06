@@ -75,7 +75,7 @@
 
 <script lang="ts" setup>
 import { invoke } from '@tauri-apps/api/core';
-import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, writeFile, exists } from '@tauri-apps/plugin-fs';
 import axios from 'axios';
 import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
 
@@ -137,39 +137,36 @@ async function addToLibrary(song: MusicSearchResponseItem) {
     }
 
     const videoId = match[1];
+    const isLossless = $settings.getLossless();
+    const mp3Exists = await exists(`Vleer/Songs/${videoId}.mp3`, { baseDir: BaseDirectory.Audio });
+    const flacExists = await exists(`Vleer/Songs/${videoId}.flac`, { baseDir: BaseDirectory.Audio });
 
-    const songsConfig = $music.getSongs();
+    if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
+      var songData: Song = {
+        id: videoId,
+        title: song.title,
+        artist: song.uploaderName,
+        length: song.duration,
+        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
+        date_added: formatDate(new Date())
+      }
 
-    const songExists = Object.values(songsConfig).some(song => song.id === videoId);
+      try {
+        await invoke('download', { id: videoId, quality: isLossless ? 'lossless' : 'compressed' });
 
-    if (songExists) {
-      console.error("Song already exists.");
-      return;
-    }
-
-    var songData: Song = {
-      id: videoId,
-      title: song.title,
-      artist: song.uploaderName,
-      length: song.duration,
-      cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
-      date_added: formatDate(new Date())
-    }
-
-    try {
-      await invoke('download', { id: videoId });
-      
-      const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
-      const data = new Uint8Array(response.data);
-      
-      await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-      
-      await $music.addSongData(songData)
-    } catch (error) {
-      console.error('Error downloading video as mp3:', error);
+        if (!mp3Exists && !flacExists) {
+          const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
+          const data = new Uint8Array(response.data);
+          await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
+          await $music.addSongData(songData);
+        }
+      } catch (error) {
+        console.error('Error downloading video:', error);
+        return;
+      }
     }
   } catch (error) {
-    console.error("Failed to handle song click:", error);
+    console.error("Failed to handle song play:", error);
   }
 }
 
@@ -183,42 +180,39 @@ async function play(song: MusicSearchResponseItem) {
     }
 
     const videoId = match[1];
+    const isLossless = $settings.getLossless();
+    const mp3Exists = await exists(`Vleer/Songs/${videoId}.mp3`, { baseDir: BaseDirectory.Audio });
+    const flacExists = await exists(`Vleer/Songs/${videoId}.flac`, { baseDir: BaseDirectory.Audio });
 
-    const songsConfig = $music.getSongs();
+    if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
+      var songData: Song = {
+        id: videoId,
+        title: song.title,
+        artist: song.uploaderName,
+        length: song.duration,
+        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
+        date_added: formatDate(new Date())
+      }
 
-    const songExists = Object.values(songsConfig).some(song => song.id === videoId);
+      try {
+        await invoke('download', { id: videoId, quality: isLossless ? 'lossless' : 'compressed' });
 
-    if (songExists) {
-      console.error("Song already exists.");
-      return;
+        if (!mp3Exists && !flacExists) {
+          const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
+          const data = new Uint8Array(response.data);
+          await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
+          await $music.addSongData(songData);
+        }
+      } catch (error) {
+        console.error('Error downloading video:', error);
+        return;
+      }
     }
 
-    var songData: Song = {
-      id: videoId,
-      title: song.title,
-      artist: song.uploaderName,
-      length: song.duration,
-      cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
-      date_added: formatDate(new Date())
-    }
-
-    try {
-      await invoke('download', { id: videoId });
-
-      const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
-      const data = new Uint8Array(response.data);
-
-      await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-
-      await $music.addSongData(songData)
-
-      await $music.setSong(videoId)
-      $music.play()
-    } catch (error) {
-      console.error('Error downloading video as mp3:', error);
-    }
+    await $music.setSong(videoId);
+    $music.play();
   } catch (error) {
-    console.error("Failed to handle song click:", error);
+    console.error("Failed to handle song play:", error);
   }
 }
 

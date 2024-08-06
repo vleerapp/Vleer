@@ -20,7 +20,9 @@ export const useSettingsStore = defineStore("settingsStore", {
         "16000": "0.0"
       },
       apiURL: "",
-      queue: [] as string[]
+      queue: [] as string[],
+      lossless: false,
+      streaming: true
     }
   }),
   actions: {
@@ -42,6 +44,8 @@ export const useSettingsStore = defineStore("settingsStore", {
       await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['apiURL', this.settings.apiURL]);
       await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['currentSong', this.settings.currentSong]);
       await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['queue', JSON.stringify(this.settings.queue)]);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['lossless', this.settings.lossless ? '1' : '0']);
+      await db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", ['streaming', this.settings.streaming ? '1' : '0']);
     },
     getVolume(): number {
       return this.settings.volume;
@@ -77,6 +81,13 @@ export const useSettingsStore = defineStore("settingsStore", {
     },
     getQueue(): string[] {
       return this.settings.queue;
+    },
+    getLossless(): boolean {
+      return this.settings.lossless;
+    },
+    setLossless(lossless: boolean) {
+      this.settings.lossless = lossless;
+      this.saveSettings();
     },
     async searchApiURL() {
       try {

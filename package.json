@@ -24,7 +24,9 @@
     "@tauri-apps/plugin-os": "2.0.0-rc.0",
     "@tauri-apps/plugin-sql": "2.0.0-rc.0",
     "@tauri-apps/plugin-updater": "^2.0.0-rc.0",
+    "@types/howler": "^2.2.11",
     "axios": "1.7.3",
+    "howler": "^2.2.4",
     "pinia": "^2.2.0",
     "uuid": "10.0.0",
     "vue-router": "^4.4.2"

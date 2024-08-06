@@ -223,6 +223,11 @@ pub fn load_migrations() -> Vec<Migration> {
     INSERT OR IGNORE INTO settings (key, value) VALUES ('volume', '50');
     "#;
 
+    let migration_v4 = r#"
+    INSERT OR IGNORE INTO settings (key, value) VALUES ('lossless', 0);
+    INSERT OR IGNORE INTO settings (key, value) VALUES ('streaming', 1);
+    "#;
+
     vec![
         Migration {
             version: 1,
@@ -240,6 +245,12 @@ pub fn load_migrations() -> Vec<Migration> {
             version: 3,
             description: "insert_default_apiURL",
             sql: migration_v3,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 4,
+            description: "insert_default_lossless_and_streaming",
+            sql: migration_v4,
             kind: MigrationKind::Up,
         },
     ]

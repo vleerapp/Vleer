@@ -35,7 +35,6 @@
 <script lang="ts" setup>
 import { type Playlist } from "~/types/types";
 import { ref, onMounted, watch, computed } from "vue";
-import { useMusicStore } from "~/stores/music";
 import { useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,7 +45,8 @@ const searchQuery = ref("");
 const playlists = ref<Playlist[]>([]);
 
 async function fetchPlaylists() {
-  const rawPlaylists = Object.values($music.getSongsData().playlists);
+  const songsData = $music.getSongsData();
+  const rawPlaylists = songsData && songsData.playlists ? Object.values(songsData.playlists) : [];
   const playlistsWithCovers = await Promise.all(rawPlaylists.map(async playlist => {
     const cover = await $music.getCoverURLFromID(playlist.id);
     return { ...playlist, cover: cover || '/cover.png' };

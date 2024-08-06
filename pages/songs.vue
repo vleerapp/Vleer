@@ -79,10 +79,12 @@ const filteredSongs = computed<Song[]>(() => {
 });
 
 async function play(id: string, index: number) {
+  console.log('Attempting to play song:', id);
   const queueIds = filteredSongs.value.slice(index).map(song => song.id);
   await $music.setQueue(queueIds);
-  await $music.ensureAudioContextAndFilters();
-  startVisualizer();
+  await $music.setSong(id);
+  $music.play();
+  console.log('Play function completed');
 }
 
 function truncate(text: string, length: number = 45) {

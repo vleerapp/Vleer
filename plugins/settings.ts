@@ -40,6 +40,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
       return store.getApiURL();
     },
+    getLossless() {
+      return store.getLossless();
+    },
+    setLossless(lossless: boolean) {
+      store.setLossless(lossless)
+    },
     async searchApiURL() {
       try {
         const response = await fetch('https://piped-instances.kavin.rocks/');

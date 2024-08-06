@@ -1,10 +1,8 @@
+import { defineStore } from 'pinia';
+import { Howl } from 'howler';
 import type { MusicStore, SongsConfig, Song, Playlist } from "~/types/types";
 import Database from "@tauri-apps/plugin-sql";
-import {
-  readFile,
-  BaseDirectory,
-} from "@tauri-apps/plugin-fs";
-import { defineStore } from 'pinia';
+import { readFile, BaseDirectory, exists } from "@tauri-apps/plugin-fs";
 import { useSettingsStore } from './settings';
 import { computed } from 'vue';
 
@@ -15,12 +13,8 @@ export const useMusicStore = defineStore("musicStore", {
       playlists: {},
     },
     player: {
-      audio: new Audio(),
       currentSongId: "",
-      audioContext: null,
-      sourceNode: null,
-      analyser: null,
-      eqFilters: []
+      howl: null as Howl | null,
     },
     lastUpdated: Date.now(),
     db: null as Database | null,
@@ -45,7 +39,7 @@ export const useMusicStore = defineStore("musicStore", {
         const contents = await readFile(`Vleer/Covers/${song.id}.png`, {
           baseDir: BaseDirectory.Audio,
         });
-        song.coverURL = URL.createObjectURL(new Blob([contents]))
+        song.coverURL = URL.createObjectURL(new Blob([contents]));
       });
 
       const playlists = await this.db.select<Playlist[]>("SELECT * FROM playlists");
@@ -55,9 +49,6 @@ export const useMusicStore = defineStore("musicStore", {
           songs: playlist.songs.split(',')
         };
       });
-
-      this.player.audio.volume = 1;
-      this.player.audio.preload = "auto";
     },
     async addSongData(song: Song) {
       await this.db.execute("INSERT INTO songs (id, title, artist, length, cover, date_added, last_played) VALUES (?, ?, ?, ?, ?, ?, ?)", [
@@ -68,17 +59,6 @@ export const useMusicStore = defineStore("musicStore", {
     },
     getSongsData(): SongsConfig {
       return this.songsConfig;
-    },
-    async setSongFromBuffer(buffer: any) {
-      const blob = new Blob([buffer], { type: "audio/mp3" });
-      const url = URL.createObjectURL(blob);
-      this.player.audio.currentTime = 0;
-      this.player.audio.src = url;
-      this.player.audio.load();
-      this.lastUpdated = Date.now();
-    },
-    getAudio(): HTMLAudioElement {
-      return this.player.audio;
     },
     getSongByID(id: string): Song {
       return this.songsConfig.songs[id] ?? null;
@@ -122,73 +102,24 @@ export const useMusicStore = defineStore("musicStore", {
     getLastUpdated() {
       return this.lastUpdated;
     },
-    setVolume(volume: number) {
-      this.player.audio.volume = volume;
-      this.lastUpdated = Date.now();
-    },
     async setSong(id: string) {
-      const contents = await readFile(`Vleer/Songs/${id}.mp3`, {
-        baseDir: BaseDirectory.Audio,
-      });
-
       this.player.currentSongId = id;
-      await this.setSongFromBuffer(contents);
       const currentTime = new Date().toISOString();
       await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
       if (this.songsConfig.songs[id]) {
         this.songsConfig.songs[id].lastPlayed = currentTime;
       }
-
       this.lastUpdated = Date.now();
     },
-    createEqFilters(): BiquadFilterNode[] {
-      const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-      return frequencies.map((freq) => {
-        const filter = this.player.audioContext!.createBiquadFilter();
-        filter.type = "peaking";
-        filter.frequency.value = freq;
-        filter.Q.value = 1;
-        filter.gain.value = 0;
-        return filter;
-      });
-    },
-
-    connectEqFilters(): void {
-      if (!this.player.sourceNode || !this.player.audioContext) return;
-
-      this.player.sourceNode.disconnect();
-      let lastNode: AudioNode = this.player.sourceNode;
-      this.player.eqFilters.forEach((filter) => {
-        lastNode.connect(filter);
-        lastNode = filter;
-      });
-      lastNode.connect(this.player.audioContext.destination);
-    },
-
-    async applyEqSettings(eqSettings: any) {
-      if (!this.player.audioContext) {
-        this.player.audioContext = new AudioContext();
-        this.player.sourceNode = this.player.audioContext.createMediaElementSource(this.player.audio);
-        this.player.eqFilters = this.createEqFilters();
-      }
-
-      this.player.eqFilters.forEach((filter, index) => {
-        const freq = filter.frequency.value;
-        const gain = eqSettings[freq.toString()];
-        if (gain !== undefined) {
-          filter.gain.setValueAtTime(parseFloat(gain), this.player.audioContext!.currentTime);
-        }
-      });
-
-      this.connectEqFilters();
-    },
-    setEqGain(filterIndex: number, gain: number): void {
-      if (this.player.eqFilters[filterIndex]) {
-        this.player.eqFilters[filterIndex].gain.value = gain;
-      }
-    },
     play() {
-      this.player.audio.play()
+      if (this.player.howl) {
+        this.player.howl.play();
+      }
+    },
+    pause() {
+      if (this.player.howl) {
+        this.player.howl.pause();
+      }
     },
     getCurrentSong() {
       return this.player.currentSongId;
@@ -200,22 +131,26 @@ export const useMusicStore = defineStore("musicStore", {
       settingsStore.setQueue(queue);
       if (this.queue.length > 0) {
         await this.setSong(this.queue[0]);
-        this.play();
       }
     },
     async skip() {
       if (this.currentQueueIndex < this.queue.length - 1) {
         this.currentQueueIndex++;
         await this.setSong(this.queue[this.currentQueueIndex]);
-        this.play();
       }
     },
     async rewind() {
       if (this.currentQueueIndex > 0) {
         this.currentQueueIndex--;
         await this.setSong(this.queue[this.currentQueueIndex]);
-        this.play();
       }
+    },
+    getSongs() {
+      return Object.values(this.songsConfig.songs);
+    },
+
+    getPlaylists() {
+      return Object.values(this.songsConfig.playlists);
     },
   },
   getters: {

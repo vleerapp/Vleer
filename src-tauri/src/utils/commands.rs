@@ -9,10 +9,10 @@ use std::fs::File;
 use std::io::copy;
 
 #[tauri::command]
-pub async fn download(id: String) -> TauriResult<()> {
+pub async fn download(id: String, quality: String) -> TauriResult<()> {
     let client = Client::new();
     let response = client
-        .get(format!("https://api.wireway.ch/wave/audioStreamMp3/{}", id))
+        .get(format!("https://api.vleer.app/download?id={}&quality={}", id, quality))
         .send()
         .await
         .map_err(|e| anyhow!(e.to_string()))?;
@@ -21,7 +21,8 @@ pub async fn download(id: String) -> TauriResult<()> {
 
     let mut path = base_path.clone();
     path.push("Songs");
-    path.push(id + ".mp3");
+    let extension = if quality == "compressed" { "mp3" } else { "flac" };
+    path.push(format!("{}.{}", id, extension));
 
     let mut file = File::create(&path).map_err(|e| anyhow!(e.to_string()))?;
     let content = response.bytes().await.map_err(|e| anyhow!(e.to_string()))?;

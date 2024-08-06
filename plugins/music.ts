@@ -1,3 +1,4 @@
+import { Howl, Howler } from 'howler';
 import { useMusicStore } from "~/stores/music";
 import { useSettingsStore } from "~/stores/settings";
 import {
@@ -15,45 +16,23 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const musicStore = useMusicStore();
   const settingsStore = useSettingsStore();
 
-  musicStore.player.audio.addEventListener("error", (e) => {
-    if (e.target) {
-      const mediaError = e.target.error;
-      if (mediaError) {
-        console.error("Error with audio element:", mediaError);
-        switch (mediaError.code) {
-          case mediaError.MEDIA_ERR_ABORTED:
-            console.error("You aborted the media playback.");
-            break;
-          case mediaError.MEDIA_ERR_NETWORK:
-            console.error("A network error caused the media download to fail.");
-            break;
-          case mediaError.MEDIA_ERR_DECODE:
-            console.error("The media playback was aborted due to a corruption problem or because the media used features your browser did not support.");
-            break;
-          case mediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-            console.error("The media source is not supported. Error code:", mediaError.code);
-            break;
-          default:
-            console.error("An unknown error occurred.");
-            break;
-        }
-      }
-    }
-  });
-
   const music = {
+    howl: null as Howl | null,
+    analyzer: null as AnalyserNode | null,
+    equalizer: null as BiquadFilterNode[] | null,
+
     async init() {
       await musicStore.init();
-      this.setVolume(settingsStore.getVolume())
+      this.setVolume(settingsStore.getVolume());
     },
     getSongs() {
-      return Object.values(musicStore.songsConfig.songs);
+      return musicStore.getSongs();
     },
     getPlaylists() {
-      return Object.values(musicStore.songsConfig.playlists);
+      return musicStore.getPlaylists();
     },
     async addSongData(song: Song) {
-      musicStore.addSongData(song);
+      await musicStore.addSongData(song);
     },
     async updatePlaylistCover(playlistId: string, coverPath: any) {
       if (!coverPath || typeof coverPath !== 'object' || typeof coverPath.path !== 'string') {
@@ -76,7 +55,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       try {
         const data = await readFile(coverPath.path, { baseDir: BaseDirectory.Audio });
         await writeFile(newCoverPath, data, { baseDir: BaseDirectory.Audio });
-        await db.execute("UPDATE playlists SET cover = ? WHERE id = ?", [newCoverPath, playlistId]);
+        await musicStore.updatePlaylistCover(playlistId, newCoverPath);
       } catch (error) {
         console.error('Failed to update playlist cover:', error);
         throw new Error('Failed to update playlist cover due to path or permission issues.');
@@ -105,111 +84,143 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       return URL.createObjectURL(new Blob([contents]));
     },
     async setSong(id: string) {
-      await musicStore.setSong(id);
+      const song = await musicStore.getSongByID(id);
+      if (song) {
+        if (this.howl) {
+          this.howl.unload();
+        }
+        try {
+          const isLossless = settingsStore.getLossless();
+          const fileExtension = isLossless ? 'flac' : 'mp3';
+          const fileContent = await readFile(`Vleer/Songs/${id}.${fileExtension}`, { baseDir: BaseDirectory.Audio });
+          const blob = new Blob([fileContent], { type: isLossless ? 'audio/flac' : 'audio/mp3' });
+          const url = URL.createObjectURL(blob);
+
+          this.howl = new Howl({
+            src: [url],
+            format: [fileExtension],
+            html5: true,
+            volume: settingsStore.getVolume() / 100,
+            onload: () => {
+              console.log('Audio loaded successfully');
+              this.setupEqualizer();
+            },
+            onloaderror: (id, error) => {
+              console.error('Error loading audio:', error);
+            },
+            onplay: () => {
+              console.log('Audio started playing');
+            },
+            onplayerror: (id, error) => {
+              console.error('Error playing audio:', error);
+            },
+            onend: () => {
+              this.skip();
+              URL.revokeObjectURL(url);
+            },
+          });
+
+          await musicStore.setSong(id);
+        } catch (error) {
+          console.error('Error reading audio file:', error);
+        }
+      }
     },
     play() {
-      this.ensureAudioContextAndFilters()
-      this.setVolume(settingsStore.getVolume())
-      musicStore.play();
+      if (this.howl) {
+        this.howl.play();
+        console.log('Attempting to play audio');
+      } else {
+        console.error('No audio loaded');
+      }
     },
     pause() {
-      const audio = musicStore.getAudio();
-      audio.pause();
+      if (this.howl) {
+        this.howl.pause();
+      }
     },
     playPause() {
-      this.setVolume(settingsStore.getVolume())
-      const audio = musicStore.getAudio();
-      if (audio.paused) {
-        audio.play();
-      } else {
-        audio.pause();
+      if (this.howl) {
+        if (this.howl.playing()) {
+          this.howl.pause();
+        } else {
+          this.howl.play();
+        }
+      } else if (musicStore.getCurrentSong()) {
+        this.setSong(musicStore.getCurrentSong()).then(() => {
+          this.play();
+        });
       }
-    },
-    getAudio(): HTMLAudioElement {
-      return musicStore.getAudio();
     },
     setVolume(volume: number) {
-      const audio = this.getAudio();
-      if (volume == 0) {
-        audio.volume = 0;
-        return;
+      if (this.howl) {
+        this.howl.volume(volume / 100);
       }
-
-      const minVolume = 1;
-      const maxVolume = 100;
-      volume = Math.max(minVolume, Math.min(maxVolume, volume));
-
-      const minp = 0;
-      const maxp = 100;
-
-      const minv = Math.log(0.001);
-      const maxv = Math.log(1);
-
-      const scale = (maxv - minv) / (maxp - minp);
-
-      audio.volume = Math.exp(minv + scale * (volume - minp));
+      Howler.volume(volume / 100);
     },
-    getCurrentSong(): Song | null {
-      const song = musicStore.getSongByID(musicStore.player.currentSongId);
-      if (song) {
-        return song;
-      }
-      return null;
+    async getCurrentSong(): Promise<Song | null> {
+      return await musicStore.getCurrentSong();
     },
     async applyEqSettings() {
       const eqSettings = settingsStore.getEq();
-      await musicStore.applyEqSettings(eqSettings);
+      if (this.equalizer) {
+        Object.entries(eqSettings).forEach(([freq, gain], index) => {
+          this.setEqGain(index, parseFloat(gain));
+        });
+      }
     },
     setEqGain(filterIndex: number, gain: number): void {
-      musicStore.setEqGain(filterIndex, gain)
-    },
-    async ensureAudioContextAndFilters() {
-      if (!musicStore.player.audioContext) {
-        musicStore.player.audioContext = new AudioContext();
-        musicStore.player.sourceNode = musicStore.player.audioContext.createMediaElementSource(musicStore.player.audio);
-        musicStore.player.analyser = musicStore.player.audioContext.createAnalyser();
-        musicStore.player.sourceNode.connect(musicStore.player.analyser);
-        musicStore.player.analyser.connect(musicStore.player.audioContext.destination);
-        musicStore.player.analyser.fftSize = 256;
-        musicStore.player.eqFilters = musicStore.createEqFilters();
-        musicStore.connectEqFilters();
-        await musicStore.applyEqSettings(musicStore.player.eqFilters);
-        if (musicStore.player.audioContext.state === "suspended") {
-          await musicStore.player.audioContext.resume();
-        }
-      } else if (musicStore.player.audioContext.state === "suspended") {
-        await musicStore.player.audioContext.resume();
+      if (this.equalizer && this.equalizer[filterIndex]) {
+        this.equalizer[filterIndex].gain.setValueAtTime(gain, Howler.ctx.currentTime);
       }
     },
     async setQueue(songIds: string[]) {
-      musicStore.setQueue(songIds)
+      await musicStore.setQueue(songIds);
     },
     async skip() {
-      musicStore.skip()
+      try {
+        await musicStore.skip();
+        const currentSong = await musicStore.getCurrentSong();
+        if (currentSong) {
+          await this.setSong(currentSong);
+          this.play();
+        }
+      } catch (error) {
+        console.error('Error skipping song:', error);
+      }
     },
     async rewind() {
-      musicStore.rewind()
+      try {
+        await musicStore.rewind();
+        const currentSong = await musicStore.getCurrentSong();
+        if (currentSong) {
+          await this.setSong(currentSong);
+          this.play();
+        }
+      } catch (error) {
+        console.error('Error rewinding song:', error);
+      }
     },
-    getSongsData(): SongsConfig {
-      return musicStore.getSongsData();
+    async getSongsData(): Promise<SongsConfig> {
+      return await musicStore.getSongsData();
     },
     async createPlaylist(playlist: Playlist) {
-      musicStore.createPlaylist(playlist);
+      await musicStore.createPlaylist(playlist);
     },
-    getPlaylistByID(id: string): Playlist {
-      return musicStore.getPlaylistByID(id);
+    async getPlaylistByID(id: string): Promise<Playlist> {
+      return await musicStore.getPlaylistByID(id);
     },
-    getSongByID(id: string): Song {
-      return musicStore.getSongByID(id);
+    async getSongByID(id: string): Promise<Song> {
+      return await musicStore.getSongByID(id);
     },
-    addSongToPlaylist(playlistId: string, songId: string) {
-      musicStore.addSongToPlaylist(playlistId, songId);
+    async addSongToPlaylist(playlistId: string, songId: string) {
+      await musicStore.addSongToPlaylist(playlistId, songId);
     },
-    renamePlaylist(playlistId: string, newName: string) {
-      musicStore.renamePlaylist(playlistId, newName);
+    async renamePlaylist(playlistId: string, newName: string) {
+      await musicStore.renamePlaylist(playlistId, newName);
     },
-    getLastUpdated() {
-      return musicStore.getLastUpdated();
+    async getLastUpdated() {
+      return await musicStore.getLastUpdated();
     },
     async searchCoverByPlaylistId(playlistId: string): Promise<string> {
       const extensions = ['png', 'jpg', 'jpeg', 'gif'];
@@ -227,20 +238,36 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       }
       return "/cover.png";
     },
-    getAudioContext() {
-      return musicStore.player.audioContext;
-    },
-    getAnalyser() {
-      return musicStore.player.analyser;
-    },
-    setAnalyser(analyser: AnalyserNode) {
-      musicStore.player.analyser = analyser;
+    setupEqualizer() {
+      if (!this.howl) return;
+
+      const node = this.howl._sounds[0]._node; // HTMLAudioElement
+      const ctx = Howler.ctx;
+
+      this.analyzer = ctx.createAnalyser();
+      const sourceNode = ctx.createMediaElementSource(node);
+
+      // Create equalizer bands
+      const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+      this.equalizer = frequencies.map(freq => {
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'peaking';
+        filter.frequency.value = freq;
+        filter.Q.value = 1;
+        filter.gain.value = 0;
+        return filter;
+      });
+
+      // Connect nodes
+      sourceNode.connect(this.equalizer[0]);
+      this.equalizer.reduce((prev, curr) => {
+        prev.connect(curr);
+        return curr;
+      });
+      this.equalizer[this.equalizer.length - 1].connect(this.analyzer);
+      this.analyzer.connect(ctx.destination);
     },
   };
-
-  musicStore.player.audio.addEventListener('ended', () => {
-    music.skip();
-  });
 
   return {
     provide: {

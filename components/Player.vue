@@ -4,9 +4,13 @@
     <div class="top">
       <div class="info">
         <img :src="coverUrl || '/cover.png'" class="cover"></img>
-        <div class="h">
+        <div class="h" v-if="currentSong">
           <div class="title">{{ truncate(currentSong.title) }}</div>
           <div class="artist">{{ truncate(currentSong.artist) }}</div>
+        </div>
+        <div class="h" v-else>
+          <div class="title">No song playing</div>
+          <div class="artist">Unknown</div>
         </div>
       </div>
       <div class="controls">
@@ -34,9 +38,7 @@
     <div class="bottom">
       <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
-      <div class="numbers">{{ time }} / {{ audio.duration > 0
-        ? new Date(audio.duration * 1000).toISOString().substr(14, 5)
-        : "00:00" }}</div>
+      <div class="numbers">{{ time }} / {{ duration }}</div>
     </div>
   </div>
 </template>
@@ -49,24 +51,75 @@ const { $music, $settings } = useNuxtApp();
 const paused = ref(true)
 const looping = ref(false)
 const time = ref("00:00")
-const progress = ref($music.getAudio().currentTime)
-const audio = ref($music.getAudio())
+const duration = ref("00:00")
+const progress = ref(0)
 const volume = ref($settings.getVolume());
 const coverUrl = ref('/cover.png');
 
-audio.value.addEventListener('pause', async () => {
-  paused.value = true
-  try {
-    await invoke("clear_activity")
-  } catch (error) {
-    console.error("Failed to update Discord activity:", error);
+const currentSong = computed(() => {
+  const song = $music.getCurrentSong();
+  return song ? {
+    id: song.id,
+    title: song.title,
+    artist: song.artist,
+    cover: song.cover,
+  } : null;
+});
+
+watch(() => $music.howl, (newHowl) => {
+  if (newHowl) {
+    newHowl.on('play', onPlay);
+    newHowl.on('pause', onPause);
+    newHowl.on('end', onEnd);
+    newHowl.on('load', onLoad);
+    newHowl.on('loaderror', onLoadError);
+    newHowl.on('playerror', onPlayError);
   }
-})
+}, { immediate: true });
 
-audio.value.addEventListener('play', async () => {
-  paused.value = false
+function onPlay() {
+  paused.value = false;
+  updateDiscordActivity();
+}
 
-  $settings.setCurrentSong(currentSong.value.id);
+function onPause() {
+  paused.value = true;
+  clearDiscordActivity();
+}
+
+function onEnd() {
+  if (looping.value) {
+    $music.play();
+  } else {
+    clearDiscordActivity();
+  }
+}
+
+function onLoad() {
+  updateDuration();
+}
+
+function onLoadError() {
+  console.error("Error loading audio");
+}
+
+function onPlayError() {
+  console.error("Error playing audio");
+}
+
+function updateDuration() {
+  if ($music.howl) {
+    duration.value = formatTime($music.howl.duration());
+  }
+}
+
+function formatTime(secs: number) {
+  const minutes = Math.floor(secs / 60) || 0;
+  const seconds = Math.floor(secs - minutes * 60) || 0;
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+async function updateDiscordActivity() {
   try {
     let thumbnail;
     try {
@@ -88,42 +141,22 @@ audio.value.addEventListener('play', async () => {
   } catch (error) {
     console.error("Failed to update Discord activity:", error);
   }
-})
+}
 
-audio.value.addEventListener('ended', async () => {
-  if (looping.value) {
-    $music.play()
-  }
+async function clearDiscordActivity() {
   try {
     await invoke("clear_activity")
   } catch (error) {
-    console.error("Failed to update Discord activity:", error);
-  }
-})
-
-audio.value.addEventListener('timeupdate', () => {
-  time.value = audio.value.currentTime > 0 ? new Date(audio.value.currentTime * 1000).toISOString().substr(14, 5) : "00:00";
-  progress.value = (audio.value.currentTime / audio.value.duration) * 100;
-})
-
-async function initializeAudioContext() {
-  if (!$music.getAudioContext()) {
-    await $music.applyEqSettings();
+    console.error("Failed to clear Discord activity:", error);
   }
 }
 
-async function play() {
-  await initializeAudioContext();
-  $music.play();
+function play() {
+  $music.playPause();
 }
 
-async function pause() {
-  $music.pause();
-  try {
-    await invoke("clear_activity")
-  } catch (error) {
-    console.error("Failed to update Discord activity:", error);
-  }
+function pause() {
+  $music.playPause();
 }
 
 function skip() {
@@ -135,25 +168,20 @@ function rewind() {
 }
 
 function skipTo() {
-  audio.value.currentTime = (progress.value / 100) * audio.value.duration;
+  if ($music.howl) {
+    $music.howl.seek(($music.howl.duration() * progress.value) / 100);
+  }
 }
 
 function toggleLoop() {
   looping.value = !looping.value
+  if ($music.howl) {
+    $music.howl.loop(looping.value);
+  }
 }
-
-const currentSong = computed(() => {
-  return $music.getCurrentSong() || {
-    id: 0,
-    title: 'No song playing',
-    artist: 'Unknown',
-    cover: '/cover.png',
-  };
-});
 
 watch(currentSong, async (newSong, oldSong) => {
   if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
-    await initializeAudioContext();
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
     } catch (error) {
@@ -176,9 +204,22 @@ function setVolume() {
   $settings.setVolume(volume.value)
 }
 
-function truncate(text: string, length: number = 30) {
+function truncate(text: string | undefined, length: number = 30) {
+  if (!text) return '';
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 }
+
+const updateInterval = setInterval(() => {
+  if ($music.howl && $music.howl.playing()) {
+    const seek = $music.howl.seek() || 0;
+    time.value = formatTime(seek);
+    progress.value = (seek / $music.howl.duration()) * 100 || 0;
+  }
+}, 1000);
+
+onUnmounted(() => {
+  clearInterval(updateInterval);
+});
 </script>
 
 <style lang="scss">
