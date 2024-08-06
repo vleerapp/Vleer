@@ -9,8 +9,8 @@ import { computed } from 'vue';
 export const useMusicStore = defineStore("musicStore", {
   state: () => ({
     songsConfig: {
-      songs: {},
-      playlists: {},
+      songs: {} as Record<string, Song>,
+      playlists: {} as Record<string, Playlist>,
     },
     player: {
       currentSongId: "",
@@ -44,16 +44,15 @@ export const useMusicStore = defineStore("musicStore", {
 
       const playlists = await this.db.select<Playlist[]>("SELECT * FROM playlists");
       playlists.forEach(playlist => {
-        this.songsConfig.playlists[playlist.id] = {
-          ...playlist,
-          songs: playlist.songs.split(',')
-        };
+        this.songsConfig.playlists[playlist.id] = playlist;
       });
     },
     async addSongData(song: Song) {
-      await this.db.execute("INSERT INTO songs (id, title, artist, length, cover, date_added, last_played) VALUES (?, ?, ?, ?, ?, ?, ?)", [
-        song.id, song.title, song.artist, song.length, song.cover, song.date_added, song.lastPlayed
-      ]);
+      if (this.db) {
+        await this.db.execute("INSERT INTO songs (id, title, artist, length, cover, date_added, last_played) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+          song.id, song.title, song.artist, song.length, song.cover, song.date_added, song.lastPlayed
+        ]);
+      }
       this.songsConfig.songs[song.id] = song;
       this.lastUpdated = Date.now();
     },
@@ -64,15 +63,19 @@ export const useMusicStore = defineStore("musicStore", {
       return this.songsConfig.songs[id] ?? null;
     },
     async updateLastPlayed(songId: string, lastPlayed: string) {
-      await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [lastPlayed, songId]);
+      if (this.db) {
+        await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [lastPlayed, songId]);
+      }
       if (this.songsConfig.songs[songId]) {
         this.songsConfig.songs[songId].lastPlayed = lastPlayed;
       }
     },
     async createPlaylist(playlist: Playlist) {
-      await this.db.execute("INSERT INTO playlists (id, name, cover, songs) VALUES (?, ?, ?, ?)", [
-        playlist.id, playlist.name, playlist.cover, playlist.songs.join(',')
-      ]);
+      if (this.db) {
+        await this.db.execute("INSERT INTO playlists (id, name, cover, songs) VALUES (?, ?, ?, ?)", [
+          playlist.id, playlist.name, playlist.cover, playlist.songs.join(',')
+        ]);
+      }
       this.songsConfig.playlists[playlist.id] = playlist;
       this.lastUpdated = Date.now();
     },
@@ -80,13 +83,17 @@ export const useMusicStore = defineStore("musicStore", {
       return this.songsConfig.playlists[id] ?? null;
     },
     async renamePlaylist(playlistId: string, newName: string) {
-      await this.db.execute("UPDATE playlists SET name = ? WHERE id = ?", [newName, playlistId]);
+      if (this.db) {
+        await this.db.execute("UPDATE playlists SET name = ? WHERE id = ?", [newName, playlistId]);
+      }
       if (this.songsConfig.playlists[playlistId]) {
         this.songsConfig.playlists[playlistId].name = newName;
       }
     },
     async updatePlaylistCover(playlistId: string, newCoverPath: string) {
-      await this.db.execute("UPDATE playlists SET cover = ? WHERE id = ?", [newCoverPath, playlistId]);
+      if (this.db) {
+        await this.db.execute("UPDATE playlists SET cover = ? WHERE id = ?", [newCoverPath, playlistId]);
+      }
       if (this.songsConfig.playlists[playlistId]) {
         this.songsConfig.playlists[playlistId].cover = newCoverPath;
       }
@@ -95,7 +102,9 @@ export const useMusicStore = defineStore("musicStore", {
       const playlist = this.songsConfig.playlists[playlistId];
       if (playlist && this.songsConfig.songs[songId]) {
         playlist.songs.push(songId);
-        await this.db.execute("UPDATE playlists SET songs = ? WHERE id = ?", [playlist.songs.join(','), playlistId]);
+        if (this.db) {
+          await this.db.execute("UPDATE playlists SET songs = ? WHERE id = ?", [playlist.songs.join(','), playlistId]);
+        }
       }
       this.lastUpdated = Date.now();
     },
@@ -105,7 +114,9 @@ export const useMusicStore = defineStore("musicStore", {
     async setSong(id: string) {
       this.player.currentSongId = id;
       const currentTime = new Date().toISOString();
-      await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
+      if (this.db) {
+        await this.db.execute("UPDATE songs SET last_played = ? WHERE id = ?", [currentTime, id]);
+      }
       if (this.songsConfig.songs[id]) {
         this.songsConfig.songs[id].lastPlayed = currentTime;
       }

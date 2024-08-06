@@ -45,6 +45,8 @@
 
 <script lang="ts" setup>
 import { invoke } from "@tauri-apps/api/core";
+import { Howl } from 'howler';
+import type { Song } from '~/types/types';
 
 const { $music, $settings } = useNuxtApp();
 
@@ -56,17 +58,19 @@ const progress = ref(0)
 const volume = ref($settings.getVolume());
 const coverUrl = ref('/cover.png');
 
-const currentSong = computed(() => {
-  const song = $music.getCurrentSong();
-  return song ? {
+const currentSong = ref<Partial<Song> | null>(null);
+
+watch($music.getCurrentSong, async (songPromise) => {
+  const song = await songPromise;
+  currentSong.value = song ? {
     id: song.id,
     title: song.title,
     artist: song.artist,
     cover: song.cover,
   } : null;
-});
+}, { immediate: true });
 
-watch(() => $music.howl, (newHowl) => {
+watch(() => $music.howl, (newHowl: Howl | null) => {
   if (newHowl) {
     newHowl.on('play', onPlay);
     newHowl.on('pause', onPause);
@@ -121,11 +125,15 @@ function formatTime(secs: number) {
 
 async function updateDiscordActivity() {
   try {
+    if (!currentSong.value) return;
+
     let thumbnail;
     try {
-      const response = await fetch(`https://api.wireway.ch/wave/thumbnail/${encodeURIComponent(currentSong.value.id)}`);
-      const data = await response.json();
-      thumbnail = data.items[0].thumbnail;
+      if (currentSong.value?.id) {
+        const response = await fetch(`https://api.wireway.ch/wave/thumbnail/${encodeURIComponent(currentSong.value.id)}`);
+        const data = await response.json();
+        thumbnail = data.items[0].thumbnail;
+      }
     } catch (error) {
       thumbnail = "https://discussions.apple.com/content/attachment/592590040"
       console.error("Failed to fetch song thumbnail:", error);
@@ -181,14 +189,14 @@ function toggleLoop() {
 }
 
 watch(currentSong, async (newSong, oldSong) => {
-  if (newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
+  if (newSong && newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
     try {
       coverUrl.value = await $music.getCoverURLFromID(newSong.id);
     } catch (error) {
       console.error('Error fetching cover URL:', error);
       coverUrl.value = '/cover.png';
     }
-  } else if (!newSong.id) {
+  } else if (newSong && !newSong.id) {
     coverUrl.value = '/cover.png';
   }
 }, { immediate: true });

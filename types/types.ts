@@ -1,4 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
+import { Howl } from 'howler';
 
 export interface Song {
   id: string;
@@ -25,19 +26,17 @@ export interface SongsConfig {
 }
 
 export interface Player {
-  audio: HTMLAudioElement;
   currentSongId: string;
-  audioContext: AudioContext | null;
-  sourceNode: MediaElementAudioSourceNode | null;
-  analyser: AnalyserNode | null;
-  eqFilters: BiquadFilterNode[];
+  howl: Howl | null;
 }
 
 export interface MusicStore {
   songsConfig: SongsConfig;
   player: Player;
   lastUpdated: number;
-  db: Database;
+  db: Database | null;
+  queue: string[];
+  currentQueueIndex: number;
 }
 
 export interface MusicSearchResponseItem {

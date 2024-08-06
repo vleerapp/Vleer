@@ -142,17 +142,35 @@ function startVisualizer() {
     });
   }
 
-  const audio = $music.getAudio();
-  audio.addEventListener('play', draw);
-  audio.addEventListener('pause', stop);
-  audio.addEventListener('ended', stop);
+  let isPlaying = false;
 
-  if (!audio.paused) {
-    draw();
-  } else {
-    stop();
+  function toggleVisualizer(play: boolean) {
+    isPlaying = play;
+    if (isPlaying) {
+      draw();
+    } else {
+      stop();
+    }
   }
+
+  return {
+    start: () => toggleVisualizer(true),
+    stop: () => toggleVisualizer(false)
+  };
 }
+
+const visualizer = startVisualizer();
+
+watch(() => $music.isPlaying(), (isPlaying) => {
+  console.log('Music playing state changed:', isPlaying);
+  if (isPlaying) {
+    console.log('Starting visualizer');
+    visualizer.start();
+  } else {
+    console.log('Stopping visualizer');
+    visualizer.stop();
+  }
+});
 </script>
 
 <style scoped lang="scss">

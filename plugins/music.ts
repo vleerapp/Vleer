@@ -9,10 +9,8 @@ import {
   remove,
 } from "@tauri-apps/plugin-fs";
 import type { Song, SongsConfig, Playlist } from "~/types/types";
-import Database from "@tauri-apps/plugin-sql";
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const db = await Database.load("sqlite:data.db");
   const musicStore = useMusicStore();
   const settingsStore = useSettingsStore();
 
@@ -159,7 +157,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       Howler.volume(volume / 100);
     },
     async getCurrentSong(): Promise<Song | null> {
-      return await musicStore.getCurrentSong();
+      const currentSongId = musicStore.getCurrentSong();
+      return currentSongId ? await musicStore.getSongByID(currentSongId) : null;
     },
     async applyEqSettings() {
       const eqSettings = settingsStore.getEq();
@@ -241,32 +240,35 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     setupEqualizer() {
       if (!this.howl) return;
 
-      const node = this.howl._sounds[0]._node; // HTMLAudioElement
+      const node = (this.howl as any)._sounds[0]._node;
       const ctx = Howler.ctx;
 
-      this.analyzer = ctx.createAnalyser();
-      const sourceNode = ctx.createMediaElementSource(node);
+      if (!node.sourceNode) {
+        this.analyzer = ctx.createAnalyser();
+        node.sourceNode = ctx.createMediaElementSource(node);
 
-      // Create equalizer bands
-      const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-      this.equalizer = frequencies.map(freq => {
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'peaking';
-        filter.frequency.value = freq;
-        filter.Q.value = 1;
-        filter.gain.value = 0;
-        return filter;
-      });
+        const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+        this.equalizer = frequencies.map(freq => {
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'peaking';
+          filter.frequency.value = freq;
+          filter.Q.value = 1;
+          filter.gain.value = 0;
+          return filter;
+        });
 
-      // Connect nodes
-      sourceNode.connect(this.equalizer[0]);
-      this.equalizer.reduce((prev, curr) => {
-        prev.connect(curr);
-        return curr;
-      });
-      this.equalizer[this.equalizer.length - 1].connect(this.analyzer);
-      this.analyzer.connect(ctx.destination);
+        node.sourceNode.connect(this.equalizer[0]);
+        this.equalizer.reduce((prev, curr) => {
+          prev.connect(curr);
+          return curr;
+        });
+        this.equalizer[this.equalizer.length - 1].connect(this.analyzer);
+        this.analyzer.connect(ctx.destination);
+      }
     },
+    isPlaying(): boolean {
+      return this.howl ? this.howl.playing() : false;
+    }
   };
 
   return {

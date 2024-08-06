@@ -87,7 +87,7 @@ let searchTimeout: ReturnType<typeof setTimeout>;
 const hoveredSongId = ref("");
 
 const currentSong = computed(() => {
-  return $music.getCurrentSong() || { id: 0 };
+  return $music.getCurrentSong() || { id: '' };
 });
 
 watch(currentSong, () => { });

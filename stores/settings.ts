@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import Database from '@tauri-apps/plugin-sql';
+import { invoke } from '@tauri-apps/api/core';
 import type { EQSettings } from "~/types/types";
 
 export const useSettingsStore = defineStore("settingsStore", {
@@ -31,9 +32,9 @@ export const useSettingsStore = defineStore("settingsStore", {
       const results = await db.select<any[]>("SELECT key, value FROM settings");
       results.forEach(({ key, value }) => {
         try {
-          this.settings[key] = JSON.parse(value);
+          (this.settings as any)[key] = JSON.parse(value);
         } catch {
-          this.settings[key] = value;
+          (this.settings as any)[key] = value;
         }
       });
     },
@@ -95,7 +96,7 @@ export const useSettingsStore = defineStore("settingsStore", {
         const instances = await response.json();
         const urls = instances.map((instance: { api_url: string }) => instance.api_url);
 
-        const results = await window.__TAURI__.core.invoke('ping_urls', { urls });
+        const results = await invoke<string[][]>('ping_urls', { urls });
         this.setApiURL(results[0][0]);
         return results;
       } catch (error) {
@@ -116,4 +117,3 @@ export const useSettingsStore = defineStore("settingsStore", {
     },
   },
 });
-
