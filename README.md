@@ -12,26 +12,26 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
     <tr>
       <td>Download for</td>
       <td>
-        <a href="https://github.com/vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.msi">
+        <a href="https://github.com/vleerapp/Vleer/releases/download/v0.1.1/Vleer-0.1.1.msi">
           <img src="./public/windows.png"> Windows
         </a>
       </td>
       <td>
-        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">
+        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.1/Vleer-0.1.1_silicon.dmg">
           <picture>
             <img src="./public/apple.png">
           </picture> macOS (Silicon)
         </a>
       </td>
       <td>
-        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.dmg">
+        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.1/Vleer-0.1.1_intel.dmg">
           <picture>
             <img src="./public/apple.png">
           </picture> macOS (Intel)
         </a>
       </td>
       <td>
-        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.0/Vleer-0.1.0.AppImage">
+        <a href="https://github.com/Vleerapp/Vleer/releases/download/v0.1.1/Vleer-0.1.1.AppImage">
           <img src="./public/linux.png"> Linux
         </a>
       </td>
