@@ -68,6 +68,11 @@ jobs:
         with:
           args: ${{ matrix.args }}
 
+      - name: Basic macOS code signing
+        if: matrix.platform == 'macos-latest'
+        run: |
+          codesign --force --deep --sign - src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app
+
       - name: Publish macOS Artifact
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v4
