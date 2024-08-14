@@ -49,36 +49,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
       - run: npm install -g pnpm && pnpm install
+      - name: Import Apple Developer Certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: |
+          echo $APPLE_CERTIFICATE | base64 --decode > certificate.p12
+          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+      - name: Update Tauri Config
+        run: |
+          sed -i '' 's/"signingIdentity": null/"signingIdentity": "${{ secrets.APPLE_SIGNING_IDENTITY }}"/' src-tauri/tauri.conf.json
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         with:
           args: ${{ matrix.args }}
-      - name: Create entitlements file
-        run: |
-          cat << EOF > entitlements.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
-              <true/>
-              <key>com.apple.security.cs.allow-jit</key>
-              <true/>
-              <key>com.apple.security.cs.disable-library-validation</key>
-              <true/>
-          </dict>
-          </plist>
-          EOF
-      - name: Improved macOS code signing
-        run: |
-          codesign --force --deep --sign - --entitlements entitlements.plist src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app
-          codesign --verify --verbose src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app
-      - name: Basic macOS code signing (fallback)
-        if: failure()
-        run: |
-          codesign --force --deep --sign - src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app
-          codesign --verify --verbose src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/macos/*.app
       - name: Rename and Publish macOS Artifacts
         run: |
           mv src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/*.dmg src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/Vleer-${{ needs.prepare.outputs.version }}_${{ matrix.arch }}.dmg
