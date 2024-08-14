@@ -82,7 +82,7 @@ jobs:
           echo "Attempting manual signing:"
           codesign --force --options runtime --sign "$CERT_ID" --entitlements src-tauri/entitlements.plist src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Vleer.app
           echo "Verifying signature:"
-          codesign -dv --verbose=4 src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Vleer.app
+          codesign -dv --verbose=4 src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Vleer.app | sed 's/.*Authority=.*/Authority=REDACTED/'
       - name: Rename and Publish macOS Artifacts
         run: |
           mv src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/*.dmg src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/Vleer-${{ needs.prepare.outputs.version }}_${{ matrix.arch }}.dmg
