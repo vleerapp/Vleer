@@ -61,13 +61,22 @@ jobs:
           security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
           security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+      - name: Verify keychain and identity
+        run: |
+          security find-identity -v -p codesigning build.keychain
+          echo "Available identities:"
+          security find-identity -v
       - name: Update Tauri Config
         run: |
-          sed -i '' 's/"signingIdentity": null/"signingIdentity": "${{ secrets.APPLE_SIGNING_IDENTITY }}"/' src-tauri/tauri.conf.json
+          jq '.bundle.macOS.signingIdentity = $newVal' --arg newVal "${{ secrets.APPLE_SIGNING_IDENTITY }}" src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           args: ${{ matrix.args }}
       - name: Rename and Publish macOS Artifacts
