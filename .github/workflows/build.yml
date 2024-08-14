@@ -53,18 +53,19 @@ jobs:
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           echo $APPLE_CERTIFICATE | base64 --decode > certificate.p12
-          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security default-keychain -s build.keychain
-          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
-      - name: Verify keychain and identity
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+      - name: Verify Certificate
         run: |
-          security find-identity -v -p codesigning build.keychain
-          echo "Available identities:"
-          security find-identity -v
+          CERT_INFO=$(security find-identity -v -p codesigning build.keychain | grep "Apple Development")
+          CERT_ID=$(echo "$CERT_INFO" | awk -F'"' '{print $2}')
+          echo "CERT_ID=$CERT_ID" >> $GITHUB_ENV
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,15 +73,16 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ env.CERT_ID }}
         with:
           args: ${{ matrix.args }}
       - name: Debug Signing Process
         if: failure()
         run: |
-          echo "Codesign version:"
-          codesign --version
           echo "Attempting manual signing:"
-          codesign --force --options runtime --sign "Apple Development: vleer.app@outlook.com" --entitlements src-tauri/entitlements.plist src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Vleer.app
+          codesign --force --options runtime --sign "$CERT_ID" --entitlements src-tauri/entitlements.plist src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Vleer.app
+          echo "Verifying signature:"
+          codesign -dv --verbose=4 src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Vleer.app
       - name: Rename and Publish macOS Artifacts
         run: |
           mv src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/*.dmg src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/dmg/Vleer-${{ needs.prepare.outputs.version }}_${{ matrix.arch }}.dmg

@@ -45,7 +45,7 @@
       "exceptionDomain": "",
       "frameworks": [],
       "providerShortName": null,
-      "signingIdentity": "Apple Development: vleer.app@outlook.com" 
+      "signingIdentity": null
     }
   },
   "plugins": {

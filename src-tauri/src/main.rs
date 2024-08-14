@@ -7,7 +7,6 @@ mod db;
 mod utils;
 
 use tauri_plugin_prevent_default::Flags;
-use tauri::Manager;
 
 fn main() {
     let _ = utils::discord_rpc::connect_rpc();
