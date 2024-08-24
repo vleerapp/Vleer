@@ -5,20 +5,18 @@ description = "Vleer"
 authors = ["pandadev", "waradu"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc", features = [] }
+tauri-build = { version = "2.0.0-rc.6", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-rc.2", features = ["devtools", "unstable"] }
+tauri = { version = "2.0.0-rc.6", features = ["devtools", "unstable"] }
 tauri-plugin-os = "2.0.0-rc.0"
 tauri-plugin-fs = "2.0.0-rc.0"
 tauri-plugin-dialog = "2.0.0-rc.0"
 tauri-plugin-updater = "2.0.0-rc.0"
 tauri-plugin-global-shortcut = "2.0.0-rc.0"
 tauri-plugin-sql = {version = "2.0.0-rc.0", features = ["sqlite"] }
-tauri-plugin-prevent-default = "0.3"
+tauri-plugin-prevent-default = "0.4"
 sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
 serde_json = "1.0"
 serde = "1.0"
@@ -32,7 +30,4 @@ regex = "1.10.4"
 # rusty_ytdl = "0.7.2"
 
 [features]
-# this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
-# If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
-# DO NOT REMOVE!!
 custom-protocol = [ "tauri/custom-protocol" ]

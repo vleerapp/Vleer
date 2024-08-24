@@ -10,16 +10,16 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@tauri-apps/api": "2.0.0-rc.0",
-    "nuxt": "3.12.4",
+    "@tauri-apps/api": "2.0.0-rc.3",
+    "nuxt": "3.13.0",
     "sass": "1.77.8",
-    "vue": "3.4.37"
+    "vue": "3.4.38"
   },
   "dependencies": {
-    "@pinia/nuxt": "^0.5.3",
-    "@tauri-apps/cli": "2.0.0-rc.3",
+    "@pinia/nuxt": "^0.5.4",
+    "@tauri-apps/cli": "2.0.0-rc.7",
     "@tauri-apps/plugin-dialog": "2.0.0-rc.0",
-    "@tauri-apps/plugin-fs": "2.0.0-rc.0",
+    "@tauri-apps/plugin-fs": "2.0.0-rc.1",
     "@tauri-apps/plugin-global-shortcut": "2.0.0-rc.0",
     "@tauri-apps/plugin-os": "2.0.0-rc.0",
     "@tauri-apps/plugin-sql": "2.0.0-rc.0",
@@ -27,7 +27,7 @@
     "@types/howler": "^2.2.11",
     "axios": "1.7.4",
     "howler": "^2.2.4",
-    "pinia": "^2.2.1",
+    "pinia": "^2.2.2",
     "uuid": "10.0.0",
     "vue-router": "^4.4.3"
   }
