@@ -52,10 +52,12 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
 
 <details>
   <summary><kbd>Star History</kbd></summary>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=vleerapp/vleer&theme=dark&type=Date">
-    <img width="100%" src="https://api.star-history.com/svg?repos=vleerapp/vleer&type=Date">
-  </picture>
+  <a href="https://star-history.com/#vleerapp/vleer&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=vleerapp/vleer&theme=dark&type=Date">
+      <img width="100%" src="https://api.star-history.com/svg?repos=vleerapp/vleer&type=Date">
+    </picture>
+  </a>
 </details>
 
 ## 📀 What is Vleer?
