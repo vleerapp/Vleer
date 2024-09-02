@@ -17,11 +17,11 @@ tauri-plugin-updater = "2.0.0-rc.0"
 tauri-plugin-global-shortcut = "2.0.0-rc.0"
 tauri-plugin-sql = {version = "2.0.0-rc.0", features = ["sqlite"] }
 tauri-plugin-prevent-default = "0.4"
-sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
+sqlx = { version = "0.8.1", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
 serde_json = "1.0"
-serde = "1.0"
+serde = "1.0.209"
 lazy_static = "1.4"
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.40.0", features = ["full"] }
 anyhow = "1.0"
 discord-ipc-rp = "0.1.1"
 dotenv = "0.15.0"
