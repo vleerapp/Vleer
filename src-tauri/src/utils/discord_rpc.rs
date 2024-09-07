@@ -1,5 +1,4 @@
 use discord_ipc_rp::{activity, DiscordIpc, DiscordIpcClient};
-use dotenv::dotenv;
 use lazy_static::lazy_static;
 use std::env;
 use std::sync::Mutex;
@@ -17,7 +16,6 @@ fn is_discord_rpc_disabled() -> bool {
 
 #[tauri::command]
 pub fn connect_rpc() -> Result<(), String> {
-    dotenv().ok();
     if is_discord_rpc_disabled() {
         return Err("Discord RPC is disabled".to_string());
     }
@@ -35,7 +33,6 @@ pub fn connect_rpc() -> Result<(), String> {
 
 #[tauri::command]
 pub fn clear_activity() -> Result<(), String> {
-    dotenv().ok();
     if is_discord_rpc_disabled() {
         return Err("Discord RPC is disabled".to_string());
     }
@@ -59,7 +56,6 @@ pub fn update_activity(
     large_image_text: String,
     youtube_url: Option<String>,
 ) -> Result<(), String> {
-    dotenv().ok();
     if is_discord_rpc_disabled() {
         return Err("Discord RPC is disabled".to_string());
     }

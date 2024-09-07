@@ -6,25 +6,24 @@ authors = ["pandadev", "waradu"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc.6", features = [] }
+tauri-build = { version = "2.0.0-rc.9", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-rc.6", features = ["devtools", "unstable"] }
-tauri-plugin-os = "2.0.0-rc.0"
-tauri-plugin-fs = "2.0.0-rc.0"
-tauri-plugin-dialog = "2.0.0-rc.0"
-tauri-plugin-updater = "2.0.0-rc.0"
-tauri-plugin-global-shortcut = "2.0.0-rc.0"
-tauri-plugin-sql = {version = "2.0.0-rc.0", features = ["sqlite"] }
+tauri = { version = "2.0.0-rc.10", features = ["devtools", "unstable"] }
+tauri-plugin-os = "2.0.0-rc.3"
+tauri-plugin-fs = "2.0.0-rc.1"
+tauri-plugin-dialog = "2.0.0-rc.5"
+tauri-plugin-updater = "2.0.0-rc.3"
+tauri-plugin-global-shortcut = "2.0.0-rc.2"
+tauri-plugin-sql = {version = "2.0.0-rc.1", features = ["sqlite"] }
 tauri-plugin-prevent-default = "0.4"
-sqlx = { version = "0.8.1", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
-serde_json = "1.0"
-serde = "1.0.209"
+sqlx = { version = "0.8.2", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
+serde_json = "1.0.128"
+serde = "1.0.210"
 lazy_static = "1.4"
 tokio = { version = "1.40.0", features = ["full"] }
-anyhow = "1.0"
+anyhow = "1.0.87"
 discord-ipc-rp = "0.1.1"
-dotenv = "0.15.0"
 reqwest = "0.12.3"
 regex = "1.10.4"
 # rusty_ytdl = "0.7.2"
