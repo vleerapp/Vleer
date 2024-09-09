@@ -126,7 +126,7 @@ pnpm build
 
 ## 📝 License
 
-Vleer is licensed under the Creative Commons Attribution-Noncommercial-Share Alike. See the [LICENSE file](./LICENCE) for more information.
+Vleer is licensed under the GPL-3. See the [LICENSE file](./LICENCE) for more information.
 
 [codespaces-link]: https://codespaces.new/vleerapp/vleer
 [codespaces-shield]: https://github.com/codespaces/badge.svg
