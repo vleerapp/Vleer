@@ -3,7 +3,7 @@
     <p class="element-title">Player</p>
     <div class="top">
       <div class="info">
-        <img :src="coverUrl || '/cover.png'" class="cover"></img>
+        <img :src="currentSong?.cover || '/cover.png'" class="cover" alt="Album cover">
         <div class="h" v-if="currentSong">
           <div class="title">{{ truncate(currentSong.title) }}</div>
           <div class="artist">{{ truncate(currentSong.artist) }}</div>
@@ -16,8 +16,8 @@
       <div class="controls">
         <IconsShuffle />
         <IconsRewind @click="rewind" />
-        <IconsPlay v-if="paused" @click="play" />
-        <IconsPause v-if="!paused" @click="pause" />
+        <IconsPlay v-if="paused" @click="playPause" />
+        <IconsPause v-if="!paused" @click="playPause" />
         <IconsSkip @click="skip" />
         <IconsRepeat @click="toggleLoop" :class="{ 'active': looping }" />
       </div>
@@ -27,8 +27,7 @@
         <IconsVolumeMute @click="mute" v-else />
 
         <div class="bar">
-          <input class="range" @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range" name=""
-            id="">
+          <input class="range" @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range">
           <div class="volume-indicator" :style="{ width: volume + '%' }"></div>
         </div>
 
@@ -36,198 +35,112 @@
       </div>
     </div>
     <div class="bottom">
-      <input type="range" class="progress" v-model="progress" @input="skipTo" min="0" max="100" step=".1" />
+      <input
+        type="range"
+        class="progress"
+        :value="progress"
+        @input="skipTo"
+        min="0"
+        max="100"
+        step=".1"
+      />
       <div class="progress-indicator" :style="{ width: progress + '%' }"></div>
-      <div class="numbers">{{ time }} / {{ duration }}</div>
+      <div class="numbers">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { invoke } from "@tauri-apps/api/core";
-import { Howl } from 'howler';
+import { ref, watch, onMounted } from 'vue';
 import type { Song } from '~/types/types';
 
-const { $music, $settings } = useNuxtApp();
+const { $music, $player, $settings } = useNuxtApp();
 
-const paused = ref(true)
-const looping = ref(false)
-const time = ref("00:00")
-const duration = ref("00:00")
-const progress = ref(0)
-const volume = ref($settings.getVolume());
-const coverUrl = ref('/cover.png');
+const currentSong = ref<Song | null>(null);
+const currentTime = ref(0);
+const duration = ref(0);
+const looping = ref(false);
+const muted = ref(false);
+const paused = ref(true);
+const progress = ref(0);
+const volume = ref(50);
 
-const currentSong = ref<Partial<Song> | null>(null);
+onMounted(async () => {
+  looping.value = $player.looping.value;
+  muted.value = $player.muted.value;
+  volume.value = $player.volume.value;
 
-watch($music.getCurrentSong, async (songPromise) => {
-  const song = await songPromise;
-  currentSong.value = song ? {
-    id: song.id,
-    title: song.title,
-    artist: song.artist,
-    cover: song.cover,
-  } : null;
-}, { immediate: true });
-
-watch(() => $music.howl, (newHowl: Howl | null) => {
-  if (newHowl) {
-    newHowl.on('play', onPlay);
-    newHowl.on('pause', onPause);
-    newHowl.on('end', onEnd);
-    newHowl.on('load', onLoad);
-    newHowl.on('loaderror', onLoadError);
-    newHowl.on('playerror', onPlayError);
-  }
-}, { immediate: true });
-
-function onPlay() {
-  paused.value = false;
-  updateDiscordActivity();
-}
-
-function onPause() {
-  paused.value = true;
-  clearDiscordActivity();
-}
-
-function onEnd() {
-  if (looping.value) {
-    $music.play();
-  } else {
-    clearDiscordActivity();
-  }
-}
-
-function onLoad() {
-  updateDuration();
-}
-
-function onLoadError() {
-  console.error("Error loading audio");
-}
-
-function onPlayError() {
-  console.error("Error playing audio");
-}
-
-function updateDuration() {
-  if ($music.howl) {
-    duration.value = formatTime($music.howl.duration());
-  }
-}
-
-function formatTime(secs: number) {
-  const minutes = Math.floor(secs / 60) || 0;
-  const seconds = Math.floor(secs - minutes * 60) || 0;
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
-
-async function updateDiscordActivity() {
-  try {
-    if (!currentSong.value) return;
-
-    let thumbnail;
-    try {
-      if (currentSong.value?.id) {
-        const response = await fetch(`https://api.wireway.ch/wave/thumbnail/${encodeURIComponent(currentSong.value.id)}`);
-        const data = await response.json();
-        thumbnail = data.items[0].thumbnail;
-      }
-    } catch (error) {
-      thumbnail = "https://discussions.apple.com/content/attachment/592590040"
-      console.error("Failed to fetch song thumbnail:", error);
+  const newSong = await $settings.getCurrentSong();
+  if (newSong) {
+    const song = await $music.getSong(newSong.id);
+    if (song) {
+      await $player.loadSong(song);
+      currentSong.value = song;
     }
-
-    await invoke("update_activity", {
-      state: "by " + currentSong.value.artist,
-      details: currentSong.value.title,
-      largeImage: thumbnail,
-      largeImageText: currentSong.value.title,
-      youtube_url: "https://youtube.com/watch?v=" + currentSong.value.id
-    });
-  } catch (error) {
-    console.error("Failed to update Discord activity:", error);
   }
-}
 
-async function clearDiscordActivity() {
-  try {
-    await invoke("clear_activity")
-  } catch (error) {
-    console.error("Failed to clear Discord activity:", error);
-  }
-}
+  watch(() => $player.currentSong.value, (newSong) => {
+    currentSong.value = newSong;
+  });
+  
+  watch(() => $player.duration.value, (newDuration) => {
+    duration.value = newDuration;
+  });
 
-function play() {
-  $music.playPause();
-}
+  watch(() => $player.paused.value, (newPaused) => {
+    paused.value = newPaused;
+  });
 
-function pause() {
-  $music.playPause();
-}
+  watch(() => $player.progress.value, (newProgress) => {
+    progress.value = newProgress;
+    currentTime.value = (newProgress / 100) * duration.value;
+  });
+  
+  watch(() => $player.time.value, (newTime) => {
+    currentTime.value = newTime;
+    progress.value = (newTime / duration.value) * 100;
+  });
 
-function skip() {
-  $music.skip();
-}
+  watch(() => $player.looping.value, (newLoop) => {
+    looping.value = newLoop;
+  });
 
-function rewind() {
-  $music.rewind();
-}
+  watch(() => $player.muted.value, (newMuted) => {
+    muted.value = newMuted;
+  });
 
-function skipTo() {
-  if ($music.howl) {
-    $music.howl.seek(($music.howl.duration() * progress.value) / 100);
-  }
-}
+  watch(() => $player.volume.value, (newVolume) => {
+    volume.value = newVolume;
+  });
+});
 
-function toggleLoop() {
-  looping.value = !looping.value
-  if ($music.howl) {
-    $music.howl.loop(looping.value);
-  }
-}
+const playPause = () => $player.playPause();
+const skip = () => $player.skip();
+const rewind = () => $player.rewind();
+const skipTo = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const newProgress = parseFloat(target.value);
+  $player.skipTo(newProgress);
+  progress.value = newProgress;
+  currentTime.value = (newProgress / 100) * duration.value;
+};
+const setVolume = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  $player.setVolume(parseInt(target.value));
+};
+const mute = () => $player.mute();
+const toggleLoop = () => $player.toggleLoop();
 
-watch(currentSong, async (newSong, oldSong) => {
-  if (newSong && newSong.id && newSong.id !== (oldSong ? oldSong.id : null)) {
-    try {
-      coverUrl.value = await $music.getCoverURLFromID(newSong.id);
-    } catch (error) {
-      console.error('Error fetching cover URL:', error);
-      coverUrl.value = '/cover.png';
-    }
-  } else if (newSong && !newSong.id) {
-    coverUrl.value = '/cover.png';
-  }
-}, { immediate: true });
-
-function mute() {
-  volume.value = 0
-  $music.setVolume(volume.value);
-  $settings.setVolume(volume.value)
-}
-
-function setVolume() {
-  $music.setVolume(volume.value);
-  $settings.setVolume(volume.value)
-}
-
-function truncate(text: string | undefined, length: number = 30) {
+const truncate = (text: string | undefined, length: number = 30) => {
   if (!text) return '';
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
-}
+};
 
-const updateInterval = setInterval(() => {
-  if ($music.howl && $music.howl.playing()) {
-    const seek = $music.howl.seek() || 0;
-    time.value = formatTime(seek);
-    progress.value = (seek / $music.howl.duration()) * 100 || 0;
-  }
-}, 1000);
-
-onUnmounted(() => {
-  clearInterval(updateInterval);
-});
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
 </script>
 
 <style lang="scss">

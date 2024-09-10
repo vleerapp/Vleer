@@ -33,10 +33,10 @@
 </template>
 
 <script lang="ts" setup>
-import { type Playlist } from "~/types/types";
 import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
+import type { Playlist } from "~/types/types";
 
 const { $music } = useNuxtApp();
 const router = useRouter();
@@ -45,26 +45,32 @@ const searchQuery = ref("");
 const playlists = ref<Playlist[]>([]);
 
 async function fetchPlaylists() {
-  const songsData = $music.getSongsData();
-  const rawPlaylists = songsData && songsData.playlists ? Object.values(songsData.playlists) : [];
-  const playlistsWithCovers = await Promise.all(rawPlaylists.map(async playlist => {
-    const cover = await $music.getCoverURLFromID(playlist.id);
-    return { ...playlist, cover: cover || '/cover.png' };
-  }));
-  playlists.value = playlistsWithCovers;
+  if ($music && $music.getPlaylists) {
+    try {
+      const playlistsData = await $music.getPlaylists();
+      playlists.value = playlistsData.map(playlist => ({
+        ...playlist,
+        cover: playlist.songs[0]?.cover || '/cover.png'
+      }));
+    } catch (error) {
+      console.error("Error fetching playlists:", error);
+    }
+  } else {
+    console.error("music or getPlaylists method is not available");
+  }
 }
 
 const filteredPlaylists = computed(() => {
   return playlists.value.filter(playlist =>
-    playlist.name && playlist.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    playlist.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
 onMounted(() => {
-  fetchPlaylists()
-}),
+  fetchPlaylists();
+});
 
-watch(() => $music.getSongsData().playlists, async () => {
+watch(() => $music?.getPlaylists, async () => {
   await fetchPlaylists();
 }, { deep: true });
 
@@ -81,13 +87,16 @@ async function createAndOpenPlaylist() {
   const newPlaylist: Playlist = {
     id: newPlaylistId,
     name: 'New Playlist',
-    date: new Date().toISOString(),
-    cover: '/cover.png',
+    date_created: new Date(),
     songs: []
   };
-  $music.createPlaylist(newPlaylist);
-  await fetchPlaylists();
-  router.push(`/${newPlaylistId}`);
+  try {
+    await $music.addPlaylist(newPlaylist);
+    await fetchPlaylists();
+    router.push(`/${newPlaylistId}`);
+  } catch (error) {
+    console.error("Error creating playlist:", error);
+  }
 }
 </script>
 

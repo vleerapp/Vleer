@@ -11,21 +11,24 @@
   },
   "devDependencies": {
     "@tauri-apps/api": "2.0.0-rc.4",
-    "nuxt": "3.13.0",
-    "sass": "1.77.8",
-    "vue": "3.4.38"
+    "@types/lodash-es": "^4.17.12",
+    "nuxt": "3.13.1",
+    "sass": "1.78.0",
+    "vue": "3.5.3"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.4",
-    "@tauri-apps/cli": "2.0.0-rc.10",
+    "@tauri-apps/cli": "2.0.0-rc.12",
     "@tauri-apps/plugin-dialog": "2.0.0-rc.1",
     "@tauri-apps/plugin-fs": "2.0.0-rc.2",
     "@tauri-apps/plugin-global-shortcut": "2.0.0-rc.1",
     "@tauri-apps/plugin-os": "2.0.0-rc.1",
     "@tauri-apps/plugin-sql": "2.0.0-rc.1",
     "@types/howler": "^2.2.11",
+    "@types/uuid": "^10.0.0",
     "axios": "1.7.7",
     "howler": "^2.2.4",
+    "lodash-es": "^4.17.21",
     "pinia": "^2.2.2",
     "uuid": "10.0.0",
     "vue-router": "^4.4.3"

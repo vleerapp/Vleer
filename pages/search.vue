@@ -31,9 +31,9 @@
             <p class="songs-title">Songs</p>
             <div class="content">
               <div @contextmenu.prevent="showContextMenu($event, song)"
-                v-for="(song, index) in searchResults.slice(1, 6)" :key="song.url.split('v=')[1]"
-                :class="['song', { playing: currentSong.id === song.url.split('v=')[1] }]"
-                @mouseover="hoveredSongId = song.url.split('v=')[1]" @mouseleave="hoveredSongId = ''">
+                v-for="(song, index) in searchResults.slice(1, 6)" :key="getSongId(song)"
+                :class="['song', { playing: isCurrentSong(song) }]"
+                @mouseover="hoveredSongId = getSongId(song)" @mouseleave="hoveredSongId = ''">
                 <div class="inline-songs">
                   <div @click="play(song)" class="cover">
                     <div class="playing-indicator">
@@ -42,7 +42,7 @@
                       <div class="bar"></div>
                       <div class="bar"></div>
                     </div>
-                    <svg v-show="hoveredSongId === song.url.split('v=')[1]" width="14px" height="14px"
+                    <svg v-show="hoveredSongId === getSongId(song)" width="14px" height="14px"
                       viewBox="0 0 14 14" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
                       xmlns="http://www.w3.org/2000/svg">
                       <g id="Group">
@@ -74,21 +74,30 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, computed, watch } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { BaseDirectory, writeFile, exists } from '@tauri-apps/plugin-fs';
 import axios from 'axios';
-import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
+import type { Song } from '~/types/types';
+import { debounce } from 'lodash-es';
 
-const { $music, $settings } = useNuxtApp();
+interface Response {
+  url: string;
+  title: string;
+  thumbnail: string;
+  uploaderName: string;
+  uploaderAvatar: string;
+  duration: number;
+  durationFormatted: string;
+}
+
+const { $player, $settings, $music } = useNuxtApp();
 
 const searchTerm = ref("");
-const searchResults = ref<MusicSearchResponseItem[]>([]);
-let searchTimeout: ReturnType<typeof setTimeout>;
+const searchResults = ref<Response[]>([]);
 const hoveredSongId = ref("");
 
-const currentSong = computed(() => {
-  return $music.getCurrentSong() || { id: '' };
-});
+const currentSong = computed(() => $player.currentSong);
 
 watch(currentSong, () => { });
 
@@ -98,19 +107,19 @@ async function searchSongs() {
     return;
   }
 
-  let apiURL = $settings.getApiURL()
-
   try {
-    const response = await fetch(`https://api.wireway.ch/wave/ytmusicsearch?q=${encodeURIComponent(searchTerm.value)}`);
+    const apiURL = await $settings.getApiUrl();
+
+    const response = await fetch(`${apiURL}/search?query=${encodeURIComponent(searchTerm.value)}`);
     const data = await response.json();
-    searchResults.value = data.items.map((item: any) => ({
-      url: `https://www.youtube.com/watch?v=${item.id}`,
-      title: item.title,
-      thumbnail: `https://api.wireway.ch/wave/thumbnail/${item.id}`,
-      uploaderName: item.uploaderName,
-      uploaderAvatar: '',
+    searchResults.value = Object.values(data).map((item: any) => ({
       duration: item.duration,
-      durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`
+      durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`,
+      thumbnail: item.thumbnailUrl,
+      title: item.title,
+      uploaderAvatar: '',
+      uploaderName: item.artist,
+      url: `https://www.youtube.com/watch?v=${item.id}`,
     }));
   } catch (error) {
     console.error("Failed to fetch songs:", error, searchTerm.value);
@@ -118,16 +127,7 @@ async function searchSongs() {
   }
 }
 
-function handleInput() {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    if (searchTerm.value.trim()) {
-      searchSongs();
-    }
-  }, 500);
-}
-
-async function addToLibrary(song: MusicSearchResponseItem) {
+async function addToLibrary(song: Response) {
   try {
     const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
 
@@ -137,19 +137,20 @@ async function addToLibrary(song: MusicSearchResponseItem) {
     }
 
     const videoId = match[1];
-    const isLossless = $settings.getLossless();
+    const isLossless = await $settings.getLossless();
     const mp3Exists = await exists(`Vleer/Songs/${videoId}.mp3`, { baseDir: BaseDirectory.Audio });
     const flacExists = await exists(`Vleer/Songs/${videoId}.flac`, { baseDir: BaseDirectory.Audio });
 
     if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
-      var songData: Song = {
+      const songData: Song = {
         id: videoId,
         title: song.title,
         artist: song.uploaderName,
-        length: song.duration,
+        duration: song.duration,
         cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
-        date_added: formatDate(new Date())
-      }
+        date_added: new Date(),
+        album: ''
+      };
 
       try {
         await invoke('download', { id: videoId, quality: isLossless ? 'lossless' : 'compressed' });
@@ -158,7 +159,7 @@ async function addToLibrary(song: MusicSearchResponseItem) {
           const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
           const data = new Uint8Array(response.data);
           await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-          await $music.addSongData(songData);
+          await $music.addSong(songData);
         }
       } catch (error) {
         console.error('Error downloading video:', error);
@@ -170,7 +171,7 @@ async function addToLibrary(song: MusicSearchResponseItem) {
   }
 }
 
-async function play(song: MusicSearchResponseItem) {
+async function play(song: Response) {
   try {
     const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
 
@@ -180,20 +181,28 @@ async function play(song: MusicSearchResponseItem) {
     }
 
     const videoId = match[1];
-    const isLossless = $settings.getLossless();
+    const isLossless = await $settings.getLossless();
     const mp3Exists = await exists(`Vleer/Songs/${videoId}.mp3`, { baseDir: BaseDirectory.Audio });
     const flacExists = await exists(`Vleer/Songs/${videoId}.flac`, { baseDir: BaseDirectory.Audio });
 
-    if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
-      var songData: Song = {
+    let dbSong = await $music.getSong(videoId);
+
+    if (!dbSong) {
+      const songData: Song = {
+        album: '',
+        artist: song.uploaderName,
+        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
+        date_added: new Date(),
+        duration: song.duration,
         id: videoId,
         title: song.title,
-        artist: song.uploaderName,
-        length: song.duration,
-        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
-        date_added: formatDate(new Date())
-      }
+      };
 
+      await $music.addSong(songData);
+      dbSong = songData;
+    }
+
+    if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
       try {
         await invoke('download', { id: videoId, quality: isLossless ? 'lossless' : 'compressed' });
 
@@ -201,7 +210,6 @@ async function play(song: MusicSearchResponseItem) {
           const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
           const data = new Uint8Array(response.data);
           await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-          await $music.addSongData(songData);
         }
       } catch (error) {
         console.error('Error downloading video:', error);
@@ -209,21 +217,11 @@ async function play(song: MusicSearchResponseItem) {
       }
     }
 
-    await $music.setSong(videoId);
-    $music.play();
+    await $player.loadSong(dbSong);
+    $player.play();
   } catch (error) {
     console.error("Failed to handle song play:", error);
   }
-}
-
-const formatDate = (date: Date) => {
-  let year = date.getFullYear();
-  let month = (date.getMonth() + 1).toString().padStart(2, '0');
-  let day = date.getDate().toString().padStart(2, '0');
-  let hours = date.getHours().toString().padStart(2, '0');
-  let minutes = date.getMinutes().toString().padStart(2, '0');
-  let seconds = date.getSeconds().toString().padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function truncate(text: string) {
@@ -256,14 +254,12 @@ function truncateArtist(text: string) {
   return text;
 }
 
-///////////////////////////
-
 const showMenu = ref(false);
 const menuX = ref(0);
 const menuY = ref(0);
 const menuItems = ref<{ label: string; action: () => void }[]>([]);
 
-function showContextMenu(event: MouseEvent, song: MusicSearchResponseItem) {
+function showContextMenu(event: MouseEvent, song: Response) {
   event.preventDefault();
   menuX.value = event.clientX;
   menuY.value = event.clientY;
@@ -286,6 +282,20 @@ function closeContextMenu() {
 onMounted(() => {
   window.addEventListener('click', closeContextMenu);
 });
+
+const handleInput = debounce(() => {
+  searchSongs();
+}, 300);
+
+function getSongId(song: Response): string {
+  const match = song.url.match(/(?:\/watch\?v=)([^&]+)/);
+  return match && match[1] ? match[1] : '';
+}
+
+function isCurrentSong(song: Response): boolean {
+  const songId = getSongId(song);
+  return !!currentSong.value && currentSong.value.id === songId;
+}
 </script>
 
 <style scoped lang="scss">

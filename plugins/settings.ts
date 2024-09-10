@@ -1,84 +1,169 @@
-import { useSettingsStore } from "~/stores/settings";
-import type { EQSettings } from "~/types/types";
+import { getDb, initDb } from '~/services/db'
+import type { Settings, Song } from '~/types/types'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const store = useSettingsStore();
-  const { $music } = useNuxtApp();
+  await initDb()
+  const db = getDb()
 
-  await store.getSettings();
+  const defaultSettings: Settings = {
+    api_url: "https://api.vleer.app",
+    current_song: null,
+    eq: {
+      "1000": "0.0",
+      "125": "0.0",
+      "16000": "0.0",
+      "2000": "0.0",
+      "250": "0.0",
+      "32": "0.0",
+      "4000": "0.0",
+      "500": "0.0",
+      "64": "0.0",
+      "8000": "0.0",
+    },
+    lossless: false,
+    loop: false,
+    muted: false,
+    queue: [],
+    shuffle: false,
+    streaming: true,
+    volume: 0.5,
+  }
+
+  let settingsInitialized = false
+  let cachedSettings: Settings | null = null
+
+  async function initializeSettings() {
+    for (const [key, value] of Object.entries(defaultSettings)) {
+      const result = await db.select<Array<{ key: string; value: string }>>('SELECT * FROM settings WHERE key = ?', [key])
+      if (result.length === 0) {
+        await db.execute('INSERT INTO settings (key, value) VALUES (?, ?)', [
+          key,
+          typeof value === 'object' ? JSON.stringify(value) : value.toString()
+        ])
+      }
+    }
+    settingsInitialized = true
+    console.log('Settings initialized')
+    
+    cachedSettings = await fetchSettingsFromDb()
+  }
+
+  async function fetchSettingsFromDb(): Promise<Settings> {
+    const result = await db.select<Array<{ key: string; value: string }>>('SELECT * FROM settings')
+    const settings: Partial<Settings> = {}
+
+    for (const row of result) {
+      let value: any = row.value
+      if (typeof value === 'string') {
+        if (value.startsWith('{') || value.startsWith('[')) {
+          value = JSON.parse(value)
+        } else if (value === 'true' || value === 'false') {
+          value = value === 'true'
+        } else if (!isNaN(Number(value))) {
+          value = Number(value)
+        }
+      }
+      settings[row.key as keyof Settings] = value
+    }
+
+    return { ...defaultSettings, ...settings }
+  }
+
+  async function getSettings(): Promise<Settings> {
+    if (!settingsInitialized) {
+      await initializeSettings()
+    }
+
+    if (cachedSettings) {
+      return cachedSettings
+    }
+
+    cachedSettings = await fetchSettingsFromDb()
+    return cachedSettings
+  }
+
+  async function updateSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
+    const stringValue = typeof value === 'object' ? JSON.stringify(value) : value.toString()
+    await db.execute('UPDATE settings SET value = ? WHERE key = ?', [stringValue, key])
+    cachedSettings = null
+  }
 
   const settings = {
-    async init() {
-      if (store.settings.currentSong != "") {
-        await $music.setSong(store.settings.currentSong);
-      }
+    async getApiUrl(): Promise<string> {
+      const settings = await getSettings()
+      return settings.api_url
     },
-    getVolume(): number {
-      return store.getVolume()
+    async getCurrentSong(): Promise<Song | null> {
+      const settings = await getSettings()
+      return settings.current_song
     },
-    setVolume(volume: number) {
-      store.setVolume(volume)
+    async getEq(): Promise<{ [key: string]: string }> {
+      const settings = await getSettings()
+      return settings.eq
     },
-    getEq(): EQSettings {
-      return store.getEq();
+    async getLossless(): Promise<boolean> {
+      const settings = await getSettings()
+      return Boolean(settings.lossless)
     },
-    setEq(eq: EQSettings) {
-      store.setEq(eq)
+    async getLoop(): Promise<boolean> {
+      const settings = await getSettings()
+      return Boolean(settings.loop)
     },
-    getCurrentSong(): string {
-      return store.getCurrentSong();
+    async getMuted(): Promise<boolean> {
+      const settings = await getSettings()
+      return Boolean(settings.muted)
     },
-    setCurrentSong(id: string) {
-      store.setCurrentSong(id)
+    async getQueue(): Promise<Song[]> {
+      const settings = await getSettings()
+      return settings.queue
     },
-    setApiURL(url: string) {
-      store.setApiURL(url)
+    async getShuffle(): Promise<boolean> {
+      const settings = await getSettings()
+      return Boolean(settings.shuffle)
     },
-    getApiURL() {
-      if (!store.getApiURL()) {
-        return "https://pipedapi.wireway.ch";
-      }
-      return store.getApiURL();
+    async getStreaming(): Promise<boolean> {
+      const settings = await getSettings()
+      return Boolean(settings.streaming)
     },
-    getLossless() {
-      return store.getLossless();
+    async getVolume(): Promise<number> {
+      const settings = await getSettings()
+      return Number(settings.volume)
     },
-    setLossless(lossless: boolean) {
-      store.setLossless(lossless)
+    async setApiUrl(api_url: string) {
+      await updateSetting('api_url', api_url)
     },
-    async searchApiURL() {
-      try {
-        const response = await fetch('https://piped-instances.kavin.rocks/');
-        const instances = await response.json();
-        const urls = instances.map((instance: { api_url: string }) => instance.api_url);
-
-        const results = await window.__TAURI__.core.invoke('ping_urls', { urls });
-        this.setApiURL(results[0][0])
-        return results;
-      } catch (error) {
-        console.error('Failed to fetch API URLs:', error);
-        return [];
-      }
+    async setCurrentSong(current_song: Song | null) {
+      await updateSetting('current_song', current_song)
     },
-    async getApiURLs() {
-      try {
-        const response = await fetch('https://piped-instances.kavin.rocks/');
-        const instances = await response.json();
-        const urls = instances.map((instance: { api_url: string }) => instance.api_url);
-        return urls;
-      } catch (error) {
-        console.error('Failed to fetch API URLs:', error);
-        return [];
-      }
+    async setEq(eq: { [key: string]: string }) {
+      await updateSetting('eq', eq)
     },
-    async saveSettings(){
-      await store.saveSettings();
-    }
-  };
+    async setLossless(lossless: boolean) {
+      await updateSetting('lossless', lossless)
+    },
+    async setLoop(loop: boolean) {
+      await updateSetting('loop', loop)
+    },
+    async setMuted(muted: boolean) {
+      await updateSetting('muted', muted)
+    },
+    async setQueue(queue: Song[]) {
+      await updateSetting('queue', queue)
+    },
+    async setShuffle(shuffle: boolean) {
+      await updateSetting('shuffle', shuffle)
+    },
+    async setStreaming(streaming: boolean) {
+      await updateSetting('streaming', streaming)
+    },
+    async setVolume(volume: number) {
+      await updateSetting('volume', Math.max(0, Math.min(1, volume)))
+    },
+  }
 
   return {
     provide: {
       settings,
-    },
-  };
-});
+    }
+  }
+})

@@ -59,33 +59,55 @@
 </template>
 
 <script lang="ts" setup>
-import { type Song } from "~/types/types";
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { useNuxtApp } from "#app";
+import type { Song } from "~/types/types";
 
-const { $music } = useNuxtApp();
+const { $player, $settings, $music } = useNuxtApp();
 
 const searchQuery = ref("");
-const songs = $music.getSongs();
+const songs = ref<Song[]>([]);
 const hoveredSongId = ref("");
+
+const fetchSongs = async () => {
+  try {
+    songs.value = await $music.getSongs();
+  } catch (error) {
+    console.error("Error fetching songs:", error);
+  }
+};
+
+onMounted(fetchSongs);
 
 const filteredSongs = computed<Song[]>(() => {
   if (!searchQuery.value.trim()) {
-    return songs.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
+    return songs.value.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
   }
-  return songs.filter(song =>
+  return songs.value.filter(song =>
     song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
   ).sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
 });
 
 async function play(id: string, index: number) {
-  console.log('Attempting to play song:', id);
-  const queueIds = filteredSongs.value.slice(index).map(song => song.id);
-  await $music.setQueue(queueIds);
-  await $music.setSong(id);
-  $music.play();
-  console.log('Play function completed');
+  const queueSongs = filteredSongs.value.slice(index);
+  $settings.setQueue(queueSongs);
+  const song = await $music.getSong(id);
+  if (song) {
+    await $player.loadSong(song);
+    $player.play();
+  }
 }
+
+const currentSong = computed(() => $player.currentSong);
+
+watch(() => $player.paused, (isPaused) => {
+  if (!isPaused) {
+    visualizer.start();
+  } else {
+    visualizer.stop();
+  }
+});
 
 function truncate(text: string, length: number = 45) {
   return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
@@ -105,11 +127,23 @@ function formatDuration(duration: number) {
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
-const currentSong = computed(() => {
-  return $music.getCurrentSong() || { id: 0 };
+const visualizer = startVisualizer();
+
+watch(() => $player.paused, (isPaused) => {
+  if (!isPaused) {
+    visualizer.start();
+  } else {
+    visualizer.stop();
+  }
 });
 
-watch(currentSong, () => {});
+watch(() => $player.currentSong, () => {
+  if (!$player.paused) {
+    visualizer.start();
+  } else {
+    visualizer.stop();
+  }
+});
 
 function startVisualizer() {
   let animationFrameId: number;
@@ -158,19 +192,6 @@ function startVisualizer() {
     stop: () => toggleVisualizer(false)
   };
 }
-
-const visualizer = startVisualizer();
-
-watch(() => $music.isPlaying(), (isPlaying) => {
-  console.log('Music playing state changed:', isPlaying);
-  if (isPlaying) {
-    console.log('Starting visualizer');
-    visualizer.start();
-  } else {
-    console.log('Stopping visualizer');
-    visualizer.stop();
-  }
-});
 </script>
 
 <style scoped lang="scss">
