@@ -1,5 +1,6 @@
 import { getDb, initDb } from '~/services/db'
 import type { History, Playlist, Song } from '~/types/types'
+import { BaseDirectory, writeFile, readFile } from '@tauri-apps/plugin-fs'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   await initDb()
@@ -19,6 +20,26 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             INSERT INTO songs (id, album, artist, cover, date_added, duration, title)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
           `, [song.id, song.album, song.artist, song.cover, song.date_added.toISOString(), song.duration, song.title])
+
+          const { $settings } = useNuxtApp()
+          const apiUrl = await $settings.getApiUrl()
+          if (song.cover && apiUrl) {
+            try {
+              const coverResponse = await fetch(`${apiUrl}/thumbnail?id=${song.id}`);
+              if (coverResponse.ok) {
+                const coverBlob = await coverResponse.blob();
+                const coverArrayBuffer = await coverBlob.arrayBuffer();
+                const coverUint8Array = new Uint8Array(coverArrayBuffer);
+
+                writeFile(`Vleer/Covers/${song.id}.png`, coverUint8Array, { baseDir: BaseDirectory.Audio });
+              } else {
+                console.error('Failed to fetch cover image:', coverResponse.statusText);
+              }
+            } catch (error) {
+              console.error('Error saving cover image:', error);
+            }
+          }
+
         },
         async addSongToHistory(song: Song) {
           const history: History = {
@@ -83,7 +104,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             return {
               album: row.album,
               artist: row.artist,
-              cover: row.cover,
+              cover: await this.getSongCover(id),
               date_added: new Date(row.date_added),
               duration: row.duration,
               id: row.id,
@@ -93,16 +114,16 @@ export default defineNuxtPlugin(async (nuxtApp) => {
           return null
         },
         async getSongs(): Promise<Song[]> {
-          const rows: Song[]  = await db.select('SELECT * FROM songs')
-          return rows.map(row => ({
+          const rows: Song[] = await db.select('SELECT * FROM songs')
+          return Promise.all(rows.map(async row => ({
             album: row.album,
             artist: row.artist,
-            cover: row.cover,
+            cover: await this.getSongCover(row.id),
             date_added: new Date(row.date_added),
             duration: row.duration,
             id: row.id,
             title: row.title
-          }))
+          })))
         },
         async removeSong(songId: string) {
           await db.execute('DELETE FROM songs WHERE id = $1', [songId])
@@ -118,6 +139,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
               [JSON.stringify(playlist.songs), playlistId])
           }
         },
+        async getSongCover(id: string): Promise<string> {
+          const coverData = await readFile(`Vleer/Covers/${id}.png`, { baseDir: BaseDirectory.Audio });
+          const blob = new Blob([coverData], { type: 'image/png' });
+          return URL.createObjectURL(blob);
+        }
       }
     }
   }

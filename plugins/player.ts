@@ -3,6 +3,7 @@ import { BaseDirectory } from '@tauri-apps/api/path';
 import { defineNuxtPlugin } from 'nuxt/app';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
 import type { Song } from '~/types/types';
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -62,12 +63,20 @@ export default defineNuxtPlugin((nuxtApp) => {
         onloaderror: (id, error) => {
           console.error('Error loading audio:', error);
         },
-        onpause: () => {
+        onpause: async () => {
           this.paused.value = true;
+          await invoke('clear_activity');
         },
-        onplay: () => {
+        onplay: async () => {
           this.paused.value = false;
           this.updateProgress();
+          await invoke('update_activity', {
+            state: this.currentSong.value?.title,
+            details: `by ${this.currentSong.value?.artist}`,
+            largeImage: 'https://api.vleer.app/thumbnail?id=' + this.currentSong.value?.id,
+            largeImageText: this.currentSong.value?.title,
+            youtubeUrl: 'https://www.youtube.com/watch?v=' + this.currentSong.value?.id
+          });
         },
         onseek: () => {
           this.updateProgress();

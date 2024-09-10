@@ -147,7 +147,7 @@ async function addToLibrary(song: Response) {
         title: song.title,
         artist: song.uploaderName,
         duration: song.duration,
-        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
+        cover: `/thumbnail?id=${videoId}`,
         date_added: new Date(),
         album: ''
       };
@@ -191,7 +191,7 @@ async function play(song: Response) {
       const songData: Song = {
         album: '',
         artist: song.uploaderName,
-        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
+        cover: `/thumbnail?id=${videoId}`,
         date_added: new Date(),
         duration: song.duration,
         id: videoId,
@@ -294,7 +294,7 @@ function getSongId(song: Response): string {
 
 function isCurrentSong(song: Response): boolean {
   const songId = getSongId(song);
-  return !!currentSong.value && currentSong.value.id === songId;
+  return !!currentSong.value && currentSong.value.value?.id === songId;
 }
 </script>
 

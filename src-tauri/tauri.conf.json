@@ -25,7 +25,10 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "default-src": ["'self'"],
+        "connect-src": ["'self'", "https://api.vleer.app", "https://*.vleer.app"]
+      }
     },
     "withGlobalTauri": true
   },

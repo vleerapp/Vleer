@@ -39,7 +39,7 @@
             <p class="artist">{{ truncate(song.artist) }}</p>
           </div>
           <p class="date">{{ formatDate(song.date_added) }}</p>
-          <p class="lenght">{{ formatDuration(song.length) }}</p>
+          <p class="lenght">{{ formatDuration(song.duration) }}</p>
         </div>
         <NuxtLink to="/search" class="add">
           <div class="cover">
@@ -77,7 +77,9 @@ const fetchSongs = async () => {
   }
 };
 
-onMounted(fetchSongs);
+onMounted(async () => {
+  await fetchSongs();
+});
 
 const filteredSongs = computed<Song[]>(() => {
   if (!searchQuery.value.trim()) {
@@ -113,12 +115,12 @@ function truncate(text: string, length: number = 45) {
   return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
 }
 
-function formatDate(dateString: string) {
+function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
-  return `${day < 10 ? '0' : ''}${day}.${month < 10 ? '0' : ''}${month}.${year}`;
+  return `${day}.${month}.${year}`;
 }
 
 function formatDuration(duration: number) {
