@@ -7,6 +7,8 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
 <br>
 <a href="https://vleer.app"><strong>vleer.app »</strong></a>
 
+<ins>**This project is not yet stable!**</ins>
+
 <table>
   <tbody>
     <tr>
