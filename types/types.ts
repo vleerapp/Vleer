@@ -1,11 +1,11 @@
 export interface Song {
+  id: string;
   title: string;
   artist: string;
   album: string;
   cover: string;
   date_added: Date;
   duration: number;
-  id: string;
 }
 
 export interface History {

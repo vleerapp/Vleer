@@ -27,10 +27,9 @@
 }
 
 .playlists .cards {
-  gap: 16px;
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-template-rows: repeat(2, 64px);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
 
   .playlist {
     background-color: v.$element;
@@ -39,6 +38,19 @@
     gap: 14px;
     align-items: center;
     position: relative;
+
+    .cover {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+    }
+
+    .name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .play {
       opacity: 0;
@@ -54,43 +66,38 @@
       transition: opacity .3s;
     }
 
-    .play:hover{
+    .play:hover {
       background-color: v.$accent_hover;
     }
   }
   
-  .playlist:hover .play{
+  .playlist:hover .play {
     opacity: 1;
   }
 }
-
 
 .recently-played {
   margin-top: 32px;
 
   .cards {
-    width: 100%;
-    padding-bottom: 10px;
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 16px;
+    padding-bottom: 10px;
 
     .song {
       display: flex;
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      width: 100%;
 
       .info {
         width: 100%;
 
         p {
-          width: 140px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 100%;
         }
 
         .artist {
@@ -101,6 +108,7 @@
       .cover {
         width: 100%;
         aspect-ratio: 1 / 1;
+        object-fit: cover;
       }
     }
   }

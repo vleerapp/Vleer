@@ -12,12 +12,11 @@
 
       <div class="playlists">
         <div class="title">Playlists</div>
-        <div class="cards" ref="playlist_cards">
+        <div class="cards">
           <template v-for="n in 6" :key="n">
             <div v-if="sortedPlaylists && sortedPlaylists.length > n - 1" class="playlist">
               <NuxtLink :to="'/' + sortedPlaylists[n - 1].id">
-                <img :src="sortedPlaylists[n - 1].songs[0].cover || '/cover.png'" height="64px" alt="playlist cover"
-                  class="cover">
+                <img :src="sortedPlaylists[n - 1].songs[0].cover || '/cover.png'" alt="playlist cover" class="cover">
                 <p class="name">{{ truncate(sortedPlaylists[n - 1].name) }}</p>
               </NuxtLink>
               <button class="play" @click="playPlaylist(sortedPlaylists[n - 1].id)">
@@ -30,7 +29,7 @@
               </button>
             </div>
             <div v-else class="playlist placeholder">
-              <img src="/cover.png" height="64px" alt="loading" class="cover">
+              <img src="/cover.png" alt="loading" class="cover">
               <p class="name">Loading...</p>
               <button class="play">
                 <svg width="10.5px" height="14px" viewBox="0 0 10.5 14" version="1.1"
@@ -47,7 +46,7 @@
 
       <div class="recently-played">
         <div class="title">Recently played</div>
-        <div class="cards" ref="song_cards">
+        <div class="cards">
           <div v-for="song in sortedRecentlyPlayed" :key="song.id" @click="playSong(song.id)" class="song">
             <img :src="song.cover || '/cover.png'" :alt="song.title" class="cover" />
             <div class="info">
@@ -62,18 +61,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import type { Playlist, Song } from '~/types/types';
 
 const { $music, $settings, $player } = useNuxtApp();
-
-const playlist_cards = ref<HTMLElement | null>(null);
-const song_cards = ref<HTMLElement | null>(null);
-const maxCards = ref(5);
-const cardsWidth = ref(0);
-const cardMinWidth = 180;
-const cardMaxWidth = 238;
-const cardGap = 16;
 
 const playlists = ref<Playlist[]>([]);
 const sortedRecentlyPlayed = ref<Song[]>([]);
@@ -81,29 +72,6 @@ const sortedRecentlyPlayed = ref<Song[]>([]);
 const sortedPlaylists = computed(() => {
   return playlists.value.sort((a, b) => b.date_created.getTime() - a.date_created.getTime());
 });
-
-function updateWidthSongs() {
-  if (song_cards.value && song_cards.value.clientWidth) {
-    const clientWidth = song_cards.value.clientWidth;
-    cardsWidth.value = clientWidth;
-    updateMaxCardsDirect(clientWidth);
-  }
-}
-
-function updateMaxCardsDirect(clientWidth: number) {
-  if (clientWidth > 0) {
-    const maxPossible = Math.floor(clientWidth / (cardMinWidth + cardGap));
-    maxCards.value = maxPossible;
-  }
-}
-
-function updateWidthPlaylists() {
-  if (playlist_cards.value) {
-    const width = playlist_cards.value.clientWidth;
-    const final = Math.round((width - 32) / 3);
-    playlist_cards.value.style.gridTemplateColumns = `repeat(3, ${final}px)`;
-  }
-}
 
 async function playSong(id: string) {
   const song = await $music.getSong(id);
@@ -126,27 +94,13 @@ function truncate(text: string, length = 24) {
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 }
 
-watch([maxCards], async () => {
-  const history = await $music.getHistory();
-  sortedRecentlyPlayed.value = history
-    .sort((a, b) => b.date_played.getTime() - a.date_played.getTime())
-    .slice(0, maxCards.value)
-    .map(item => item.song);
-});
-
 onMounted(async () => {
-  window.addEventListener('resize', updateWidthSongs);
-  window.addEventListener('resize', updateWidthPlaylists);
-
-  updateWidthSongs();
-  updateWidthPlaylists();
-
   playlists.value = await $music.getPlaylists();
 
   const history = await $music.getHistory();
   sortedRecentlyPlayed.value = history
     .sort((a, b) => b.date_played.getTime() - a.date_played.getTime())
-    .slice(0, maxCards.value)
+    .slice(0, 5)
     .map(item => item.song);
 });
 </script>

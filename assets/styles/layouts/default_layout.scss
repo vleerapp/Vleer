@@ -16,6 +16,7 @@
     color: v.$text-muted;
     user-select: none;
     transition: color v.$transition-time;
+    z-index: 10;
   }
 
   &:hover {
@@ -36,28 +37,28 @@
   padding-top: v.$titlebar-height + 5px;
   position: relative;
 
-  .pages {
+  .navbar {
     position: fixed;
-    top: v.$titlebar-height + 5px;
-    left: v.$spacing;
-    width: v.$sidebar-width;
-    height: 148px;
+    top: v.$titlebar-height;
+    left: v.$spacing * 2 + v.$sidebar-width;
+    width: calc(100% - (v.$spacing * 3 + v.$sidebar-width));
+    height: 50px;
   }
 
   .library {
     position: fixed;
-    top: v.$titlebar-height + 5px + 148px + v.$spacing;
+    top: v.$titlebar-height;
     left: v.$spacing;
     width: v.$sidebar-width;
-    height: calc(100vh - (v.$titlebar-height + 5px + (v.$spacing * 3) + v.$playersize + 148px));
+    height: calc(100vh - (v.$titlebar-height + (v.$spacing * 2) + v.$playersize));
   }
 
   .main {
     position: fixed;
-    top: v.$titlebar-height + 5px;
+    top: v.$titlebar-height + 50px + v.$spacing;
     left: v.$sidebar-width + (v.$spacing * 2);
     width: calc(100vw - (v.$spacing * 3 + v.$sidebar-width));
-    height: calc(100vh - (v.$titlebar-height + 5px + (v.$spacing * 2) + v.$playersize));
+    height: calc(100vh - (v.$titlebar-height + 50px + (v.$spacing * 3) + v.$playersize));
   }
 
   .player {

@@ -1,8 +1,7 @@
 @use '~/assets/styles/variables' as v;
 
 .element {
-  padding: 24px !important;
-  padding-bottom: 0px !important;
+  padding: 0px !important;
 }
 
 .search-container {
@@ -34,14 +33,14 @@
 .search {
   display: flex;
   flex-direction: column;
-  gap: v.$spacing;
   overflow: auto;
   width: 100%;
   height: 100%;
+  padding: 24px;
+  font-size: 14px !important;
 }
 
 .results {
-  margin-top: 48px;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -54,6 +53,7 @@
 
 .top-result {
   position: relative;
+  width: 220px;
 
   p {
     font-size: 14px;
@@ -63,21 +63,36 @@
   .content {
     padding: 16px;
     background-color: v.$element;
-    width: min-content;
     display: flex;
     flex-direction: column;
     font-size: 14px;
     gap: 14px;
-    width: 332px;
+    width: 100%;
     height: 216px;
 
     .cover {
       width: 134px;
     }
 
+    .title,
+    .artist {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: calc(100% - 16px - 36px);
+    }
+
     .artist {
       color: v.$text;
     }
+  }
+
+  .title,
+  .artist {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
   }
 
   .play {
@@ -122,10 +137,13 @@
       align-items: center;
       justify-content: space-between;
       font-size: 14px;
+      width: 100%;
 
       .inline-songs {
         display: flex;
-        align-self: left;
+        align-items: center;
+        flex: 1;
+        min-width: 0; // Allow flexbox to shrink below content size
       }
 
       .cover,
@@ -147,15 +165,23 @@
       }
 
       .titles {
+        flex: 1;
+        min-width: 0;
         align-items: center;
         display: flex;
         gap: 14px;
         margin-left: 8px;
 
+        .title,
+        .artist {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
 
       .artist,
-      .lenght {
+      .length {
         color: v.$text;
       }
     }
@@ -188,4 +214,86 @@
       }
     }
   }
+}
+
+.album-grid,
+.playlist-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: 100%;
+  padding-bottom: 10px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+$width: calc((100vw - (v.$spacing * 3) - (24px * 4) - v.$sidebar-width) / 8);
+
+.album-item,
+.playlist-item {
+  width: $width;
+}
+
+.album-artist,
+.playlist-owner {
+  color: v.$text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-title,
+.playlist-title {
+  margin-top: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-cover,
+.playlist-cover {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  width: $width;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.scroll-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.scroll-button {
+  background-color: v.$element;
+  border: none;
+  color: v.$text;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: lighten(v.$element, 10%);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.no-results,
+.empty-state {
+  color: v.$text;
 }

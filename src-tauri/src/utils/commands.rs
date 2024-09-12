@@ -9,10 +9,10 @@ use std::fs::File;
 use std::io::copy;
 
 #[tauri::command]
-pub async fn download(id: String, quality: String) -> TauriResult<()> {
+pub async fn download(id: String, quality: String, url: String) -> TauriResult<()> {
     let client = Client::new();
     let response = client
-        .get(format!("https://api.vleer.app/download?id={}&quality={}", id, quality))
+        .get(format!("{}/download?id={}&quality={}", url, id, quality))
         .send()
         .await
         .map_err(|e| anyhow!(e.to_string()))?;

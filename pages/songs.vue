@@ -4,7 +4,7 @@
     <div class="songs">
       <div class="search-container">
         <IconsSearch />
-        <input class="input" placeholder="Search" spellcheck="false" v-model="searchQuery" />
+        <input class="input" placeholder="Search Library" spellcheck="false" v-model="searchQuery" />
       </div>
       <div class="songs-info">
         <div class="cover">#</div>
