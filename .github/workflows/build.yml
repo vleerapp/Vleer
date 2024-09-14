@@ -52,7 +52,9 @@ jobs:
           workspaces: "./src-tauri -> target"
       - uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
+          path: |
+            ~/.pnpm-store
+            **/node_modules
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
@@ -125,7 +127,9 @@ jobs:
           workspaces: "./src-tauri -> target"
       - uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
+          path: |
+            ~/.pnpm-store
+            **/node_modules
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
@@ -144,7 +148,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: updater-files-windows
-          path: | 
+          path: |
             src-tauri/target/release/bundle/msi/*.msi
             src-tauri/target/release/bundle/msi/*.msi.sig
 
@@ -164,7 +168,9 @@ jobs:
           workspaces: "./src-tauri -> target"
       - uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
+          path: |
+            ~/.pnpm-store
+            **/node_modules
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
