@@ -14,17 +14,17 @@
         </div>
       </div>
       <div class="controls">
-        <IconsShuffle />
-        <IconsRewind @click="rewind" />
-        <IconsPlay v-if="paused" @click="playPause" />
-        <IconsPause v-if="!paused" @click="playPause" />
-        <IconsSkip @click="skip" />
-        <IconsRepeat @click="toggleLoop" :class="{ 'active': looping }" />
+        <IconsPlayerShuffle />
+        <IconsPlayerRewind @click="rewind" />
+        <IconsPlayerPlay v-if="paused" @click="playPause" />
+        <IconsPlayerPause v-if="!paused" @click="playPause" />
+        <IconsPlayerSkip @click="skip" />
+        <IconsPlayerRepeat @click="toggleLoop" :class="{ 'active': looping }" />
       </div>
       <div class="right-controls">
-        <IconsVolumeLoud @click="mute" v-if="volume > 50" />
-        <IconsVolumeMid @click="mute" v-else-if="volume > 0" />
-        <IconsVolumeMute @click="mute" v-else />
+        <IconsPlayerVolumeLoud @click="mute" v-if="volume > 50" />
+        <IconsPlayerVolumeMid @click="mute" v-else-if="volume > 0" />
+        <IconsPlayerVolumeMute @click="mute" v-else />
 
         <div class="bar">
           <input class="range" @input="setVolume" v-model="volume" step="1" min="0" max="100" type="range">

@@ -21,16 +21,15 @@ fn main() {
                 .with_flags(Flags::all().difference(Flags::CONTEXT_MENU))
                 .build(),
         )
-        .plugin(
-            tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:data.db", db::migration::load_migrations())
-                .build(),
-        )
+        // .plugin(
+        //     tauri_plugin_sql::Builder::default()
+        //         .add_migrations("sqlite:data.db", db::migration::load_migrations())
+        //         .build(),
+        // )
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             let app_handle = app.handle();
 
-            
             let config_path = utils::commands::get_config_path();
             tauri::async_runtime::spawn(async move {
                 if let Err(e) = db::migration::insert_data(config_path).await {
@@ -38,7 +37,6 @@ fn main() {
                 }
             });
 
-            
             let update_handle = app_handle.clone();
             tauri::async_runtime::spawn(async move {
                 utils::updater::check_for_updates(update_handle).await;

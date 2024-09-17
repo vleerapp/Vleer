@@ -15,8 +15,8 @@ export interface History {
 }
 
 export interface Playlist {
-  date_created: Date;
   id: string;
+  date_created: Date;
   name: string;
   songs: Song[];
 }

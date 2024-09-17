@@ -7,13 +7,11 @@
 
 <script lang="ts" setup>
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut';
-import { initDb } from '~/services/db';
 import initializeSettings from '~/plugins/settings';
 
 const { $player, $settings } = useNuxtApp();
 
 onMounted(async () => {
-  await initDb();
   await initializeSettings(useNuxtApp())
 
   document.addEventListener('keydown', handleKeyDown);

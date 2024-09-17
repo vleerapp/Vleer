@@ -1,9 +1,8 @@
-import { getDb, initDb } from '~/services/db'
+import { getDb, saveDb } from '~/services/db'
 import type { Settings, Song } from '~/types/types'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  await initDb()
-  const db = getDb()
+  const db = await getDb()
 
   const defaultSettings: Settings = {
     api_url: "https://api.vleer.app",
@@ -20,7 +19,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       "64": "0.0",
       "8000": "0.0",
     },
-    lossless: false,
+    lossless: true,
     loop: false,
     muted: false,
     queue: [],
@@ -29,105 +28,58 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     volume: 0.5,
   }
 
-  let settingsInitialized = false
-  let cachedSettings: Settings | null = null
-
-  async function initializeSettings() {
-    for (const [key, value] of Object.entries(defaultSettings)) {
-      const result = await db.select<Array<{ key: string; value: string }>>('SELECT * FROM settings WHERE key = ?', [key])
-      if (result.length === 0) {
-        await db.execute('INSERT INTO settings (key, value) VALUES (?, ?)', [
-          key,
-          typeof value === 'object' ? JSON.stringify(value) : value.toString()
-        ])
-      }
-    }
-    settingsInitialized = true
-    console.log('Settings initialized')
-    
-    cachedSettings = await fetchSettingsFromDb()
+  const settingsCollection = db.getCollection('settings')
+  if (settingsCollection.count() === 0) {
+    settingsCollection.insert(defaultSettings)
+    await saveDb()
   }
 
-  async function fetchSettingsFromDb(): Promise<Settings> {
-    const result = await db.select<Array<{ key: string; value: string }>>('SELECT * FROM settings')
-    const settings: Partial<Settings> = {}
-
-    for (const row of result) {
-      let value: any = row.value
-      if (typeof value === 'string') {
-        if (value.startsWith('{') || value.startsWith('[')) {
-          value = JSON.parse(value)
-        } else if (value === 'true' || value === 'false') {
-          value = value === 'true'
-        } else if (!isNaN(Number(value))) {
-          value = Number(value)
-        }
-      }
-      settings[row.key as keyof Settings] = value
+  function getSettings(): Settings {
+    const existingSettings = settingsCollection.findOne({}) as Settings
+    if (existingSettings) {
+      return { ...defaultSettings, ...existingSettings }
     }
-
-    return { ...defaultSettings, ...settings }
-  }
-
-  async function getSettings(): Promise<Settings> {
-    if (!settingsInitialized) {
-      await initializeSettings()
-    }
-
-    if (cachedSettings) {
-      return cachedSettings
-    }
-
-    cachedSettings = await fetchSettingsFromDb()
-    return cachedSettings
+    return defaultSettings
   }
 
   async function updateSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
-    const stringValue = typeof value === 'object' ? JSON.stringify(value) : value.toString()
-    await db.execute('UPDATE settings SET value = ? WHERE key = ?', [stringValue, key])
-    cachedSettings = null
+    const settingsCollection = db.getCollection('settings');
+    const settings = getSettings(); // Use getSettings to ensure we have all fields
+    settings[key] = value;
+    settingsCollection.update(settings);
+    await saveDb();
   }
 
   const settings = {
-    async getApiUrl(): Promise<string> {
-      const settings = await getSettings()
-      return settings.api_url
+    getApiUrl(): string {
+      return getSettings().api_url
     },
-    async getCurrentSong(): Promise<Song | null> {
-      const settings = await getSettings()
-      return settings.current_song
+    getCurrentSong(): Song | null {
+      return getSettings().current_song
     },
-    async getEq(): Promise<{ [key: string]: string }> {
-      const settings = await getSettings()
-      return settings.eq
+    getEq(): { [key: string]: string } {
+      return getSettings().eq
     },
-    async getLossless(): Promise<boolean> {
-      const settings = await getSettings()
-      return Boolean(settings.lossless)
+    getLossless(): boolean {
+      return Boolean(getSettings().lossless)
     },
-    async getLoop(): Promise<boolean> {
-      const settings = await getSettings()
-      return Boolean(settings.loop)
+    getLoop(): boolean {
+      return Boolean(getSettings().loop)
     },
-    async getMuted(): Promise<boolean> {
-      const settings = await getSettings()
-      return Boolean(settings.muted)
+    getMuted(): boolean {
+      return Boolean(getSettings().muted)
     },
-    async getQueue(): Promise<Song[]> {
-      const settings = await getSettings()
-      return settings.queue
+    getQueue(): Song[] {
+      return getSettings().queue
     },
-    async getShuffle(): Promise<boolean> {
-      const settings = await getSettings()
-      return Boolean(settings.shuffle)
+    getShuffle(): boolean {
+      return Boolean(getSettings().shuffle)
     },
-    async getStreaming(): Promise<boolean> {
-      const settings = await getSettings()
-      return Boolean(settings.streaming)
+    getStreaming(): boolean {
+      return Boolean(getSettings().streaming)
     },
-    async getVolume(): Promise<number> {
-      const settings = await getSettings()
-      return Number(settings.volume)
+    getVolume(): number {
+      return Number(getSettings().volume)
     },
     async setApiUrl(api_url: string) {
       await updateSetting('api_url', api_url)

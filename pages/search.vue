@@ -63,15 +63,17 @@
           <div class="section-header">
             <p>Albums</p>
             <div class="scroll-buttons">
-              <button class="scroll-button" @click="scroll('albums', 'left')" :disabled="albumsScrollLeft === 0">&lt;</button>
-              <button class="scroll-button" @click="scroll('albums', 'right')" :disabled="albumsScrollLeft >= albumsMaxScroll">&gt;</button>
+              <button class="scroll-button" @click="scroll('albums', 'left')"
+                :disabled="albumsScrollLeft === 0">&lt;</button>
+              <button class="scroll-button" @click="scroll('albums', 'right')"
+                :disabled="albumsScrollLeft >= albumsMaxScroll">&gt;</button>
             </div>
           </div>
           <div class="album-grid" ref="albumsGrid">
             <div v-for="album in albums" :key="album.id" class="album-item">
               <img :src="album.cover" :alt="album.name" class="album-cover" />
               <p class="album-title">{{ album.name }}</p>
-              <p class="album-artist">{{ album.author }}</p>
+              <p class="album-artist">{{ album.artist }}</p>
             </div>
           </div>
         </div>
@@ -80,15 +82,17 @@
           <div class="section-header">
             <p>Playlists</p>
             <div class="scroll-buttons">
-              <button class="scroll-button" @click="scroll('playlists', 'left')" :disabled="playlistsScrollLeft === 0">&lt;</button>
-              <button class="scroll-button" @click="scroll('playlists', 'right')" :disabled="playlistsScrollLeft >= playlistsMaxScroll">&gt;</button>
+              <button class="scroll-button" @click="scroll('playlists', 'left')"
+                :disabled="playlistsScrollLeft === 0">&lt;</button>
+              <button class="scroll-button" @click="scroll('playlists', 'right')"
+                :disabled="playlistsScrollLeft >= playlistsMaxScroll">&gt;</button>
             </div>
           </div>
           <div class="playlist-grid" ref="playlistsGrid">
             <div v-for="playlist in playlists" :key="playlist.id" class="playlist-item">
               <img :src="playlist.cover" :alt="playlist.name" class="playlist-cover" />
               <p class="playlist-title">{{ playlist.name }}</p>
-              <p class="playlist-owner">{{ playlist.author }}</p>
+              <p class="playlist-owner">{{ playlist.artist }}</p>
             </div>
           </div>
         </div>
@@ -120,7 +124,8 @@ export interface Response {
 export interface Album {
   id: string;
   name: string;
-  author: string;
+  artist: string;
+  artistCover: string;
   cover: string;
   songs: Song[];
 }
@@ -128,7 +133,8 @@ export interface Album {
 export interface Playlist {
   id: string;
   name: string;
-  author: string;
+  artist: string;
+  artistCover: string;
   cover: string;
   songs: Song[];
 }
@@ -193,29 +199,32 @@ async function searchSongs() {
     }
 
     const data = await response.json();
-    
+
     searchResults.value = Object.values(data.songs).map((song: any) => ({
       id: song.id,
       title: song.title,
       artist: song.artist,
+      artistCover: song.artistCover,
       album: song.album,
-      cover: song.cover,
+      cover: song.cover.replace("w544-h544", "w160-h160"),
       duration: song.duration,
     }));
 
     albums.value = Object.values(data.albums).map((album: any) => ({
       id: album.id,
       name: album.name,
-      author: album.author,
-      cover: album.cover,
+      artist: album.artist,
+      artistCover: album.artistCover,
+      cover: album.cover.replace("w544-h544", "w160-h160"),
       songs: album.songs,
     }));
 
     playlists.value = Object.values(data.playlists).map((playlist: any) => ({
       id: playlist.id,
       name: playlist.name,
-      author: playlist.author,
-      cover: playlist.cover,
+      artist: playlist.artist,
+      artistCover: playlist.artistCover,
+      cover: playlist.cover.replace("w120-h120", "w160-h160"),
       songs: playlist.songs,
     }));
 
@@ -250,7 +259,7 @@ async function addToLibrary(song: Response) {
         await invoke('download', { id: song.id, quality: isLossless ? 'lossless' : 'compressed', url: await $settings.getApiUrl() });
 
         if (!mp3Exists && !flacExists) {
-          const response = await axios.get(song.cover.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
+          const response = await axios.get(song.cover, { responseType: 'arraybuffer' });
           const data = new Uint8Array(response.data);
           await writeFile(`Vleer/Covers/${song.id}.png`, data, { baseDir: BaseDirectory.Audio });
           await $music.addSong(songData);
@@ -293,7 +302,7 @@ async function play(song: Response) {
         await invoke('download', { id: song.id, quality: isLossless ? 'lossless' : 'compressed', url: await $settings.getApiUrl() });
 
         if (!mp3Exists && !flacExists) {
-          const response = await axios.get(song.cover.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
+          const response = await axios.get(song.cover, { responseType: 'arraybuffer' });
           const data = new Uint8Array(response.data);
           await writeFile(`Vleer/Covers/${song.id}.png`, data, { baseDir: BaseDirectory.Audio });
         }

@@ -26,8 +26,18 @@
     ],
     "security": {
       "csp": {
-        "default-src": ["'self'"],
-        "connect-src": ["'self'", "https://api.vleer.app", "https://*.vleer.app"]
+        "connect-src": [
+          "'self'",
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://0.0.0.0:3000",
+          "http://0.0.0.0:3001",
+          "http://127.0.0.1:3000",
+          "http://127.0.0.1:3001",
+          "https://api.vleer.app",
+          "https://*.vleer.app"
+        ],
+        "default-src": ["'self'"]
       }
     },
     "withGlobalTauri": true

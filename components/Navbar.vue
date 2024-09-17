@@ -4,26 +4,26 @@
     <div class="links">
       <NuxtLink class="link" to="/">
         <div class="svg-active">
-          <IconsPagesHomeFill />
+          <IconsNavHomeFill />
         </div>
         <div class="svg-default">
-          <IconsPagesHomeOutline />
+          <IconsNavHomeOutline />
         </div>
         Home
       </NuxtLink>
       <div class="link search-link" @click="toggleSearch">
         <template v-if="!isSearchActive">
           <div class="svg-active">
-            <IconsPagesSearchFill />
+            <IconsNavSearchFill />
           </div>
           <div class="svg-default">
-            <IconsPagesSearchOutline />
+            <IconsNavSearchOutline />
           </div>
           Search
         </template>
 
         <div v-else class="search-container">
-          <IconsPagesSearchOutline class="icon"/>
+          <IconsNavSearchOutline class="icon"/>
           <input 
             ref="searchInput" 
             v-model="searchTerm" 
@@ -42,10 +42,10 @@
     <div>
       <NuxtLink class="link" to="/settings">
         <div class="svg-active">
-          <IconsPagesSettingsFill />
+          <IconsNavSettingsFill />
         </div>
         <div class="svg-default">
-          <IconsPagesSettingsOutline />
+          <IconsNavSettingsOutline />
         </div>
       </NuxtLink>
     </div>
