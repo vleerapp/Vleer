@@ -1,11 +1,5 @@
-export interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  album: string;
-  cover: string;
-  date_added: Date;
-  duration: number;
+export interface EQSettings {
+  [key: string]: string
 }
 
 export interface History {
@@ -24,9 +18,7 @@ export interface Playlist {
 export interface Settings {
   api_url: string;
   current_song: Song | null;
-  eq: {
-    [key: string]: string;
-  };
+  eq: EQSettings;
   lossless: boolean;
   loop: boolean;
   muted: boolean;
@@ -34,4 +26,14 @@ export interface Settings {
   shuffle: boolean;
   streaming: boolean;
   volume: number;
+}
+
+export interface Song {
+  album: string;
+  artist: string;
+  cover: string;
+  date_added: Date;
+  duration: number;
+  id: string;
+  title: string;
 }

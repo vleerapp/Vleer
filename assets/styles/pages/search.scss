@@ -79,7 +79,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      width: calc(100% - 16px - 36px);
+      width: calc(100% - 36px);
     }
 
     .artist {
@@ -143,7 +143,7 @@
         display: flex;
         align-items: center;
         flex: 1;
-        min-width: 0; // Allow flexbox to shrink below content size
+        min-width: 0;
       }
 
       .cover,
@@ -232,7 +232,7 @@
   }
 }
 
-$width: calc((100vw - (v.$spacing * 3) - (24px * 4) - v.$sidebar-width) / 8);
+$width: clamp(150px, calc((100vw - (v.$spacing * 3) - (24px * 4) - v.$sidebar-width) / 8), 238px);
 
 .album-item,
 .playlist-item {
@@ -267,7 +267,7 @@ $width: calc((100vw - (v.$spacing * 3) - (24px * 4) - v.$sidebar-width) / 8);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .scroll-buttons {

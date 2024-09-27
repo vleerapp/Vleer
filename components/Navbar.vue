@@ -78,7 +78,7 @@ const handleInput = debounce(() => {
   if (searchTerm.value.trim() !== '') {
     router.push({ path: '/search', query: { q: searchTerm.value.trim() } });
   }
-}, 300);
+}, 0);
 
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {

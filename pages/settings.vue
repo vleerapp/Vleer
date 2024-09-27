@@ -16,7 +16,7 @@
                 :max="12"
                 :min="-12"
                 :step="0.1"
-                @input="updateEqGain(index, $event.target.valueAsNumber)"
+                @input="updateEqGain(index, ($event.target as HTMLInputElement)?.valueAsNumber ?? 0)"
                 class="gain"
                 type="number"
                 v-model.number="eqGains[index]"
@@ -56,6 +56,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import type { Settings } from '~/types/types';
+import { emit } from '@tauri-apps/api/event';
 
 const { $settings } = useNuxtApp();
 
@@ -81,6 +82,8 @@ async function updateEqGain(filterIndex: number, gain: number) {
   const eqSettingsMap = await $settings.getEq();
   eqSettingsMap[frequencies[filterIndex].toString()] = formattedGain.toString();
   await $settings.setEq(eqSettingsMap);
+  
+  await emit('eq-change', eqSettingsMap);
 }
 
 function formatFrequency(freq: number): string {
@@ -96,6 +99,8 @@ async function resetEQ() {
     eqSettingsMap[freq.toString()] = '0';
   });
   await $settings.setEq(eqSettingsMap);
+  
+  await emit('eq-change', eqSettingsMap);
 }
 </script>
 

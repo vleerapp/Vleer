@@ -16,7 +16,7 @@
       </div>
       <div class="items">
         <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)"
-          :class="['song', { playing: currentSong.id === song.id }]" @mouseover="hoveredSongId = song.id"
+          :class="['song', { playing: currentSong.value?.id === song.id }]" @mouseover="hoveredSongId = song.id"
           @mouseleave="hoveredSongId = ''">
           <div class="cover">
             <div class="playing-indicator">
@@ -32,7 +32,7 @@
                 <path d="M2 14L2 0L12.5 7L2 14Z" id="Shape" fill="#FFFFFF" stroke="none" />
               </g>
             </svg>
-            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="img" />
+            <img :src="song.cover || '/cover.png'" :alt="song.title" class="img" />
           </div>
           <div class="titles">
             <p class="title">{{ truncate(song.title) }}</p>
@@ -115,11 +115,11 @@ function truncate(text: string, length: number = 45) {
   return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
+function formatDate(date: Date): string {
+  const parsedDate = new Date(date);
+  const day = parsedDate.getDate().toString().padStart(2, "0");
+  const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = parsedDate.getFullYear();
   return `${day}.${month}.${year}`;
 }
 
