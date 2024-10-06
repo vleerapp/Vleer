@@ -6,26 +6,28 @@ authors = ["pandadev", "waradu"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc.11", features = [] }
+tauri-build = { version = "2.0.1", features = [] }
 
 [dependencies]
 anyhow = "1.0.89"
 discord-ipc-rp = "0.1.1"
 lazy_static = "1.4"
-regex = "1.10.4"
-reqwest = "0.12.3"
+regex = "1.11.0"
+reqwest = "0.12.8"
 serde = "1.0.210"
 serde_json = "1.0.128"
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "tls-native-tls", "sqlite"] }
+log = "0.4.22"
+env_logger = "0.11.5"
 
-tauri = { version = "2.0.0-rc.13", features = ["devtools", "unstable"] }
-tauri-plugin-dialog = "2.0.0-rc.5"
-tauri-plugin-fs = "2.0.0-rc.1"
-tauri-plugin-global-shortcut = "2.0.0-rc.2"
-tauri-plugin-os = "2.0.0-rc.1"
-tauri-plugin-prevent-default = "0.5"
-tauri-plugin-sql = { version = "2.0.0-rc.1", features = ["sqlite"] }
-tauri-plugin-updater = "2.0.0-rc.3"
+tauri = { version = "2.0.1", features = ["devtools", "unstable"] }
+tauri-plugin-dialog = "2.0.1"
+tauri-plugin-fs = "2.0.1"
+tauri-plugin-global-shortcut = "2.0.1"
+tauri-plugin-os = "2.0.1"
+tauri-plugin-prevent-default = "0.6.1"
+tauri-plugin-sql = { version = "2.0.1", features = ["sqlite"] }
+tauri-plugin-updater = "2.0.2"
 
 tokio = { version = "1.40.0", features = ["full"] }
 
