@@ -3,7 +3,7 @@
 <img width="128px" src="src-tauri/icons/128x128@2x.png" />
 <h1><b>Vleer</b></h1>
 
-Explore high-quality music with Vleer a fast, simple, and reliable app, tailored to your preferences.
+Free and open source alternative to Spotify, Apple Music etc. With privacy in mind.
 <br>
 <a href="https://vleer.app"><strong>vleer.app »</strong></a>
 
@@ -41,12 +41,14 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
   </tbody>
 </table>
 
-<sup>Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a> </sup>
+<sup>Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a> </sup>
 </div>
 
 <br>
 
 ![Vleer banner](https://github.com/vleerapp/Vleer/assets/70103896/f4a619ab-4f4c-4c2f-babe-79a4555a93c5)
+
+[discord »](https://discord.gg/invite/Y7SbYphVw9)
 
 > \[!IMPORTANT]
 >
@@ -64,7 +66,7 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
 
 ## 📀 What is Vleer?
 
-Vleer is a lightweight, fast, privacy-first music app, offering a free alternative to Spotify or Apple Music. Ideal for those who can't afford or don't want to pay for these shitty subscriptions.
+Vleer is a lightweight, fast, privacy-first music app, offering a free alternative to Spotify or Apple Music. Ideal for those who can't afford or don't want to pay these shitty subscriptions.
 
 🚧 Despite a major rewrite since January 2024, Vleer is already showing great promise. We are actively seeking contributors to help improve the project. If you're interested, we welcome your participation.
 
