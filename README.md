@@ -77,11 +77,10 @@ Vleer is a lightweight, fast, privacy-first music app, offering a free alternati
 
 ## 📦 Features
 
+- [ ] Music Streaming
+- [x] Music Download
 - [X] Playlists
-- [X] Offline music
 - [X] Equalizer
-- [X] Custom Backend
-- [ ] Music streaming
 
 ![Vleer preview gif](https://github.com/vleerapp/Vleer/assets/70103896/aa9a0be4-0f3f-4cef-b2c4-b9b21602885b)
 
