@@ -7,6 +7,13 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or tag to build e.g. main or v0.1.0'
+        required: true
+        type: string
+        default: 'main'
 
 jobs:
   prepare:
@@ -15,6 +22,8 @@ jobs:
       version: ${{ steps.get_version.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
       - name: Get version
         id: get_version
         run: echo "VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")" >> $GITHUB_OUTPUT
@@ -35,6 +44,8 @@ jobs:
       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
       - name: Redact Sensitive Information
         run: |
           function redact_output {
@@ -119,6 +130,8 @@ jobs:
       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -161,6 +174,8 @@ jobs:
       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
