@@ -50,6 +50,9 @@ Free and open source alternative to Spotify, Apple Music etc. With privacy in mi
 
 [discord »](https://discord.gg/invite/Y7SbYphVw9)
 
+> [!WARNING]
+> Vleer is currently in major version zero (0.x) active development, and features are being added regularly. Things may break or change at any time! Keep an eye out for new releases, report bugs and give feedback!
+
 > \[!IMPORTANT]
 >
 > **Star Us**, You will receive all release notifications from GitHub without any delay \~ ⭐️
