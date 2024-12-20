@@ -1,15 +1,19 @@
-use anyhow::{anyhow, Result as AnyhowResult};
+use anyhow::anyhow;
 use reqwest::Client;
 use std::path::PathBuf;
-use std::fs;
 use tauri::Result as TauriResult;
 use tokio::time::Instant;
 use tokio::task::JoinHandle;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::copy;
+use std::result::Result;
 
 #[tauri::command]
-pub async fn download(id: String, quality: String, url: String) -> TauriResult<()> {
+pub async fn download_from_backend(
+    id: String,
+    quality: String,
+    url: String,
+) -> Result<(), tauri::Error> {
     let client = Client::new();
     let response = client
         .get(format!("{}/download?id={}&quality={}", url, id, quality))
@@ -67,7 +71,7 @@ pub fn get_music_path() -> PathBuf {
 }
 
 #[tauri::command]
-pub fn get_config_path() -> PathBuf {
+pub fn _get_config_path() -> PathBuf {
     let mut path = PathBuf::new();
     match std::env::consts::OS {
         "macos" => {
@@ -89,28 +93,24 @@ pub fn get_config_path() -> PathBuf {
 
 #[tauri::command]
 pub async fn ping_urls(urls: Vec<String>) -> TauriResult<Vec<(String, u128)>> {
-    let client = Client::new();
-    let results = ping_urls_helper(&client, &urls).await?;
-    Ok(results)
+    ping_urls_helper(&urls).await.map_err(|e| e.into())
 }
 
 async fn ping_urls_helper(
-    client: &Client,
     urls: &[String],
-) -> AnyhowResult<Vec<(String, u128)>> {
-    let mut handles: Vec<JoinHandle<AnyhowResult<(String, u128)>>> = vec![];
+) -> Result<Vec<(String, u128)>, anyhow::Error> {
+    let mut handles: Vec<JoinHandle<Result<(String, u128), anyhow::Error>>> = vec![];
 
     for url in urls.iter() {
         let url_clone = url.clone();
-        let client_clone = client.clone();
 
         let handle = tokio::spawn(async move {
             let start = Instant::now();
-            let result = client_clone.head(&url_clone).send().await;
+            let result = Client::new().head(&url_clone).send().await;
             let latency = start.elapsed().as_millis();
             match result {
-                Ok(_) => Ok((url_clone, latency)),    // Use the cloned URL here
-                Err(_) => Ok((url_clone, u128::MAX)), // Use the cloned URL here
+                Ok(_) => Ok((url_clone, latency)),
+                Err(e) => Err(anyhow!(e.to_string())),
             }
         });
         handles.push(handle);
