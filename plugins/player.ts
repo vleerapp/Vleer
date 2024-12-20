@@ -33,11 +33,18 @@ export default defineNuxtPlugin((nuxtApp) => {
     volume,
 
     applyEQ(eq: EQSettings) {
-      if (!sound || !equalizer) return
+      if (!sound || !equalizer) return;
 
       Object.entries(eq).forEach(([freq, gain], index) => {
-        this.setEqGain(index, parseFloat(gain))
-      })
+        const cleanGain = typeof gain === 'string' ? gain.replace(',', '.') : gain;
+        const numericGain = parseFloat(cleanGain);
+
+        if (Number.isFinite(numericGain)) {
+          this.setEqGain(index, numericGain);
+        } else {
+          console.error('Non-finite gain encountered', gain, 'Converted to:', numericGain);
+        }
+      });
     },
 
     async loadSong(song: Song) {
@@ -163,7 +170,13 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     setEqGain(filterIndex: number, gain: number) {
       if (equalizer && equalizer[filterIndex]) {
-        equalizer[filterIndex].gain.setValueAtTime(gain, Howler.ctx.currentTime)
+        if (Number.isFinite(gain)) {
+          equalizer[filterIndex].gain.setValueAtTime(gain, Howler.ctx.currentTime);
+        } else {
+          console.error('Attempted to set non-finite gain:', gain);
+        }
+      } else {
+        console.error('Equalizer filter not found or invalid filter index:', filterIndex);
       }
     },
 
