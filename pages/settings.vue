@@ -67,7 +67,7 @@ const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 onMounted(async () => {
   apiUrl.value = await $settings.getApiUrl();
   const eq = await $settings.getEq();
-  eqGains.value = frequencies.map(freq => Number(parseFloat(eq[freq.toString()] || '0').toFixed(1)));
+  eqGains.value = frequencies.map(freq => Number(parseFloat(eq.values[freq.toString()] || '0').toFixed(1)));
 });
 
 async function updateApiURL() {
@@ -80,7 +80,7 @@ async function updateEqGain(filterIndex: number, gain: number) {
   eqGains.value[filterIndex] = formattedGain;
   
   const eqSettingsMap = await $settings.getEq();
-  eqSettingsMap[frequencies[filterIndex].toString()] = formattedGain.toString();
+  eqSettingsMap.values[frequencies[filterIndex].toString()] = formattedGain.toString();
   await $settings.setEq(eqSettingsMap);
   
   await emit('eq-change', eqSettingsMap);
@@ -94,9 +94,9 @@ async function resetEQ() {
   const resetEqGains = new Array(frequencies.length).fill(0);
   eqGains.value = resetEqGains;
   
-  const eqSettingsMap: Settings['eq'] = {};
+  const eqSettingsMap: Settings['eq'] = { values: {} };
   frequencies.forEach(freq => {
-    eqSettingsMap[freq.toString()] = '0';
+    eqSettingsMap.values[freq.toString()] = '0';
   });
   await $settings.setEq(eqSettingsMap);
   
@@ -105,5 +105,5 @@ async function resetEQ() {
 </script>
 
 <style scoped lang="scss">
-@import '~/assets/styles/pages/settings.scss';
+@use '~/assets/styles/pages/settings.scss';
 </style>
