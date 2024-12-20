@@ -68,5 +68,5 @@ async function createAndOpenPlaylist() {
 </script>
 
 <style lang="scss">
-@import "~/assets/styles/components/library.scss";
+@use "~/assets/styles/components/library.scss";
 </style>

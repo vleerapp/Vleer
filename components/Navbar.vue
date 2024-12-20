@@ -103,5 +103,5 @@ const toggleSearch = () => {
 </script>
 
 <style scoped lang="scss">
-@import "~/assets/styles/components/navbar.scss";
+@use "~/assets/styles/components/navbar.scss";
 </style>

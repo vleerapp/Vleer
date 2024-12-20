@@ -144,5 +144,5 @@ const formatTime = (seconds: number): string => {
 </script>
 
 <style lang="scss">
-@import '~/assets/styles/components/player.scss';
+@use '~/assets/styles/components/player.scss';
 </style>

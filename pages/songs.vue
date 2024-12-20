@@ -197,5 +197,5 @@ function startVisualizer() {
 </script>
 
 <style scoped lang="scss">
-@import "~/assets/styles/pages/songs.scss";
+@use "~/assets/styles/pages/songs.scss";
 </style>

@@ -1,4 +1,5 @@
-@use '~/assets/styles/variables' as v;
+@use "sass:color";
+@use "~/assets/styles/variables" as v;
 
 .element {
   padding: 0px !important;
@@ -105,11 +106,11 @@
     height: 36px;
     display: grid;
     place-items: center;
-    transition: all .1s ease;
+    transition: all 0.1s ease;
   }
 
-  .play:hover{
-    background-color: #7540BA;
+  .play:hover {
+    background-color: #7540ba;
   }
 }
 
@@ -284,7 +285,7 @@ $width: clamp(150px, calc((100vw - (v.$spacing * 3) - (24px * 4) - v.$sidebar-wi
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: lighten(v.$element, 10%);
+    background-color: color.adjust(v.$element, $lightness: 10%);
   }
 
   &:disabled {
