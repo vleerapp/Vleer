@@ -1,17 +1,26 @@
 export interface EQSettings {
-  [key: string]: string
+  values: { [key: string]: string };
 }
 
 export interface History {
-  date_played: Date;
   id: string;
+  date_played: Date;
   song: Song;
+}
+
+export interface Album {
+  id: string;
+  name: string;
+  artist: string;
+  cover: string;
+  date_added: Date;
+  songs: Song[];
 }
 
 export interface Playlist {
   id: string;
-  date_created: Date;
   name: string;
+  date_created: Date;
   songs: Song[];
 }
 
@@ -29,11 +38,11 @@ export interface Settings {
 }
 
 export interface Song {
-  album: string;
+  id: string;
+  title: string;
   artist: string;
+  album: string;
   cover: string;
   date_added: Date;
   duration: number;
-  id: string;
-  title: string;
 }
