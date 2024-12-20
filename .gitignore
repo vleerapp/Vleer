@@ -28,3 +28,4 @@ package.json
 src-tauri/gen/
 bun.lockb
 src-tauri/src/main copy.rs
+deno.lock

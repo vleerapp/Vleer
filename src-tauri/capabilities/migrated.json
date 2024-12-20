@@ -2,9 +2,7 @@
   "identifier": "migrated",
   "description": "permissions that were migrated from v1",
   "local": true,
-  "windows": [
-    "main"
-  ],
+  "windows": ["main"],
   "permissions": [
     "core:path:default",
     "core:event:default",
@@ -31,9 +29,6 @@
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
     "global-shortcut:allow-unregister-all",
-    "sql:allow-load",
-    "sql:allow-select",
-    "sql:allow-execute",
     {
       "identifier": "fs:allow-audio-read-recursive",
       "allow": [
@@ -101,11 +96,5 @@
       ]
     }
   ],
-  "platforms": [
-    "linux",
-    "macOS",
-    "windows",
-    "android",
-    "iOS"
-  ]
+  "platforms": ["linux", "macOS", "windows", "android", "iOS"]
 }
