@@ -71,7 +71,7 @@ Free and open source alternative to Spotify, Apple Music etc. With privacy in mi
 
 Vleer is a lightweight, fast, privacy-first music app, offering a free alternative to Spotify or Apple Music. Ideal for those who can't afford or don't want to pay these shitty subscriptions.
 
-🚧 Despite a major rewrite since January 2024, Vleer is already showing great promise. We are actively seeking contributors to help improve the project. If you're interested, we welcome your participation.
+We are actively seeking contributors to help improve the project. If you're interested, we welcome your participation.
 
 > \[!WARNING]
 >
