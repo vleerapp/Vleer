@@ -36,7 +36,6 @@ export default defineNuxtPlugin((nuxtApp) => {
           return await invoke('get_volume')
         },
         async setApiUrl(apiUrl: string) {
-          console.log(apiUrl)
           return await invoke('set_api_url', { apiUrl })
         },
         async setCurrentSong(currentSong: Song | null) {
