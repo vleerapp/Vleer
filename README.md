@@ -3,9 +3,11 @@
 <img width="128px" src="src-tauri/icons/128x128@2x.png" />
 <h1><b>Vleer</b></h1>
 
-Explore high-quality music with Vleer a fast, simple, and reliable app, tailored to your preferences.
+Free and open source alternative to Spotify, Apple Music etc. With privacy in mind.
 <br>
 <a href="https://vleer.app"><strong>vleer.app »</strong></a>
+
+<ins>**This project is not yet stable!**</ins>
 
 <table>
   <tbody>
@@ -39,12 +41,17 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
   </tbody>
 </table>
 
-<sup>Unstable Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a> </sup>
+<sup>Nightly releases can be found <a href="https://github.com/vleerapp/Vleer/actions/workflows/build.yml">here</a> </sup>
 </div>
 
 <br>
 
 ![Vleer banner](https://github.com/vleerapp/Vleer/assets/70103896/f4a619ab-4f4c-4c2f-babe-79a4555a93c5)
+
+[discord »](https://discord.gg/invite/Y7SbYphVw9)
+
+> [!WARNING]
+> Vleer is currently in major version zero (0.x) active development, and features are being added regularly. Things may break or change at any time! Keep an eye out for new releases, report bugs and give feedback!
 
 > \[!IMPORTANT]
 >
@@ -62,9 +69,9 @@ Explore high-quality music with Vleer a fast, simple, and reliable app, tailored
 
 ## 📀 What is Vleer?
 
-Vleer is a lightweight, fast, privacy-first music app, offering a free alternative to Spotify or Apple Music. Ideal for those who can't afford or don't want to pay for these shitty subscriptions.
+Vleer is a lightweight, fast, privacy-first music app, offering a free alternative to Spotify or Apple Music. Ideal for those who can't afford or don't want to pay these shitty subscriptions.
 
-🚧 Despite a major rewrite since January 2024, Vleer is already showing great promise. We are actively seeking contributors to help improve the project. If you're interested, we welcome your participation.
+We are actively seeking contributors to help improve the project. If you're interested, we welcome your participation.
 
 > \[!WARNING]
 >
@@ -125,7 +132,7 @@ pnpm build
 
 ## 📝 License
 
-Vleer is licensed under the Creative Commons Attribution-Noncommercial-Share Alike. See the [LICENSE file](./LICENCE) for more information.
+Vleer is licensed under the GPL-3. See the [LICENSE file](./LICENCE) for more information.
 
 [codespaces-link]: https://codespaces.new/vleerapp/vleer
 [codespaces-shield]: https://github.com/codespaces/badge.svg

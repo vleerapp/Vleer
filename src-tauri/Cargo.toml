@@ -9,13 +9,13 @@ edition = "2021"
 tauri-build = { version = "2.0.3", features = [] }
 
 [dependencies]
-anyhow = "1.0.94"
+anyhow = "1.0.95"
 discord-ipc-rp = "0.1.1"
 lazy_static = "1.5.0"
 regex = "1.11.1"
 reqwest = "0.12.9"
 serde = "1.0.216"
-serde_json = "1.0.133"
+serde_json = "1.0.134"
 sqlx = { version = "0.8.2", features = [
   "runtime-tokio",
   "tls-native-tls",
@@ -23,7 +23,7 @@ sqlx = { version = "0.8.2", features = [
   "chrono",
 ] }
 log = "0.4.22"
-env_logger = "0.11.5"
+env_logger = "0.11.6"
 base64 = "0.22.1"
 chrono = "0.4.39"
 include_dir = "0.7.4"
