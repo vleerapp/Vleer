@@ -25,7 +25,20 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "connect-src": [
+          "'self'",
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://0.0.0.0:3000",
+          "http://0.0.0.0:3001",
+          "http://127.0.0.1:3000",
+          "http://127.0.0.1:3001",
+          "https://api.vleer.app",
+          "https://*.vleer.app"
+        ],
+        "default-src": ["'self'"]
+      }
     },
     "withGlobalTauri": true
   },
@@ -54,12 +67,6 @@
       "endpoints": [
         "https://updater.vleer.app"
       ]
-    },
-    "sql": {
-      "preload": [
-        "sqlite:data.db"
-      ]
     }
-  },
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json"
+  }
 }

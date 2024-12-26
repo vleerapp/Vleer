@@ -14,12 +14,44 @@
   padding: 16px;
   position: relative;
 
+  .link {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+    color: v.$text;
+    user-select: none;
+    text-decoration: none;
+  }
+
+  .link svg {
+    fill: currentColor;
+  }
+
+  .link:hover,
+  .link.router-link-active {
+    color: v.$text-bright;
+    transition: all 0.2s;
+  }
+
   .top {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    padding-inline: 8px;
+    gap: 14px;
+  }
+
+  .playlist-icon {
+    display: flex;
     align-items: center;
-    height: 18px;
-    padding-inline: 12px;
+    gap: 12px;
+  }
+
+  .playlists {
+    justify-content: space-between;
+    display: flex;
+    width: 100%;
   }
 
   .create-playlist {
@@ -33,26 +65,6 @@
 
   .create-playlist:hover {
     color: v.$text-bright;
-  }
-
-  .link {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.2s;
-    color: v.$text;
-    user-select: none;
-  }
-
-  .link svg {
-    fill: currentColor;
-  }
-
-  .link:hover,
-  .link.router-link-active {
-    color: v.$text-bright;
-    transition: all 0.2s;
   }
 
   .search-container {

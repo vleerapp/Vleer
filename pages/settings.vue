@@ -12,10 +12,24 @@
           </div>
           <div class="sliders">
             <div v-for="(freq, index) in frequencies" :key="freq" class="freq">
-              <input type="number" v-model.number="eqGains[index]"
-                @input="updateEqGain(index, $event.target.valueAsNumber)" class="gain" step="0.1" min="-12" max="12">
-              <input type="range" min="-12" max="12" step="0.1" v-model.number="eqGains[index]"
-                @input="updateEqGain(index, eqGains[index])" class="range">
+              <input
+                :max="12"
+                :min="-12"
+                :step="0.1"
+                @input="updateEqGain(index, ($event.target as HTMLInputElement)?.valueAsNumber ?? 0)"
+                class="gain"
+                type="number"
+                v-model.number="eqGains[index]"
+              >
+              <input
+                :max="12"
+                :min="-12"
+                :step="0.1"
+                @input="updateEqGain(index, eqGains[index])"
+                class="range"
+                type="range"
+                v-model.number="eqGains[index]"
+              >
               <div class="hz">{{ formatFrequency(freq) }}</div>
             </div>
           </div>
@@ -25,7 +39,14 @@
       <div class="api-url setting">
         <p>Search API URL</p>
         <div class="input-container">
-          <input class="input" v-model="apiUrl" @input="updateApiURL" spellcheck="false" type="url" placeholder="url" />
+          <input
+            @input="updateApiURL"
+            class="input"
+            placeholder="url"
+            spellcheck="false"
+            type="url"
+            v-model="apiUrl"
+          />
         </div>
       </div>
     </div>
@@ -33,54 +54,56 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { type EQSettings } from '~/types/types';
+import { ref, onMounted } from 'vue';
+import type { Settings } from '~/types/types';
+import { emit } from '@tauri-apps/api/event';
 
-const { $music, $settings } = useNuxtApp()
+const { $settings } = useNuxtApp();
 
+const apiUrl = ref('');
+const eqGains = ref<number[]>([]);
 const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-const eqGains = ref(new Array(frequencies.length).fill(0.0));
-const apiUrl = ref($settings.getApiURL());
 
-function updateApiURL() {
-  $settings.setApiURL(apiUrl.value);
-}
-
-
-const eq = $settings.getEq()
-frequencies.forEach((freq, index) => {
-  const freqKey = freq.toString();
-  eqGains.value[index] = Number(parseFloat(eq[freqKey as keyof EQSettings] || 0).toFixed(1));
+onMounted(async () => {
+  apiUrl.value = await $settings.getApiUrl();
+  const eq = await $settings.getEq();
+  eqGains.value = frequencies.map(freq => Number(parseFloat(eq.values[freq.toString()] || '0').toFixed(1)));
 });
 
-function updateEqGain(filterIndex: number, gain: number) {
-  if (isNaN(gain)) return;
-  let formattedGain = Math.min(12, Math.max(gain, -12));
-  formattedGain = Number(formattedGain.toFixed(1));
-  eqGains.value[filterIndex] = formattedGain;
-  $music.setEqGain(filterIndex, formattedGain);
-  const eqSettingsMap = $settings.getEq();
-  eqSettingsMap[frequencies[filterIndex].toString() as keyof EQSettings] = formattedGain;
-  $settings.setEq(eqSettingsMap as EQSettings);
+async function updateApiURL() {
+  await $settings.setApiUrl(apiUrl.value);
 }
 
-function formatFrequency(freq: number) {
+async function updateEqGain(filterIndex: number, gain: number) {
+  if (isNaN(gain)) return;
+  const formattedGain = Number(Math.min(12, Math.max(gain, -12)).toFixed(1));
+  eqGains.value[filterIndex] = formattedGain;
+  
+  const eqSettingsMap = await $settings.getEq();
+  eqSettingsMap.values[frequencies[filterIndex].toString()] = formattedGain.toString();
+  await $settings.setEq(eqSettingsMap);
+  
+  await emit('eq-change', eqSettingsMap);
+}
+
+function formatFrequency(freq: number): string {
   return freq >= 1000 ? `${freq / 1000}KHz` : `${freq}Hz`;
 }
 
-function resetEQ() {
-  frequencies.forEach((freq, index) => {
-    eqGains.value[index] = 0;
+async function resetEQ() {
+  const resetEqGains = new Array(frequencies.length).fill(0);
+  eqGains.value = resetEqGains;
+  
+  const eqSettingsMap: Settings['eq'] = { values: {} };
+  frequencies.forEach(freq => {
+    eqSettingsMap.values[freq.toString()] = '0';
   });
-  const eqSettingsMap = {} as EQSettings;
-  frequencies.forEach((freq, index) => {
-    $music.setEqGain(index, 0);
-    eqSettingsMap[freq.toString() as keyof EQSettings] = "0";
-  });
-  $settings.setEq(eqSettingsMap as EQSettings)
+  await $settings.setEq(eqSettingsMap);
+  
+  await emit('eq-change', eqSettingsMap);
 }
 </script>
 
 <style scoped lang="scss">
-@import '~/assets/styles/pages/settings.scss';
+@use '~/assets/styles/pages/settings.scss';
 </style>

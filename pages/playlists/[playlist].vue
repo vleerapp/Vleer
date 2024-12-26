@@ -281,5 +281,5 @@ async function selectNewCover() {
 </script>
 
 <style scoped lang="scss">
-@import "~/assets/styles/pages/playlist.scss";
+@use "~/assets/styles/pages/playlist.scss";
 </style>

@@ -4,7 +4,7 @@
     <div class="songs">
       <div class="search-container">
         <IconsSearch />
-        <input class="input" placeholder="Search" spellcheck="false" v-model="searchQuery" />
+        <input class="input" placeholder="Search Library" spellcheck="false" v-model="searchQuery" />
       </div>
       <div class="songs-info">
         <div class="cover">#</div>
@@ -16,7 +16,7 @@
       </div>
       <div class="items">
         <div v-for="(song, index) in filteredSongs" :key="song.id" @click="play(song.id, index)"
-          :class="['song', { playing: currentSong.id === song.id }]" @mouseover="hoveredSongId = song.id"
+          :class="['song', { playing: currentSong.value?.id === song.id }]" @mouseover="hoveredSongId = song.id"
           @mouseleave="hoveredSongId = ''">
           <div class="cover">
             <div class="playing-indicator">
@@ -32,14 +32,14 @@
                 <path d="M2 14L2 0L12.5 7L2 14Z" id="Shape" fill="#FFFFFF" stroke="none" />
               </g>
             </svg>
-            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="img" />
+            <img :src="song.cover || '/cover.png'" :alt="song.title" class="img" />
           </div>
           <div class="titles">
             <p class="title">{{ truncate(song.title) }}</p>
             <p class="artist">{{ truncate(song.artist) }}</p>
           </div>
           <p class="date">{{ formatDate(song.date_added) }}</p>
-          <p class="lenght">{{ formatDuration(song.length) }}</p>
+          <p class="lenght">{{ formatDuration(song.duration) }}</p>
         </div>
         <NuxtLink to="/search" class="add">
           <div class="cover">
@@ -59,44 +59,68 @@
 </template>
 
 <script lang="ts" setup>
-import { type Song } from "~/types/types";
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { useNuxtApp } from "#app";
+import type { Song } from "~/types/types";
 
-const { $music } = useNuxtApp();
+const { $player, $settings, $music } = useNuxtApp();
 
 const searchQuery = ref("");
-const songs = $music.getSongs();
+const songs = ref<Song[]>([]);
 const hoveredSongId = ref("");
+
+const fetchSongs = async () => {
+  try {
+    songs.value = await $music.getSongs();
+  } catch (error) {
+    console.error("Error fetching songs:", error);
+  }
+};
+
+onMounted(async () => {
+  await fetchSongs();
+});
 
 const filteredSongs = computed<Song[]>(() => {
   if (!searchQuery.value.trim()) {
-    return songs.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
+    return songs.value.sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
   }
-  return songs.filter(song =>
+  return songs.value.filter(song =>
     song.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     song.artist.toLowerCase().includes(searchQuery.value.toLowerCase())
   ).sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime());
 });
 
 async function play(id: string, index: number) {
-  console.log('Attempting to play song:', id);
-  const queueIds = filteredSongs.value.slice(index).map(song => song.id);
-  await $music.setQueue(queueIds);
-  await $music.setSong(id);
-  $music.play();
-  console.log('Play function completed');
+  const queueSongs = filteredSongs.value.slice(index);
+  $settings.setQueue(queueSongs);
+  const song = await $music.getSong(id);
+  if (song) {
+    await $player.loadSong(song);
+    $player.play();
+  }
 }
+
+const currentSong = computed(() => $player.currentSong);
+
+watch(() => $player.paused, (isPaused) => {
+  if (!isPaused) {
+    visualizer.start();
+  } else {
+    visualizer.stop();
+  }
+});
 
 function truncate(text: string, length: number = 45) {
   return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
 }
 
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  return `${day < 10 ? '0' : ''}${day}.${month < 10 ? '0' : ''}${month}.${year}`;
+function formatDate(date: Date): string {
+  const parsedDate = new Date(date);
+  const day = parsedDate.getDate().toString().padStart(2, "0");
+  const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = parsedDate.getFullYear();
+  return `${day}.${month}.${year}`;
 }
 
 function formatDuration(duration: number) {
@@ -105,11 +129,23 @@ function formatDuration(duration: number) {
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
-const currentSong = computed(() => {
-  return $music.getCurrentSong() || { id: 0 };
+const visualizer = startVisualizer();
+
+watch(() => $player.paused, (isPaused) => {
+  if (!isPaused) {
+    visualizer.start();
+  } else {
+    visualizer.stop();
+  }
 });
 
-watch(currentSong, () => {});
+watch(() => $player.currentSong, () => {
+  if (!$player.paused) {
+    visualizer.start();
+  } else {
+    visualizer.stop();
+  }
+});
 
 function startVisualizer() {
   let animationFrameId: number;
@@ -158,21 +194,8 @@ function startVisualizer() {
     stop: () => toggleVisualizer(false)
   };
 }
-
-const visualizer = startVisualizer();
-
-watch(() => $music.isPlaying(), (isPlaying) => {
-  console.log('Music playing state changed:', isPlaying);
-  if (isPlaying) {
-    console.log('Starting visualizer');
-    visualizer.start();
-  } else {
-    console.log('Stopping visualizer');
-    visualizer.stop();
-  }
-});
 </script>
 
 <style scoped lang="scss">
-@import "~/assets/styles/pages/songs.scss";
+@use "~/assets/styles/pages/songs.scss";
 </style>

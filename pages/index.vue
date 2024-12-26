@@ -12,16 +12,14 @@
 
       <div class="playlists">
         <div class="title">Playlists</div>
-        <div class="cards" ref="playlist_cards">
-          <template v-for="n in 6">
-            <div v-if="sortedPlaylists.value && sortedPlaylists.value.length > n" :key="sortedPlaylists.value[n].id"
-              class="playlist">
-              <NuxtLink :to="'/' + sortedPlaylists.value[n].id">
-                <img :src="sortedPlaylists.value[n].coverURL || '/cover.png'" height="64px" alt="playlist cover"
-                  class="cover">
-                <p class="name">{{ truncate(sortedPlaylists.value[n].name) }}</p>
+        <div class="cards">
+          <template v-for="n in 6" :key="n">
+            <div v-if="sortedPlaylists && sortedPlaylists.length > n - 1" class="playlist">
+              <NuxtLink :to="'/' + sortedPlaylists[n - 1].id">
+                <img :src="sortedPlaylists[n - 1].songs[0].cover || '/cover.png'" alt="playlist cover" class="cover">
+                <p class="name">{{ truncate(sortedPlaylists[n - 1].name) }}</p>
               </NuxtLink>
-              <button class="play">
+              <button class="play" @click="playPlaylist(sortedPlaylists[n - 1].id)">
                 <svg width="10.5px" height="14px" viewBox="0 0 10.5 14" version="1.1"
                   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
                   <g id="Group">
@@ -30,8 +28,8 @@
                 </svg>
               </button>
             </div>
-            <div v-else :key="n" class="playlist placeholder">
-              <img src="/cover.png" height="64px" alt="loading" class="cover">
+            <div v-else class="playlist placeholder">
+              <img src="/cover.png" alt="loading" class="cover">
               <p class="name">Loading...</p>
               <button class="play">
                 <svg width="10.5px" height="14px" viewBox="0 0 10.5 14" version="1.1"
@@ -48,9 +46,9 @@
 
       <div class="recently-played">
         <div class="title">Recently played</div>
-        <div class="cards" ref="song_cards">
-          <div v-for="song in sortedRecentlyPlayed" :key="song.id" @click="play(song.id)" class="song">
-            <img :src="song.coverURL || '/cover.png'" :alt="song.title" class="cover" />
+        <div class="cards">
+          <div v-for="song in sortedRecentlyPlayed" :key="song.id" @click="playSong(song.id)" class="song">
+            <img :src="song.cover || '/cover.png'" :alt="song.title" class="cover" />
             <div class="info">
               <p class="title" :title="song.title">{{ song.title }}</p>
               <p class="artist" :title="song.artist">{{ song.artist }}</p>
@@ -62,79 +60,51 @@
   </div>
 </template>
 
-<script setup>
-import { useMusicStore } from "~/stores/music";
-import { onMounted, computed } from 'vue';
-import { useNuxtApp } from '#app';
-import music from "~/plugins/music";
+<script lang="ts" setup>
+import { onMounted, ref, computed } from 'vue';
+import type { Playlist, Song } from '~/types/types';
 
-const { $music } = useNuxtApp();
-const musicStore = useMusicStore();
+const { $music, $settings, $player } = useNuxtApp();
 
-const playlists = $music.getPlaylists();
+const playlists = ref<Playlist[]>([]);
+const sortedRecentlyPlayed = ref<Song[]>([]);
 
-const playlist_cards = ref(null)
-const song_cards = ref(null)
-const maxCards = ref(5)
-const cardsWidth = ref(0)
-const cardMinWidth = 180
-const cardMaxWidth = 238
-const cardGap = 16
+const sortedPlaylists = computed(() => {
+  return playlists.value.sort((a, b) => b.date_created.getTime() - a.date_created.getTime());
+});
 
-function updateWidthSongs() {
-  if (song_cards.value && song_cards.value.clientWidth) {
-    const clientWidth = song_cards.value.clientWidth;
-    cardsWidth.value = clientWidth;
-    updateMaxCardsDirect(clientWidth);
+async function playSong(id: string) {
+  const song = await $music.getSong(id);
+  if (song) {
+    await $settings.setCurrentSong(song);
+    $player.loadSong(song);
+    $player.play();
   }
 }
 
-function updateMaxCardsDirect(clientWidth) {
-  if (clientWidth > 0) {
-    const maxPossible = Math.floor(clientWidth / (cardMinWidth + cardGap));
-    maxCards.value = maxPossible;
+async function playPlaylist(id: string) {
+  const playlist = await $music.getPlaylist(id);
+  if (playlist && playlist.songs.length > 0) {
+    await $settings.setQueue(playlist.songs);
+    await playSong(playlist.songs[0].id);
   }
 }
 
-function updateWidthPlaylists() {
-  if (playlist_cards.value) {
-    const width = playlist_cards.value.clientWidth;
-    const final = Math.round((width - 32) / 3);
-    playlist_cards.value.style.gridTemplateColumns = `repeat(3, ${final}px)`;
-  }
-}
-
-async function play(id) {
-  if ($music && $music.setSong && $music.play) {
-    await $music.setSong(id).then(() => {
-      $music.play();
-    });
-  }
-}
-
-function truncate(text, length = 24) {
+function truncate(text: string, length = 24) {
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 }
 
-const sortedPlaylists = computed(() => {
-  return playlists.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-});
-
-const sortedRecentlyPlayed = ref([]);
-
-watch(() => [musicStore.getLastUpdated(), maxCards.value], () => {
-  sortedRecentlyPlayed.value = musicStore.sortedRecentlyPlayed.value.slice(0, maxCards.value);
-}, { immediate: true });
-
 onMounted(async () => {
-  window.addEventListener('resize', updateWidthSongs);
-  window.addEventListener('resize', updateWidthPlaylists)
+  playlists.value = await $music.getPlaylists();
 
-  updateWidthSongs();
-  updateWidthPlaylists();
-})
+  const history = await $music.getHistory();
+  sortedRecentlyPlayed.value = history
+    .sort((a, b) => b.date_played.getTime() - a.date_played.getTime())
+    .slice(0, 5)
+    .map(item => item.song);
+});
 </script>
 
 <style scoped lang="scss">
-@import "~/assets/styles/pages/index.scss";
+@use "~/assets/styles/pages/index.scss";
 </style>

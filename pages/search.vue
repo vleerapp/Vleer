@@ -2,38 +2,32 @@
   <div class="main element">
     <p class="element-title">Search</p>
     <div class="search">
-      <div class="search-container">
-        <IconsSearch />
-        <input class="input" spellcheck="false" type="text" v-model="searchTerm" @input="handleInput"
-          placeholder="Search" />
-      </div>
       <div v-if="searchResults.length > 0" class="results">
         <div class="inline">
           <div class="top-result">
             <p>Top Result</p>
             <div @contextmenu.prevent="showContextMenu($event, searchResults[0])" class="content">
-              <img class="cover" :src="searchResults[0].thumbnail" :alt="searchResults[0].title" loading="lazy" />
+              <img :alt="searchResults[0].title" :src="searchResults[0].cover" class="cover" loading="lazy" />
               <div>
-                <div class="title">{{ truncate(searchResults[0].title) }}</div>
-                <div class="artist">{{ searchResults[0].uploaderName }}</div>
+                <div class="title">{{ searchResults[0].title }}</div>
+                <div class="artist">{{ searchResults[0].artist }}</div>
               </div>
               <div @click="play(searchResults[0])" class="play">
-                <svg width="11.083252px" height="14px" viewBox="0 0 11.083252 14" version="1.1"
-                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 0L0 14L11.083252 7L0 0Z" id="Shape" fill="#000000" stroke="none" />
+                <svg height="14px" version="1.1" viewBox="0 0 11.083252 14" width="11.083252px"
+                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <path d="M0 0L0 14L11.083252 7L0 0Z" fill="#000000" id="Shape" stroke="none" />
                 </svg>
               </div>
-              <ContextMenu :x="menuX" :y="menuY" :show="showMenu" :menuItems="menuItems" @close="closeContextMenu" />
+              <ContextMenu :menuItems="menuItems" :show="showMenu" :x="menuX" :y="menuY" @close="closeContextMenu" />
             </div>
           </div>
 
           <div class="songs">
             <p class="songs-title">Songs</p>
-            <div class="content">
-              <div @contextmenu.prevent="showContextMenu($event, song)"
-                v-for="(song, index) in searchResults.slice(1, 6)" :key="song.url.split('v=')[1]"
-                :class="['song', { playing: currentSong.id === song.url.split('v=')[1] }]"
-                @mouseover="hoveredSongId = song.url.split('v=')[1]" @mouseleave="hoveredSongId = ''">
+            <div class="content scrollable-songs">
+              <div :class="['song', { playing: isCurrentSong(song) }]" :key="song.id"
+                @contextmenu.prevent="showContextMenu($event, song)" @mouseleave="hoveredSongId = ''"
+                @mouseover="hoveredSongId = song.id" v-for="(song, index) in searchResults.slice(1, 6)">
                 <div class="inline-songs">
                   <div @click="play(song)" class="cover">
                     <div class="playing-indicator">
@@ -42,252 +36,585 @@
                       <div class="bar"></div>
                       <div class="bar"></div>
                     </div>
-                    <svg v-show="hoveredSongId === song.url.split('v=')[1]" width="14px" height="14px"
-                      viewBox="0 0 14 14" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
-                      xmlns="http://www.w3.org/2000/svg">
+                    <svg height="14px" version="1.1" viewBox="0 0 14 14" width="14px" v-show="hoveredSongId === song.id"
+                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="Group">
-                        <path d="M0 0L14 0L14 14L0 14L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd"
+                        <path d="M0 0L14 0L14 14L0 14L0 0Z" fill="none" fill-rule="evenodd" id="Rectangle"
                           stroke="none" />
-                        <path d="M2 14L2 0L12.5 7L2 14Z" id="Shape" fill="#FFFFFF" stroke="none" />
+                        <path d="M2 14L2 0L12.5 7L2 14Z" fill="#FFFFFF" id="Shape" stroke="none" />
                       </g>
                     </svg>
-                    <img :src="song.thumbnail || '/cover.png'" :alt="song.title" class="img" />
+                    <img :alt="song.title" :src="song.cover || '/cover.png'" class="img" />
                   </div>
                   <div class="titles">
-                    <p class="title">{{ truncateTitle(song.title) }}</p>
-                    <p class="artist">{{ truncateArtist(song.uploaderName) }}</p>
+                    <p class="title">{{ song.title }}</p>
+                    <p class="artist">{{ song.artist }}</p>
                   </div>
                 </div>
-                <p class="lenght">{{ formatDuration(song.duration) }}</p>
+                <p class="length">{{ formatDuration(song.duration) }}</p>
               </div>
-              <ContextMenu :x="menuX" :y="menuY" :show="showMenu" :menuItems="menuItems" @close="closeContextMenu" />
+              <ContextMenu :menuItems="menuItems" :show="showMenu" :x="menuX" :y="menuY" @close="closeContextMenu" />
             </div>
           </div>
         </div>
 
         <div class="albums">
-          <p>Albums</p>
+          <div class="section-header">
+            <p>Albums</p>
+            <div class="scroll-buttons">
+              <button :disabled="albumsScrollLeft === 0" @click="scroll('albums', 'left')"
+                class="scroll-button">&lt;</button>
+              <button :disabled="albumsScrollLeft >= albumsMaxScroll" @click="scroll('albums', 'right')"
+                class="scroll-button">&gt;</button>
+            </div>
+          </div>
+          <div class="album-grid" ref="albumsGrid">
+            <div :key="album.id" class="album-item" v-for="album in albums"
+              @contextmenu.prevent="showContextMenu($event, album, 'album')">
+              <img :alt="album.name" :src="album.cover" class="album-cover" />
+              <p class="album-title">{{ album.name }}</p>
+              <p class="album-artist">{{ album.artist }}</p>
+            </div>
+          </div>
         </div>
+
+        <div class="playlists">
+          <div class="section-header">
+            <p>Playlists</p>
+            <div class="scroll-buttons">
+              <button :disabled="playlistsScrollLeft === 0" @click="scroll('playlists', 'left')"
+                class="scroll-button">&lt;</button>
+              <button :disabled="playlistsScrollLeft >= playlistsMaxScroll" @click="scroll('playlists', 'right')"
+                class="scroll-button">&gt;</button>
+            </div>
+          </div>
+          <div class="playlist-grid" ref="playlistsGrid">
+            <div :key="playlist.id" class="playlist-item" v-for="playlist in playlists"
+              @contextmenu.prevent="showContextMenu($event, playlist, 'playlist')">
+              <img :alt="playlist.name" :src="playlist.cover" class="playlist-cover" />
+              <p class="playlist-title">{{ playlist.name }}</p>
+              <p class="playlist-owner">{{ playlist.artist }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="no-results" v-else-if="searchTerm && !isLoading">
+        No results found for "{{ searchTerm }}"
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { invoke } from '@tauri-apps/api/core';
-import { BaseDirectory, writeFile, exists } from '@tauri-apps/plugin-fs';
-import axios from 'axios';
-import type { MusicSearchResponseItem, MusicSearchResponse, Song } from '~/types/types';
+import { BaseDirectory, exists, writeFile } from '@tauri-apps/plugin-fs'
+import { invoke } from '@tauri-apps/api/core'
+import axios from 'axios'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import type { Song } from '~/types/types'
+import { debounce } from 'lodash-es'
 
-const { $music, $settings } = useNuxtApp();
+export interface Album {
+  artist: string
+  artistCover: string
+  cover: string
+  id: string
+  name: string
+  songs: Song[]
+}
 
-const searchTerm = ref("");
-const searchResults = ref<MusicSearchResponseItem[]>([]);
-let searchTimeout: ReturnType<typeof setTimeout>;
-const hoveredSongId = ref("");
+export interface Playlist {
+  id: string
+  artist: string
+  artistCover: string
+  cover: string
+  name: string
+  songs: Song[]
+}
 
-const currentSong = computed(() => {
-  return $music.getCurrentSong() || { id: '' };
-});
+export interface ResponseSong {
+  id: string
+  title: string
+  artist: string
+  artistCover: string
+  album: string
+  cover: string
+  duration: number
+}
 
-watch(currentSong, () => { });
+const { $music, $player, $settings } = useNuxtApp()
 
-async function searchSongs() {
-  if (searchTerm.value === "") {
-    searchResults.value = [];
-    return;
+const albums = ref<Album[]>([])
+const albumsGrid = ref<HTMLElement | null>(null)
+const albumsMaxScroll = ref(0)
+const albumsScrollLeft = ref(0)
+const currentSearchId = ref(0)
+const currentSong = computed(() => $player.currentSong)
+const hoveredSongId = ref('')
+const menuItems = ref<{ action: () => void; label: string }[]>([])
+const menuX = ref(0)
+const menuY = ref(0)
+const playlists = ref<Playlist[]>([])
+const playlistsGrid = ref<HTMLElement | null>(null)
+const playlistsMaxScroll = ref(0)
+const playlistsScrollLeft = ref(0)
+const route = useRoute()
+const searchResults = ref<ResponseSong[]>([])
+const searchTerm = ref('')
+const showMenu = ref(false)
+
+
+const isSongsLoading = ref(false)
+const isAlbumsLoading = ref(false)
+const isPlaylistsLoading = ref(false)
+
+
+const searchType = ref<SearchType>('songs')
+const isLoading = ref(false)
+
+
+type SearchType = 'songs' | 'albums' | 'playlists'
+
+const SEARCH_PRIORITY = {
+  SONGS: 1,
+  ALBUMS: 2,
+  PLAYLISTS: 3
+} as const
+
+const debouncedSearch = debounce(async (term: string) => {
+  if (term === "") {
+    clearResults()
+    return
   }
 
-  let apiURL = $settings.getApiURL()
+  const searchId = ++currentSearchId.value
+  const apiURL = await $settings.getApiUrl()
+  const encodedSearchTerm = encodeURIComponent(term).replace(/[!'()*]/g, escape)
 
-  try {
-    const response = await fetch(`https://api.wireway.ch/wave/ytmusicsearch?q=${encodeURIComponent(searchTerm.value)}`);
-    const data = await response.json();
-    searchResults.value = data.items.map((item: any) => ({
-      url: `https://www.youtube.com/watch?v=${item.id}`,
-      title: item.title,
-      thumbnail: `https://api.wireway.ch/wave/thumbnail/${item.id}`,
-      uploaderName: item.uploaderName,
-      uploaderAvatar: '',
-      duration: item.duration,
-      durationFormatted: `${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? '0' : ''}${item.duration % 60}`
-    }));
-  } catch (error) {
-    console.error("Failed to fetch songs:", error, searchTerm.value);
-    searchResults.value = [];
+  isLoading.value = true
+  
+  Promise.all([
+    (async () => {
+      isSongsLoading.value = true
+      try {
+        const response = await fetch(`${apiURL}/search/?query=${encodedSearchTerm}&filter=songs`, {
+          signal: AbortSignal.timeout(5000)
+        })
+        const data = await response.json()
+        if (searchId === currentSearchId.value) {
+          searchResults.value = (data.songs || []).map((song: any) => ({
+            id: song.id,
+            title: song.title,
+            artist: song.artist,
+            artistCover: song.artistCover || '',
+            album: song.album,
+            cover: processCoverImage(song.cover),
+            duration: song.duration || 0,
+          }))
+        }
+      } catch (error) {
+        console.error("Failed to fetch songs:", error)
+      } finally {
+        isSongsLoading.value = false
+      }
+    })(),
+
+    (async () => {
+      isAlbumsLoading.value = true
+      try {
+        const response = await fetch(`${apiURL}/search/?query=${encodedSearchTerm}&filter=albums`, {
+          signal: AbortSignal.timeout(5000)
+        })
+        const data = await response.json()
+        if (searchId === currentSearchId.value) {
+          albums.value = (data.albums || []).map((album: any) => ({
+            artist: album.artist,
+            artistCover: album.artistCover || '',
+            cover: processCoverImage(album.cover),
+            id: album.id,
+            name: album.name,
+            songs: album.songs || [],
+          }))
+        }
+      } catch (error) {
+        console.error("Failed to fetch albums:", error)
+      } finally {
+        isAlbumsLoading.value = false
+      }
+    })(),
+
+    (async () => {
+      isPlaylistsLoading.value = true
+      try {
+        const response = await fetch(`${apiURL}/search/?query=${encodedSearchTerm}&filter=playlists`, {
+          signal: AbortSignal.timeout(5000)
+        })
+        const data = await response.json()
+        if (searchId === currentSearchId.value) {
+          playlists.value = (data.playlists || []).map((playlist: any) => ({
+            artist: playlist.artist,
+            artistCover: playlist.artistCover || '',
+            cover: processCoverImage(playlist.cover),
+            id: playlist.id,
+            name: playlist.name,
+            songs: playlist.songs || [],
+          }))
+        }
+      } catch (error) {
+        console.error("Failed to fetch playlists:", error)
+      } finally {
+        isPlaylistsLoading.value = false
+      }
+    })()
+  ]).finally(() => {
+    isLoading.value = false
+  })
+}, 300)
+
+function processCoverImage(cover: any): string {
+  if (!cover) return '/cover.png'
+
+  if (typeof cover === 'string' && cover.startsWith('data:image')) {
+    return cover
+  }
+
+  if (typeof cover === 'string') {
+    if (cover.includes('w544-h544')) {
+      return cover.replace('w544-h544', 'w160-h160')
+    }
+    if (cover.includes('w120-h120')) {
+      return cover.replace('w120-h120', 'w160-h160')
+    }
+    return cover
+  }
+
+  return '/cover.png'
+}
+
+function clearResults() {
+  searchResults.value = []
+  albums.value = []
+  playlists.value = []
+}
+
+
+watch([
+  () => route.query.q,
+], ([newQuery]) => {
+  const query = newQuery as string || ''
+  searchTerm.value = query
+
+  if (query.length >= 2) {
+    debouncedSearch(query)
+  } else {
+    clearResults()
+  }
+})
+
+onMounted(() => {
+  searchTerm.value = route.query.q as string || ''
+  if (searchTerm.value) {
+    searchSongs()
+  }
+  updateMaxScroll()
+  window.addEventListener('click', closeContextMenu)
+  window.addEventListener('resize', updateMaxScroll)
+})
+
+async function addToLibrary(item: ResponseSong | Album | Playlist, type: 'song' | 'album' | 'playlist') {
+  switch (type) {
+    case 'song':
+      await addSongToLibrary(item as ResponseSong)
+      break
+    case 'album':
+
+      console.log('Adding album to library:', item)
+      break
+    case 'playlist':
+
+      console.log('Adding playlist to library:', item)
+      break
   }
 }
 
-function handleInput() {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    if (searchTerm.value.trim()) {
-      searchSongs();
-    }
-  }, 500);
+async function removeFromLibrary(item: ResponseSong | Album | Playlist, type: 'song' | 'album' | 'playlist') {
+  switch (type) {
+    case 'song':
+      await $music.removeSong((item as ResponseSong).id)
+      break
+    case 'album':
+
+      console.log('Removing album from library:', item)
+      break
+    case 'playlist':
+
+      console.log('Removing playlist from library:', item)
+      break
+  }
 }
 
-async function addToLibrary(song: MusicSearchResponseItem) {
+async function addSongToLibrary(song: ResponseSong) {
   try {
-    const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
-
-    if (!match || !match[1]) {
-      console.error("No valid ID found in the URL.");
-      return;
-    }
-
-    const videoId = match[1];
-    const isLossless = $settings.getLossless();
-    const mp3Exists = await exists(`Vleer/Songs/${videoId}.mp3`, { baseDir: BaseDirectory.Audio });
-    const flacExists = await exists(`Vleer/Songs/${videoId}.flac`, { baseDir: BaseDirectory.Audio });
+    const isLossless = await $settings.getLossless()
+    const flacExists = await exists(`Vleer/Songs/${song.id}.flac`, { baseDir: BaseDirectory.Audio })
+    const mp3Exists = await exists(`Vleer/Songs/${song.id}.mp3`, { baseDir: BaseDirectory.Audio })
 
     if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
-      var songData: Song = {
-        id: videoId,
+      const songData: Song = {
+        album: song.album,
+        artist: song.artist,
+        cover: `/thumbnail?id=${song.id}`,
+        date_added: new Date(),
+        duration: song.duration,
+        id: song.id,
         title: song.title,
-        artist: song.uploaderName,
-        length: song.duration,
-        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
-        date_added: formatDate(new Date())
       }
 
       try {
-        await invoke('download', { id: videoId, quality: isLossless ? 'lossless' : 'compressed' });
+        await invoke('download', { id: song.id, quality: isLossless ? 'lossless' : 'compressed', url: await $settings.getApiUrl() })
 
-        if (!mp3Exists && !flacExists) {
-          const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
-          const data = new Uint8Array(response.data);
-          await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-          await $music.addSongData(songData);
+        if (!flacExists && !mp3Exists) {
+          const response = await axios.get(song.cover, { responseType: 'arraybuffer' })
+          const data = new Uint8Array(response.data)
+          await writeFile(`Vleer/Covers/${song.id}.png`, data, { baseDir: BaseDirectory.Audio })
+          await $music.addSong(songData)
         }
       } catch (error) {
-        console.error('Error downloading video:', error);
-        return;
+        console.error('Error downloading video:', error)
+        return
       }
     }
   } catch (error) {
-    console.error("Failed to handle song play:", error);
+    console.error("Failed to add song to library:", error)
   }
-}
-
-async function play(song: MusicSearchResponseItem) {
-  try {
-    const match = song.url.match(/(?:\/watch\?v=)([^&]+)/)! as RegExpMatchArray;
-
-    if (!match || !match[1]) {
-      console.error("No valid ID found in the URL.");
-      return;
-    }
-
-    const videoId = match[1];
-    const isLossless = $settings.getLossless();
-    const mp3Exists = await exists(`Vleer/Songs/${videoId}.mp3`, { baseDir: BaseDirectory.Audio });
-    const flacExists = await exists(`Vleer/Songs/${videoId}.flac`, { baseDir: BaseDirectory.Audio });
-
-    if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
-      var songData: Song = {
-        id: videoId,
-        title: song.title,
-        artist: song.uploaderName,
-        length: song.duration,
-        cover: song.thumbnail.replace(/^https?:\/\/[^\/]+/, ''),
-        date_added: formatDate(new Date())
-      }
-
-      try {
-        await invoke('download', { id: videoId, quality: isLossless ? 'lossless' : 'compressed' });
-
-        if (!mp3Exists && !flacExists) {
-          const response = await axios.get(song.thumbnail.replace("w120-h120", "w500-h500"), { responseType: 'arraybuffer' });
-          const data = new Uint8Array(response.data);
-          await writeFile(`Vleer/Covers/${videoId}.png`, data, { baseDir: BaseDirectory.Audio });
-          await $music.addSongData(songData);
-        }
-      } catch (error) {
-        console.error('Error downloading video:', error);
-        return;
-      }
-    }
-
-    await $music.setSong(videoId);
-    $music.play();
-  } catch (error) {
-    console.error("Failed to handle song play:", error);
-  }
-}
-
-const formatDate = (date: Date) => {
-  let year = date.getFullYear();
-  let month = (date.getMonth() + 1).toString().padStart(2, '0');
-  let day = date.getDate().toString().padStart(2, '0');
-  let hours = date.getHours().toString().padStart(2, '0');
-  let minutes = date.getMinutes().toString().padStart(2, '0');
-  let seconds = date.getSeconds().toString().padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
-function truncate(text: string) {
-  const maxLength = Math.floor(252 / 10);
-  if (text.length > maxLength) {
-    return text.substring(0, maxLength) + '...';
-  }
-  return text;
-}
-
-function formatDuration(duration: number) {
-  const minutes = Math.floor(duration / 60);
-  const seconds = duration % 60;
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
-
-function truncateTitle(text: string) {
-  const maxLength = (window.innerWidth - 788) / 16;
-  if (text.length > maxLength) {
-    return text.substring(0, maxLength) + '...';
-  }
-  return text;
-}
-
-function truncateArtist(text: string) {
-  const maxLength = (window.innerWidth - 788) / 20;
-  if (text.length > maxLength) {
-    return text.substring(0, maxLength) + '...';
-  }
-  return text;
-}
-
-///////////////////////////
-
-const showMenu = ref(false);
-const menuX = ref(0);
-const menuY = ref(0);
-const menuItems = ref<{ label: string; action: () => void }[]>([]);
-
-function showContextMenu(event: MouseEvent, song: MusicSearchResponseItem) {
-  event.preventDefault();
-  menuX.value = event.clientX;
-  menuY.value = event.clientY;
-  showMenu.value = true;
-
-  menuItems.value = [
-    {
-      label: 'Add to library',
-      action: () => {
-        addToLibrary(song)
-      },
-    },
-  ];
 }
 
 function closeContextMenu() {
-  showMenu.value = false;
+  showMenu.value = false
 }
 
-onMounted(() => {
-  window.addEventListener('click', closeContextMenu);
-});
+function formatDuration(duration: number) {
+  const minutes = Math.floor(duration / 60)
+  const seconds = duration % 60
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+}
+
+function isCurrentSong(song: ResponseSong): boolean {
+  return !!currentSong.value && currentSong.value.value?.id === song.id
+}
+
+async function play(song: ResponseSong) {
+  try {
+    const isLossless = await $settings.getLossless()
+    const flacExists = await exists(`Vleer/Songs/${song.id}.flac`, { baseDir: BaseDirectory.Audio })
+    const mp3Exists = await exists(`Vleer/Songs/${song.id}.mp3`, { baseDir: BaseDirectory.Audio })
+
+    let dbSong = await $music.getSong(song.id)
+
+    if (!dbSong) {
+      const songData: Song = {
+        album: song.album,
+        artist: song.artist,
+        cover: `/thumbnail?id=${song.id}`,
+        date_added: new Date(),
+        duration: song.duration,
+        id: song.id,
+        title: song.title,
+      }
+
+      await $music.addSong(songData)
+      dbSong = songData
+    }
+
+    if ((isLossless && !flacExists) || (!isLossless && !mp3Exists)) {
+      try {
+        await invoke('download_from_backend', { id: song.id, quality: isLossless ? 'lossless' : 'compressed', url: await $settings.getApiUrl() })
+
+        if (!flacExists && !mp3Exists) {
+          const response = await axios.get(song.cover, { responseType: 'arraybuffer' })
+          const data = new Uint8Array(response.data)
+          await writeFile(`Vleer/Covers/${song.id}.png`, data, { baseDir: BaseDirectory.Audio })
+        }
+      } catch (error) {
+        console.error('Error downloading video:', error)
+        return
+      }
+    }
+
+    await $player.loadSong(dbSong)
+    $player.play()
+
+    const apiURL = await $settings.getApiUrl()
+    const encodedSearchTerm = encodeURIComponent(searchTerm.value).replace(/[!'()*]/g, escape)
+    const updateWeightURL = `${apiURL}/search/update-weight?query=${encodedSearchTerm}&selected_id=${song.id}`
+
+    try {
+      await fetch(updateWeightURL, {
+        method: 'POST',
+      })
+    } catch (error) {
+      console.error('Error updating weight:', error)
+    }
+  } catch (error) {
+    console.error("Failed to handle song play:", error)
+  }
+}
+
+function scroll(type: 'albums' | 'playlists', direction: 'left' | 'right') {
+  const grid = type === 'albums' ? albumsGrid.value : playlistsGrid.value
+  if (!grid) return
+
+  const newScrollLeft = direction === 'left'
+    ? Math.max(0, grid.scrollLeft - 200)
+    : Math.min(grid.scrollLeft + 200, grid.scrollWidth - grid.clientWidth)
+
+  grid.scrollTo({
+    behavior: 'smooth',
+    left: newScrollLeft,
+  })
+
+  if (type === 'albums') {
+    albumsScrollLeft.value = newScrollLeft
+  } else {
+    playlistsScrollLeft.value = newScrollLeft
+  }
+}
+
+async function searchSongs() {
+  if (searchTerm.value === "") {
+    albums.value = []
+    playlists.value = []
+    searchResults.value = []
+    return
+  }
+
+  const searchId = ++currentSearchId.value
+  const apiURL = await $settings.getApiUrl()
+  const encodedSearchTerm = encodeURIComponent(searchTerm.value).replace(/[!'()*]/g, escape)
+
+  isSongsLoading.value = true
+  try {
+    const songsResponse = await fetch(`${apiURL}/search?query=${encodedSearchTerm}&filter=songs`, {
+      signal: AbortSignal.timeout(5000)
+    })
+    const songsData = await songsResponse.json()
+    searchResults.value = (songsData.songs || []).map((song: any) => ({
+      id: song.id,
+      title: song.title,
+      artist: song.artist,
+      artistCover: song.artistCover || '',
+      album: song.album,
+      cover: processCoverImage(song.cover),
+      duration: song.duration || 0,
+    }))
+  } catch (error) {
+    console.error("Failed to fetch songs:", error)
+  } finally {
+    isSongsLoading.value = false
+  }
+
+  Promise.all([
+    (async () => {
+      isAlbumsLoading.value = true
+      try {
+        const albumsResponse = await fetch(`${apiURL}/search?query=${encodedSearchTerm}&filter=albums`, {
+          signal: AbortSignal.timeout(5000)
+        })
+        const albumsData = await albumsResponse.json()
+        albums.value = (albumsData.albums || []).map((album: any) => ({
+          artist: album.artist,
+          artistCover: album.artistCover || '',
+          cover: processCoverImage(album.cover),
+          id: album.id,
+          name: album.name,
+          songs: album.songs || [],
+        }))
+      } finally {
+        isAlbumsLoading.value = false
+      }
+    })(),
+    (async () => {
+      isPlaylistsLoading.value = true
+      try {
+        const playlistsResponse = await fetch(`${apiURL}/search?query=${encodedSearchTerm}&filter=playlists`, {
+          signal: AbortSignal.timeout(5000)
+        })
+        const playlistsData = await playlistsResponse.json()
+        playlists.value = (playlistsData.playlists || []).map((playlist: any) => ({
+          artist: playlist.artist,
+          artistCover: playlist.artistCover || '',
+          cover: processCoverImage(playlist.cover),
+          id: playlist.id,
+          name: playlist.name,
+          songs: playlist.songs || [],
+        }))
+      } finally {
+        isPlaylistsLoading.value = false
+      }
+    })()
+  ]).catch(error => console.error("Failed to fetch albums/playlists:", error))
+}
+
+async function checkIfInLibrary(item: ResponseSong | Album | Playlist, type: 'song' | 'album' | 'playlist'): Promise<boolean> {
+  switch (type) {
+    case 'song':
+      const song = await $music.getSong((item as ResponseSong).id)
+      return !!song
+    case 'album':
+      const albumSongs = await $music.getSongs()
+      return albumSongs.some(song => song.album === (item as Album).name)
+    case 'playlist':
+      const playlists = await $music.getPlaylists()
+      return playlists.some(playlist => playlist.id === (item as Playlist).id)
+    default:
+      return false
+  }
+}
+
+function showContextMenu(event: MouseEvent, item: ResponseSong | Album | Playlist, type: 'song' | 'album' | 'playlist' = 'song') {
+  event.preventDefault()
+  menuX.value = event.clientX
+  menuY.value = event.clientY
+  showMenu.value = true
+
+  menuItems.value = [
+    {
+      action: () => {
+        navigator.clipboard.writeText(item.id)
+      },
+      label: 'Copy ID',
+    },
+  ]
+
+  checkIfInLibrary(item, type).then(isInLibrary => {
+    menuItems.value.push({
+      action: () => {
+        if (isInLibrary) {
+          removeFromLibrary(item, type)
+        } else {
+          addToLibrary(item, type)
+        }
+      },
+      label: isInLibrary ? 'Remove from Library' : 'Add to Library',
+    })
+  })
+}
+
+function updateMaxScroll() {
+  if (albumsGrid.value) {
+    albumsMaxScroll.value = albumsGrid.value.scrollWidth - albumsGrid.value.clientWidth
+  }
+  if (playlistsGrid.value) {
+    playlistsMaxScroll.value = playlistsGrid.value.scrollWidth - playlistsGrid.value.clientWidth
+  }
+}
+
+watch([albums, playlists], () => {
+  setTimeout(updateMaxScroll, 0)
+})
 </script>
 
-<style scoped lang="scss">
-@import '~/assets/styles/pages/search.scss';
+<style lang="scss" scoped>
+@use '~/assets/styles/pages/search.scss';
 </style>
+script

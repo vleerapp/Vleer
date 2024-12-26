@@ -1,4 +1,5 @@
 @use '~/assets/styles/variables' as v;
+@use "sass:color";
 
 .element {
   padding: 0 !important;
@@ -117,15 +118,15 @@
 
     .freq:hover {
       .range::-webkit-slider-thumb {
-        background: darken(v.$text-bright, 20%);
+        background: color.scale(v.$text-bright, $lightness: -20%);
       }
 
       .range::-moz-range-thumb {
-        background: darken(v.$text-bright, 20%);
+        background: color.scale(v.$text-bright, $lightness: -20%);
       }
 
       .range::-ms-thumb {
-        background: darken(v.$text-bright, 20%);
+        background: color.scale(v.$text-bright, $lightness: -20%);
       }
     }
   }

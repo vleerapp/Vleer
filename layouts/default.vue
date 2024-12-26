@@ -1,6 +1,6 @@
 <template>
   <div class="default-layout">
-    <Pages />
+    <Navbar/>
     <Library />
     <slot />
     <Player />

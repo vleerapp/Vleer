@@ -1,96 +1,72 @@
 <template>
   <div class="library element">
     <p class="element-title">Library</p>
-    <div class="top">
-      <p class="link">
-        <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
-          xmlns="http://www.w3.org/2000/svg">
-          <g id="Icon">
-            <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
-            <path d="M2 14L2 2L3 2L3 14L2 14ZM5.5 14L5.5 2L6.5 2L6.5 14L5.5 14ZM8.8 14L8.8 2L13.8 4.5L13.8 14L8.8 14Z"
-              id="Rectangle-3-Union" fill-rule="evenodd" stroke="none" />
-          </g>
-        </svg>
-        Your Library
-      </p>
-      <button @click="createAndOpenPlaylist" class="create-playlist">
-        <IconsAdd />
-      </button>
-    </div>
     <div class="search-container">
       <IconsSearch />
-      <input class="input" spellcheck="false" placeholder="Search Playlists" v-model="searchQuery" />
+      <input class="input" spellcheck="false" placeholder="Search Library" v-model="searchQuery" />
     </div>
-    <div class="items">
-      <div v-for="playlist in filteredPlaylists" :key="playlist.id" @click="openPlaylist(playlist.id)" class="song">
-        <img :src="playlist.cover" class="cover">
-        <div class="info">
-          <p class="title">{{ truncate(playlist.name) }}</p>
+    <div class="top">
+      <NuxtLink to="/playlists" class="playlists link">
+        <div class="playlist-icon">
+          <IconsLibraryPlaylistFill v-if="$route.path === '/playlists'" />
+          <IconsLibraryPlaylistOutline v-else />
+          Playlists
         </div>
-      </div>
+        <button @click="createAndOpenPlaylist" class="create-playlist">
+          <IconsAdd />
+        </button>
+      </NuxtLink>
+      <NuxtLink to="/liked-songs" class="liked-songs link">
+        <IconsLibraryLikedFill v-if="$route.path === '/liked-songs'" />
+        <IconsLibraryLikedOutline v-else />
+        Liked Songs
+      </NuxtLink>
+      <NuxtLink to="/songs" class="songs link">
+        <IconsLibrarySongsFill v-if="$route.path === '/songs'" />
+        <IconsLibrarySongsOutline v-else />
+        Songs
+      </NuxtLink>
+      <NuxtLink to="/albums" class="albums link">
+        <IconsLibraryAlbumFill v-if="$route.path === '/albums'" />
+        <IconsLibraryAlbumOutline v-else />
+        Albums
+      </NuxtLink>
+      <NuxtLink to="/artists" class="artists link">
+        <IconsLibraryArtistFill v-if="$route.path === '/artists'" />
+        <IconsLibraryArtistOutline v-else />
+        Artists
+      </NuxtLink>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { type Playlist } from "~/types/types";
-import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
+import type { Playlist } from "~/types/types";
 
 const { $music } = useNuxtApp();
 const router = useRouter();
 
 const searchQuery = ref("");
-const playlists = ref<Playlist[]>([]);
-
-async function fetchPlaylists() {
-  const songsData = $music.getSongsData();
-  const rawPlaylists = songsData && songsData.playlists ? Object.values(songsData.playlists) : [];
-  const playlistsWithCovers = await Promise.all(rawPlaylists.map(async playlist => {
-    const cover = await $music.getCoverURLFromID(playlist.id);
-    return { ...playlist, cover: cover || '/cover.png' };
-  }));
-  playlists.value = playlistsWithCovers;
-}
-
-const filteredPlaylists = computed(() => {
-  return playlists.value.filter(playlist =>
-    playlist.name && playlist.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
-
-onMounted(() => {
-  fetchPlaylists()
-}),
-
-watch(() => $music.getSongsData().playlists, async () => {
-  await fetchPlaylists();
-}, { deep: true });
-
-function openPlaylist(playlistId: string) {
-  router.push(`/${playlistId}`);
-}
-
-function truncate(text: string, length: number = 45) {
-  return text.length > length ? text.substring(0, length - 3).trim() + "..." : text;
-}
 
 async function createAndOpenPlaylist() {
   const newPlaylistId = uuidv4();
   const newPlaylist: Playlist = {
     id: newPlaylistId,
     name: 'New Playlist',
-    date: new Date().toISOString(),
-    cover: '/cover.png',
+    date_created: new Date(),
     songs: []
   };
-  $music.createPlaylist(newPlaylist);
-  await fetchPlaylists();
-  router.push(`/${newPlaylistId}`);
+  try {
+    await $music.addPlaylist(newPlaylist);
+    router.push(`/${newPlaylistId}`);
+  } catch (error) {
+    console.error("Error creating playlist:", error);
+  }
 }
 </script>
 
 <style lang="scss">
-@import "~/assets/styles/components/library.scss";
+@use "~/assets/styles/components/library.scss";
 </style>
