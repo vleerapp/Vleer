@@ -13,8 +13,8 @@ anyhow = "1.0.95"
 discord-ipc-rp = "0.1.1"
 lazy_static = "1.5.0"
 regex = "1.11.1"
-reqwest = "0.12.9"
-serde = "1.0.216"
+reqwest = "0.12.11"
+serde = "1.0.217"
 serde_json = "1.0.134"
 sqlx = { version = "0.8.2", features = [
   "runtime-tokio",
@@ -28,7 +28,7 @@ base64 = "0.22.1"
 chrono = "0.4.39"
 include_dir = "0.7.4"
 tokio = { version = "1.42.0", features = ["full"] }
-serde_with = "3.11.0"
+serde_with = "3.12.0"
 
 tauri = { version = "2.1.1", features = ["devtools", "unstable"] }
 tauri-plugin-dialog = "2.2.0"
@@ -37,6 +37,7 @@ tauri-plugin-global-shortcut = "2.2.0"
 tauri-plugin-os = "2.2.0"
 tauri-plugin-prevent-default = "1.0.1"
 tauri-plugin-updater = "2.3.0"
+tauri-plugin-aptabase = { git = "https://github.com/aptabase/tauri-plugin-aptabase", branch = "v2" }
 
 
 [features]

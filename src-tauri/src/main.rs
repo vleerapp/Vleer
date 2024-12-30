@@ -9,6 +9,7 @@ mod utils;
 
 use crate::db::{music::MusicDatabase, settings::SettingsDatabase};
 use sqlx::sqlite::SqlitePoolOptions;
+use tauri_plugin_aptabase::{InitOptions, EventTracker};
 use std::env;
 use std::fs;
 use tauri::Manager;
@@ -16,11 +17,27 @@ use tauri_plugin_prevent_default::Flags;
 
 #[tokio::main]
 async fn main() {
+    let runtime = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+    let _guard = runtime.enter();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_aptabase::Builder::new("A-SH-4648501883")
+            .with_options(InitOptions {
+                host: Some("https://aptabase.pandadev.net".to_string()),
+                flush_interval: None,
+            })
+            .with_panic_hook(Box::new(|client, info, msg| {
+                let location = info.location().map(|loc| format!("{}:{}:{}", loc.file(), loc.line(), loc.column())).unwrap_or_else(|| "".to_string());
+
+                let _ = client.track_event("panic", Some(serde_json::json!({
+                    "info": format!("{} ({})", msg, location),
+                })));
+            }))
+            .build())
         .plugin(
             tauri_plugin_prevent_default::Builder::new()
                 .with_flags(Flags::all().difference(Flags::CONTEXT_MENU))
@@ -30,6 +47,8 @@ async fn main() {
         .setup(|app| {
             let app_data_dir = app.path().app_data_dir().unwrap();
             utils::logger::init_logger(&app_data_dir).expect("Failed to initialize logger");
+
+            let _ = app.track_event("app_started", None);
 
             let db_path = app_data_dir.join("data.db");
             let is_new_db = !db_path.exists();
