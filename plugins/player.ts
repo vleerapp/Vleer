@@ -96,7 +96,6 @@ export default defineNuxtPlugin((nuxtApp) => {
           await invoke('update_activity', {
             details: `by ${this.currentSong.value?.artist}`,
             largeImage: 'https://api.vleer.app/thumbnail?id=' + this.currentSong.value?.id,
-            largeImageText: this.currentSong.value?.title,
             state: this.currentSong.value?.title,
             youtubeUrl: 'https://www.youtube.com/watch?v=' + this.currentSong.value?.id
           })

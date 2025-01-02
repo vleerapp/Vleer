@@ -1,12 +1,13 @@
-use discord_ipc_rp::{activity, DiscordIpc, DiscordIpcClient};
+use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
 use lazy_static::lazy_static;
 use std::env;
 use std::sync::Mutex;
 use std::thread;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 lazy_static! {
     static ref DRPC_CLIENT: Mutex<Option<DiscordIpcClient>> =
-        Mutex::new(Some(DiscordIpcClient::new("1194990403963858984")));
+        Mutex::new(Some(DiscordIpcClient::new("1194990403963858984").unwrap()));
 }
 
 fn is_discord_rpc_disabled() -> bool {
@@ -53,7 +54,6 @@ pub fn update_activity(
     state: String,
     details: String,
     large_image: String,
-    large_image_text: String,
     youtube_url: Option<String>,
 ) -> Result<(), String> {
     if is_discord_rpc_disabled() {
@@ -64,14 +64,20 @@ pub fn update_activity(
         let drpc = DRPC_CLIENT.lock().map_err(|e| e.to_string());
         if let Ok(mut drpc) = drpc {
             if let Some(ref mut client) = *drpc {
+                let start_timestamp = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .expect("Time went backwards")
+                    .as_secs() as i64;
+
                 let mut activity_builder = activity::Activity::new()
                     .state(&state)
                     .details(&details)
                     .assets(
                         activity::Assets::new()
                             .large_image(&large_image)
-                            .large_text(&large_image_text),
-                    );
+                    )
+                    .timestamps(activity::Timestamps::new().start(start_timestamp))
+                    .activity_type(activity::ActivityType::Listening);
 
                 if let Some(ref url) = youtube_url {
                     let youtube_button = activity::Button::new("YouTube", url);

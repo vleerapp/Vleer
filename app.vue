@@ -6,43 +6,48 @@
 </template>
 
 <script lang="ts" setup>
-import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut';
-import initializeSettings from '~/plugins/settings';
+import {
+  register,
+  unregister,
+  isRegistered,
+} from "@tauri-apps/plugin-global-shortcut";
+import initializeSettings from "~/plugins/settings";
+import { invoke } from "@tauri-apps/api/core";
 
 const { $player, $settings } = useNuxtApp();
 
 onMounted(async () => {
-  await initializeSettings(useNuxtApp())
+  await initializeSettings(useNuxtApp());
 
-  document.addEventListener('keydown', handleKeyDown);
-  document.addEventListener('focusin', updateFocus);
-  document.addEventListener('focusout', updateFocus);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("focusin", updateFocus);
+  document.addEventListener("focusout", updateFocus);
 
   if (await isRegistered("MediaPlayPause")) {
-    await unregister("MediaPlayPause")
+    await unregister("MediaPlayPause");
   }
 
-  await register('MediaPlayPause', (event) => {
+  await register("MediaPlayPause", (event) => {
     if (event.state === "Pressed") {
-      $player.playPause()
+      $player.playPause();
     }
   });
 
   if (await isRegistered("MediaTrackNext")) {
-    await unregister("MediaTrackNext")
+    await unregister("MediaTrackNext");
   }
 
-  await register('MediaTrackNext', (event) => {
+  await register("MediaTrackNext", (event) => {
     if (event.state === "Pressed") {
-      $player.skip()
+      $player.skip();
     }
   });
 
   if (await isRegistered("MediaTrackPrevious")) {
-    await unregister("MediaTrackPrevious")
+    await unregister("MediaTrackPrevious");
   }
 
-  await register('MediaTrackPrevious', (event) => {
+  await register("MediaTrackPrevious", (event) => {
     if (event.state === "Pressed") {
       $player.rewind();
     }
@@ -50,27 +55,27 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  document.removeEventListener('keydown', handleKeyDown);
-  document.removeEventListener('focusin', updateFocus);
-  document.removeEventListener('focusout', updateFocus);
+  document.removeEventListener("keydown", handleKeyDown);
+  document.removeEventListener("focusin", updateFocus);
+  document.removeEventListener("focusout", updateFocus);
 
   if (await isRegistered("MediaPlayPause")) {
-    await unregister("MediaPlayPause")
+    await unregister("MediaPlayPause");
   }
 
   if (await isRegistered("MediaTrackNext")) {
-    await unregister("MediaTrackNext")
+    await unregister("MediaTrackNext");
   }
 
   if (await isRegistered("MediaTrackPrevious")) {
-    await unregister("MediaTrackPrevious")
+    await unregister("MediaTrackPrevious");
   }
 });
 
 const isTextInputFocused = ref(false);
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.code === 'Space' && !isTextInputFocused.value) {
+  if (event.code === "Space" && !isTextInputFocused.value) {
     $player.playPause();
     event.preventDefault();
   }
@@ -78,11 +83,12 @@ function handleKeyDown(event: KeyboardEvent) {
 
 function updateFocus() {
   const activeElement = document.activeElement;
-  isTextInputFocused.value = activeElement instanceof HTMLInputElement ||
+  isTextInputFocused.value =
+    activeElement instanceof HTMLInputElement ||
     activeElement instanceof HTMLTextAreaElement;
 }
 </script>
 
 <style lang="scss">
-@use '~/assets/styles/global';
+@use "~/assets/styles/global";
 </style>

@@ -10,10 +10,10 @@ tauri-build = { version = "2.0.3", features = [] }
 
 [dependencies]
 anyhow = "1.0.95"
-discord-ipc-rp = "0.1.1"
+discord-rich-presence = "0.2.5"
 lazy_static = "1.5.0"
 regex = "1.11.1"
-reqwest = "0.12.11"
+reqwest = "0.12.12"
 serde = "1.0.217"
 serde_json = "1.0.134"
 sqlx = { version = "0.8.2", features = [
