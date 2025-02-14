@@ -59,10 +59,9 @@ Free and open source alternative to Spotify, Apple Music etc. With privacy in mi
 
 <details>
   <summary><kbd>Star History</kbd></summary>
-  <a href="https://star-history.com/#vleerapp/vleer&Date">
+  <a href="https://starchart.cc/vleerapp/vleer">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=vleerapp/vleer&theme=dark&type=Date">
-      <img width="100%" src="https://api.star-history.com/svg?repos=vleerapp/vleer&type=Date">
+      <img width="100%" src="https://starchart.cc/vleerapp/vleer.svg?variant=adaptive">
     </picture>
   </a>
 </details>
