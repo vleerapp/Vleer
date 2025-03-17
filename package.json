@@ -26,7 +26,7 @@
     "@tauri-apps/plugin-sql": "2.2.0",
     "@types/howler": "2.2.12",
     "@types/uuid": "10.0.0",
-    "axios": "1.7.9",
+    "axios": "1.8.2",
     "howler": "2.2.4",
     "lodash-es": "4.17.21",
     "pinia": "2.3.0",
