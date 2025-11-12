@@ -189,13 +189,13 @@ pub async fn run() -> anyhow::Result<()> {
     })?;
 
     let pool = create_pool(data_dir.join("library.db")).await?;
-    let database = Database::init(pool.clone());
 
     Application::new()
         .with_assets(VleerAssetSource::new())
         .run(move |cx| {
-            cx.set_global(database);
             gpui_component::init(cx);
+            Database::init(cx, pool);
+            
             find_fonts(cx).expect("unable to load fonts");
 
             cx.open_window(

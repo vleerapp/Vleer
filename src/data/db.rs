@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use gpui::Global;
+use gpui::{App, Global};
 use sqlx::{
     SqlitePool,
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqliteSynchronous},
@@ -35,15 +35,10 @@ pub struct Database {
 impl Global for Database {}
 
 impl Database {
-    pub fn init(pool: sqlx::Pool<sqlx::Sqlite>) -> Self {
-        Self { pool }
+    pub fn init(cx: &mut App, pool: SqlitePool) {
+        cx.set_global(Database { pool });
     }
 
-    pub fn global(cx: &gpui::App) -> Self {
-        cx.global::<Database>().clone()
-    }
-
-    // Song operations
     pub async fn insert_song(
         &self,
         title: String,
@@ -57,20 +52,20 @@ impl Database {
     ) -> Result<Cuid, sqlx::Error> {
         let id = Cuid::new();
         sqlx::query(
-            "INSERT INTO songs (id, title, artist_id, album_id, genre, date, duration, cover, track_number)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        )
-        .bind(&id)
-        .bind(&title)
-        .bind(&artist_id)
-        .bind(&album_id)
-        .bind(&genre)
-        .bind(&date)
-        .bind(&duration)
-        .bind(&cover)
-        .bind(&track_number)
-        .execute(&self.pool)
-        .await?;
+                "INSERT INTO songs (id, title, artist_id, album_id, genre, date, duration, cover, track_number)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            )
+            .bind(&id)
+            .bind(&title)
+            .bind(&artist_id)
+            .bind(&album_id)
+            .bind(&genre)
+            .bind(&date)
+            .bind(&duration)
+            .bind(&cover)
+            .bind(&track_number)
+            .execute(&self.pool)
+            .await?;
         Ok(id)
     }
 
@@ -87,7 +82,6 @@ impl Database {
             .await
     }
 
-    // Artist operations
     pub async fn insert_artist(
         &self,
         name: String,
@@ -116,7 +110,6 @@ impl Database {
             .await
     }
 
-    // Album operations
     pub async fn insert_album(
         &self,
         title: String,
@@ -147,7 +140,6 @@ impl Database {
             .await
     }
 
-    // Playlist operations
     pub async fn insert_playlist(
         &self,
         name: String,
@@ -178,7 +170,6 @@ impl Database {
             .await
     }
 
-    // Event operations
     pub async fn insert_event(
         &self,
         event_type: crate::data::types::EventType,
