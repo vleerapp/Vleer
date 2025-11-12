@@ -43,25 +43,27 @@ impl Render for MainWindow {
                         div()
                             .w(px(300.0))
                             .h_full()
-                            .on_mouse_move(cx.listener(|this, _event: &MouseMoveEvent, _window: &mut Window, cx| {
-                                this.library.update(cx, |library, cx| {
-                                    library.hovered = true;
-                                    cx.notify();
-                                });
-                                this.navbar.update(cx, |navbar, cx| {
-                                    navbar.hovered = false;
-                                    cx.notify();
-                                });
-                                this.home_view.update(cx, |home, cx| {
-                                    home.hovered = false;
-                                    cx.notify();
-                                });
-                                this.player.update(cx, |player, cx| {
-                                    player.hovered = false;
-                                    cx.notify();
-                                });
-                            }))
-                            .child(self.library.clone())
+                            .on_mouse_move(cx.listener(
+                                |this, _event: &MouseMoveEvent, _window: &mut Window, cx| {
+                                    this.library.update(cx, |library, cx| {
+                                        library.hovered = true;
+                                        cx.notify();
+                                    });
+                                    this.navbar.update(cx, |navbar, cx| {
+                                        navbar.hovered = false;
+                                        cx.notify();
+                                    });
+                                    this.home_view.update(cx, |home, cx| {
+                                        home.hovered = false;
+                                        cx.notify();
+                                    });
+                                    this.player.update(cx, |player, cx| {
+                                        player.hovered = false;
+                                        cx.notify();
+                                    });
+                                },
+                            ))
+                            .child(self.library.clone()),
                     )
                     .child(
                         v_flex()
@@ -72,76 +74,87 @@ impl Render for MainWindow {
                                 div()
                                     .h(px(48.0))
                                     .w_full()
-                                    .on_mouse_move(cx.listener(|this, _event: &MouseMoveEvent, _window: &mut Window, cx| {
-                                        this.library.update(cx, |library, cx| {
-                                            library.hovered = false;
-                                            cx.notify();
-                                        });
-                                        this.navbar.update(cx, |navbar, cx| {
-                                            navbar.hovered = true;
-                                            cx.notify();
-                                        });
-                                        this.home_view.update(cx, |home, cx| {
-                                            home.hovered = false;
-                                            cx.notify();
-                                        });
-                                        this.player.update(cx, |player, cx| {
-                                            player.hovered = false;
-                                            cx.notify();
-                                        });
-                                    }))
-                                    .child(self.navbar.clone())
+                                    .on_mouse_move(cx.listener(
+                                        |this,
+                                         _event: &MouseMoveEvent,
+                                         _window: &mut Window,
+                                         cx| {
+                                            this.library.update(cx, |library, cx| {
+                                                library.hovered = false;
+                                                cx.notify();
+                                            });
+                                            this.navbar.update(cx, |navbar, cx| {
+                                                navbar.hovered = true;
+                                                cx.notify();
+                                            });
+                                            this.home_view.update(cx, |home, cx| {
+                                                home.hovered = false;
+                                                cx.notify();
+                                            });
+                                            this.player.update(cx, |player, cx| {
+                                                player.hovered = false;
+                                                cx.notify();
+                                            });
+                                        },
+                                    ))
+                                    .child(self.navbar.clone()),
                             )
                             .child(
                                 div()
                                     .flex_1()
                                     .w_full()
-                                    .on_mouse_move(cx.listener(|this, _event: &MouseMoveEvent, _window: &mut Window, cx| {
-                                        this.library.update(cx, |library, cx| {
-                                            library.hovered = false;
-                                            cx.notify();
-                                        });
-                                        this.navbar.update(cx, |navbar, cx| {
-                                            navbar.hovered = false;
-                                            cx.notify();
-                                        });
-                                        this.home_view.update(cx, |home, cx| {
-                                            home.hovered = true;
-                                            cx.notify();
-                                        });
-                                        this.player.update(cx, |player, cx| {
-                                            player.hovered = false;
-                                            cx.notify();
-                                        });
-                                    }))
-                                    .child(content)
+                                    .on_mouse_move(cx.listener(
+                                        |this,
+                                         _event: &MouseMoveEvent,
+                                         _window: &mut Window,
+                                         cx| {
+                                            this.library.update(cx, |library, cx| {
+                                                library.hovered = false;
+                                                cx.notify();
+                                            });
+                                            this.navbar.update(cx, |navbar, cx| {
+                                                navbar.hovered = false;
+                                                cx.notify();
+                                            });
+                                            this.home_view.update(cx, |home, cx| {
+                                                home.hovered = true;
+                                                cx.notify();
+                                            });
+                                            this.player.update(cx, |player, cx| {
+                                                player.hovered = false;
+                                                cx.notify();
+                                            });
+                                        },
+                                    ))
+                                    .child(content),
                             ),
                     ),
-                    
             )
             .child(
                 div()
                     .h(px(100.0))
                     .w_full()
-                    .on_mouse_move(cx.listener(|this, _event: &MouseMoveEvent, _window: &mut Window, cx| {
-                        this.library.update(cx, |library, cx| {
-                            library.hovered = false;
-                            cx.notify();
-                        });
-                        this.navbar.update(cx, |navbar, cx| {
-                            navbar.hovered = false;
-                            cx.notify();
-                        });
-                        this.home_view.update(cx, |home, cx| {
-                            home.hovered = false;
-                            cx.notify();
-                        });
-                        this.player.update(cx, |player, cx| {
-                            player.hovered = true;
-                            cx.notify();
-                        });
-                    }))
-                    .child(self.player.clone())
+                    .on_mouse_move(cx.listener(
+                        |this, _event: &MouseMoveEvent, _window: &mut Window, cx| {
+                            this.library.update(cx, |library, cx| {
+                                library.hovered = false;
+                                cx.notify();
+                            });
+                            this.navbar.update(cx, |navbar, cx| {
+                                navbar.hovered = false;
+                                cx.notify();
+                            });
+                            this.home_view.update(cx, |home, cx| {
+                                home.hovered = false;
+                                cx.notify();
+                            });
+                            this.player.update(cx, |player, cx| {
+                                player.hovered = true;
+                                cx.notify();
+                            });
+                        },
+                    ))
+                    .child(self.player.clone()),
             )
     }
 }
@@ -187,6 +200,11 @@ pub async fn run() -> anyhow::Result<()> {
 
             cx.open_window(
                 WindowOptions {
+                    titlebar: Some(TitlebarOptions {
+                        title: Some(SharedString::new("Vleer")),
+                        appears_transparent: true,
+                        traffic_light_position: None,
+                    }),
                     app_id: Some("app.vleerapp.vleer".to_string()),
                     kind: gpui::WindowKind::Normal,
                     ..Default::default()
