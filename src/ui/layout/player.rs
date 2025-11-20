@@ -1,7 +1,20 @@
 use gpui::*;
-use gpui_component::*;
+use gpui_component::{StyledExt, h_flex, v_flex};
+use tracing::info;
 
-use crate::ui::utils::rgba_hex;
+use crate::{
+    data::settings::Settings,
+    media::{PlaybackContext, Queue, RepeatMode},
+    ui::{
+        components::{
+            button::Button,
+            icons::{icon::icon, icons::*},
+            slider::slider,
+            title::Title,
+        },
+        variables::Variables,
+    },
+};
 
 pub struct Player {
     pub hovered: bool,
@@ -11,15 +24,160 @@ impl Player {
     pub fn new() -> Self {
         Self { hovered: false }
     }
+
+    fn format_time(seconds: f32) -> String {
+        let mins = (seconds / 60.0).floor() as i32;
+        let secs = (seconds % 60.0).floor() as i32;
+        format!("{:02}:{:02}", mins, secs)
+    }
 }
 
 impl Render for Player {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
-        let color = if self.hovered {
-            rgba_hex(0xA058FF)
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let variables = cx.global::<Variables>();
+
+        let border_color = if self.hovered {
+            variables.accent
         } else {
-            rgba_hex(0x535353)
+            variables.border
         };
+
+        let current_track = cx.global::<Queue>().current().map(|item| {
+            (
+                item.title
+                    .clone()
+                    .unwrap_or_else(|| "Unknown Track".to_string()),
+                item.artist_name
+                    .clone()
+                    .unwrap_or_else(|| "Unknown Artist".to_string()),
+            )
+        });
+
+        let is_playing = cx.global::<PlaybackContext>().is_playing();
+        let volume = cx.global::<PlaybackContext>().get_volume();
+        let repeat_mode = cx.global::<Queue>().repeat_mode();
+        let _is_shuffle = cx.global::<Queue>().is_shuffle();
+
+        let play_button = Button::new("play_pause")
+            .child(if is_playing { icon(PAUSE) } else { icon(PLAY) })
+            .on_click(cx.listener(|_this, _event, _window, cx| {
+                cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                    playback.toggle_play_pause();
+                });
+                cx.notify();
+            }));
+
+        let prev_button = Button::new("previous")
+            .child(icon(PREVIOUS))
+            .on_click(cx.listener(|_this, _event, _window, cx| {
+                let next_item = cx.update_global::<Queue, _>(|queue, _cx| {
+                    queue.previous().map(|item| item.path.clone())
+                });
+
+                if let Some(path) = next_item {
+                    let settings = cx.global::<Settings>().clone();
+                    cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                        if let Err(e) = playback.load_file(&path, &settings) {
+                            tracing::error!("Failed to load previous track: {}", e);
+                        } else {
+                            playback.play();
+                        }
+                    });
+                }
+                cx.notify();
+            }));
+
+        let next_button = Button::new("next").child(icon(NEXT)).on_click(cx.listener(
+            |_this, _event, _window, cx| {
+                let next_item = cx.update_global::<Queue, _>(|queue, _cx| {
+                    queue.next().map(|item| item.path.clone())
+                });
+
+                if let Some(path) = next_item {
+                    let settings = cx.global::<Settings>().clone();
+                    cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                        if let Err(e) = playback.load_file(&path, &settings) {
+                            tracing::error!("Failed to load next track: {}", e);
+                        } else {
+                            playback.play();
+                        }
+                    });
+                }
+                cx.notify();
+            },
+        ));
+
+        let shuffle_button = Button::new("shuffle")
+            .child(icon(SHUFFLE))
+            .on_click(cx.listener(|_this, _event, _window, cx| {
+                cx.update_global::<Queue, _>(|queue, _cx| {
+                    queue.toggle_shuffle();
+                });
+                cx.notify();
+            }));
+
+        let repeat_icon = match repeat_mode {
+            RepeatMode::Off => REPLAY,
+            RepeatMode::All => REPLAY,
+            RepeatMode::One => REPLAY_1,
+        };
+
+        let repeat_button = Button::new("repeat")
+            .child(icon(repeat_icon))
+            .on_click(cx.listener(|_this, _event, _window, cx| {
+                cx.update_global::<Queue, _>(|queue, _cx| {
+                    queue.cycle_repeat();
+                });
+                cx.notify();
+            }));
+
+        let controls = h_flex()
+            .gap(px(variables.small_padding))
+            .items_center()
+            .child(shuffle_button)
+            .child(prev_button)
+            .child(play_button)
+            .child(next_button)
+            .child(repeat_button);
+
+        let track_info = if let Some((title, artist)) = current_track {
+            v_flex()
+                .gap(px(4.0))
+                .child(div().text_sm().font_weight(FontWeight::BOLD).child(title))
+                .child(div().text_xs().text_color(rgb(0x999999)).child(artist))
+        } else {
+            v_flex().gap(px(4.0)).child(
+                div()
+                    .text_sm()
+                    .text_color(rgb(0x666666))
+                    .child("No track loaded"),
+            )
+        };
+
+        let volume_icon = match volume {
+            v if v == 0.0 => MUTE,
+            v if v <= 0.33 => VOLUME_1,
+            v if v <= 0.66 => VOLUME_2,
+            v if v <= 1.0 => VOLUME_3,
+            _ => VOLUME,
+        };
+
+        let volume_display = h_flex()
+            .gap(px(variables.small_padding))
+            .items_center()
+            .child(icon(volume_icon))
+            .child(
+                slider()
+                    .id("volume-slider")
+                    .w(px(150.0))
+                    .h(px(16.0))
+                    .value(volume)
+                    .on_change(|value, _window, cx| {
+                        cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                            playback.set_volume(value);
+                        });
+                    }),
+            );
 
         div()
             .relative()
@@ -27,20 +185,21 @@ impl Render for Player {
             .child(
                 v_flex()
                     .border(px(1.0))
-                    .border_color(color)
+                    .border_color(border_color)
                     .h_full()
-                    .pt(px(10.0))
-                    .px(px(10.0)),
+                    .paddings(px(variables.default_padding))
+                    .gap(px(variables.small_padding))
+                    .child(
+                        h_flex()
+                            .h(px(36.0))
+                            .w_full()
+                            .items_center()
+                            .justify_between()
+                            .child(track_info)
+                            .child(controls)
+                            .child(volume_display),
+                    ),
             )
-            .child(
-                div()
-                    .absolute()
-                    .top(px(-12.0))
-                    .left(px(6.0))
-                    .px(px(2.0))
-                    .bg(rgba_hex(0x121212))
-                    .text_color(color)
-                    .child("Player"),
-            )
+            .child(Title::new("Player", self.hovered))
     }
 }
