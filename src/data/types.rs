@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(transparent)]
 pub struct Cuid(String);
 
@@ -23,6 +23,7 @@ pub struct Song {
     pub title: String,
     pub artist_id: Option<Cuid>,
     pub album_id: Option<Cuid>,
+    pub file_path: String,
     pub genre: Option<String>,
     pub date: Option<String>,
     pub date_added: String,
