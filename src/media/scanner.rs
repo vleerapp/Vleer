@@ -1,0 +1,508 @@
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::Duration;
+
+use anyhow::{Context, Result};
+use futures::stream::{self, StreamExt};
+use lofty::file::{AudioFile, TaggedFileExt};
+use lofty::tag::Accessor;
+use notify::{EventKind, RecommendedWatcher, RecursiveMode, event::ModifyKind};
+use notify_debouncer_full::{DebounceEventResult, Debouncer, NoCache, new_debouncer};
+use tokio::sync::mpsc;
+use tracing::{debug, error, info, warn};
+use walkdir::WalkDir;
+
+use crate::data::db::Database;
+use crate::data::types::Cuid;
+use crate::media::QueueItem;
+
+const SUPPORTED_EXTENSIONS: &[&str] = &["mp3", "flac", "ogg", "m4a", "aac", "wav", "mp1", "mp2"];
+
+const MAX_CONCURRENT_SCANS: usize = 16;
+
+#[derive(Debug, Clone)]
+pub struct ScanStats {
+    pub scanned: usize,
+    pub added: usize,
+    pub updated: usize,
+    pub removed: usize,
+}
+
+#[derive(Debug, Clone)]
+enum SaveAction {
+    Added,
+    Updated,
+    Unchanged,
+}
+
+#[derive(Debug, Clone)]
+pub struct ScannedTrack {
+    pub path: PathBuf,
+    pub title: Option<String>,
+    pub artist: Option<String>,
+    pub album: Option<String>,
+    pub album_artist: Option<String>,
+    pub track_number: Option<u32>,
+    pub year: Option<i32>,
+    pub duration: Option<Duration>,
+    pub genre: Option<String>,
+}
+
+impl ScannedTrack {
+    pub fn to_queue_item(&self) -> QueueItem {
+        QueueItem::with_metadata(
+            self.path.clone(),
+            None,
+            self.title.clone(),
+            self.artist.clone(),
+            self.album.clone(),
+            self.duration.map(|d| d.as_secs() as i32),
+        )
+    }
+}
+
+pub struct MusicScanner {
+    scan_paths: Vec<PathBuf>,
+}
+
+impl MusicScanner {
+    pub fn new(scan_paths: Vec<PathBuf>) -> Self {
+        Self { scan_paths }
+    }
+
+    pub async fn scan(&self) -> Result<Vec<ScannedTrack>> {
+        let mut all_tracks = Vec::new();
+
+        for path in &self.scan_paths {
+            info!("Scanning directory: {:?}", path);
+
+            if !path.exists() {
+                warn!("Scan path does not exist: {:?}", path);
+                continue;
+            }
+
+            if !path.is_dir() {
+                warn!("Scan path is not a directory: {:?}", path);
+                continue;
+            }
+
+            match self.scan_directory(path).await {
+                Ok(mut found_tracks) => {
+                    info!("Found {} tracks in {:?}", found_tracks.len(), path);
+                    all_tracks.append(&mut found_tracks);
+                }
+                Err(e) => {
+                    error!("Error scanning directory {:?}: {}", path, e);
+                }
+            }
+        }
+
+        info!("Scan complete. Found {} total tracks", all_tracks.len());
+        Ok(all_tracks)
+    }
+
+    async fn scan_directory(&self, path: &Path) -> Result<Vec<ScannedTrack>> {
+        let path = path.to_path_buf();
+
+        let audio_files = tokio::task::spawn_blocking(move || {
+            let mut files = Vec::new();
+            for entry in WalkDir::new(&path)
+                .follow_links(true)
+                .into_iter()
+                .filter_map(|e| e.ok())
+            {
+                let path = entry.path();
+                if path.is_file() && Self::is_audio_file(path) {
+                    files.push(path.to_path_buf());
+                }
+            }
+            files
+        })
+        .await
+        .context("Failed to walk directory")?;
+
+        info!("Found {} audio files to scan", audio_files.len());
+
+        let tracks: Vec<ScannedTrack> = stream::iter(audio_files)
+            .map(|path| async move {
+                let path_clone = path.clone();
+                tokio::task::spawn_blocking(move || Self::read_metadata(&path))
+                    .await
+                    .ok()
+                    .and_then(|result| {
+                        result
+                            .map_err(|e| {
+                                warn!("Failed to read metadata from {:?}: {}", path_clone, e);
+                                e
+                            })
+                            .ok()
+                    })
+            })
+            .buffer_unordered(MAX_CONCURRENT_SCANS)
+            .filter_map(|track| async move { track })
+            .collect()
+            .await;
+
+        debug!("Successfully scanned {} tracks", tracks.len());
+        Ok(tracks)
+    }
+
+    fn is_audio_file(path: &Path) -> bool {
+        path.extension()
+            .and_then(|ext| ext.to_str())
+            .map(|ext| SUPPORTED_EXTENSIONS.contains(&ext.to_lowercase().as_str()))
+            .unwrap_or(false)
+    }
+
+    fn read_metadata(path: &Path) -> Result<ScannedTrack> {
+        let tagged_file = lofty::read_from_path(path)
+            .with_context(|| format!("Failed to read audio file: {:?}", path))?;
+
+        let properties = tagged_file.properties();
+        let duration = properties.duration();
+
+        let tag = tagged_file
+            .primary_tag()
+            .or_else(|| tagged_file.first_tag());
+
+        let (title, artist, album, album_artist, track_number, year, genre) = if let Some(tag) = tag
+        {
+            (
+                tag.title().map(|s| s.to_string()),
+                tag.artist().map(|s| s.to_string()),
+                tag.album().map(|s| s.to_string()),
+                tag.get_string(&lofty::tag::ItemKey::AlbumArtist)
+                    .map(|s| s.to_string()),
+                tag.track(),
+                tag.year().map(|y| y as i32),
+                tag.genre().map(|s| s.to_string()),
+            )
+        } else {
+            (None, None, None, None, None, None, None)
+        };
+
+        let title = title.or_else(|| {
+            path.file_stem()
+                .and_then(|s| s.to_str())
+                .map(|s| s.to_string())
+        });
+
+        Ok(ScannedTrack {
+            path: path.to_path_buf(),
+            title,
+            artist,
+            album,
+            album_artist,
+            track_number,
+            year,
+            duration: Some(duration),
+            genre,
+        })
+    }
+
+    pub async fn scan_and_save(&self, db: &Database) -> Result<ScanStats> {
+        let tracks = self.scan().await?;
+        let scanned_count = tracks.len();
+
+        info!("Processing {} scanned tracks", scanned_count);
+
+        let mut stats = ScanStats {
+            scanned: scanned_count,
+            added: 0,
+            updated: 0,
+            removed: 0,
+        };
+
+        let mut found_paths = std::collections::HashSet::new();
+
+        for track in tracks {
+            let path_str = track.path.to_string_lossy().to_string();
+            found_paths.insert(path_str.clone());
+
+            match self.save_or_update_track(db, &track).await {
+                Ok(action) => match action {
+                    SaveAction::Added => stats.added += 1,
+                    SaveAction::Updated => stats.updated += 1,
+                    SaveAction::Unchanged => {}
+                },
+                Err(e) => {
+                    error!("Failed to save track {:?}: {}", track.path, e);
+                }
+            }
+        }
+
+        info!("Checking for songs to remove from database");
+        match self.remove_missing_songs(db, &found_paths).await {
+            Ok(removed) => {
+                stats.removed = removed;
+                if removed > 0 {
+                    info!("Removed {} songs that no longer exist", removed);
+                }
+            }
+            Err(e) => {
+                error!("Failed to remove missing songs: {}", e);
+            }
+        }
+
+        if stats.removed > 0 {
+            info!("Cleaning up orphaned artists and albums");
+            if let Err(e) = db.cleanup_orphaned_artists().await {
+                error!("Failed to cleanup orphaned artists: {}", e);
+            }
+            if let Err(e) = db.cleanup_orphaned_albums().await {
+                error!("Failed to cleanup orphaned albums: {}", e);
+            }
+        }
+
+        info!(
+            "Scan complete - Added: {}, Updated: {}, Removed: {}",
+            stats.added, stats.updated, stats.removed
+        );
+        Ok(stats)
+    }
+
+    async fn save_or_update_track(
+        &self,
+        db: &Database,
+        track: &ScannedTrack,
+    ) -> Result<SaveAction> {
+        let path_str = track.path.to_string_lossy().to_string();
+
+        let existing_song = db.get_song_by_path(&path_str).await?;
+
+        let artist_id = if let Some(artist_name) = &track.artist {
+            Some(
+                db.insert_artist(artist_name, track.album_artist.as_deref())
+                    .await?,
+            )
+        } else {
+            None
+        };
+
+        let album_id = if let Some(album_name) = &track.album {
+            Some(
+                db.insert_album(
+                    album_name,
+                    artist_id.as_ref(),
+                    track.year,
+                    track.genre.as_deref(),
+                )
+                .await?,
+            )
+        } else {
+            None
+        };
+
+        let title = track.title.as_deref().unwrap_or("Unknown");
+        let duration = track.duration.map(|d| d.as_secs() as i32);
+        let track_number = track.track_number.map(|n| n as i32);
+
+        if let Some(existing) = existing_song {
+            let metadata_changed = existing.title != title
+                || existing.artist_id.as_ref() != artist_id.as_ref()
+                || existing.album_id.as_ref() != album_id.as_ref()
+                || existing.duration != duration
+                || existing.track_number != track_number
+                || existing.date != track.year.map(|y| y.to_string())
+                || existing.genre.as_deref() != track.genre.as_deref();
+
+            if metadata_changed {
+                db.update_song_metadata(
+                    &existing.id,
+                    title,
+                    artist_id.as_ref(),
+                    album_id.as_ref(),
+                    duration,
+                    track_number,
+                    track.year,
+                    track.genre.as_deref(),
+                )
+                .await?;
+                debug!("Updated metadata for: {:?}", track.path);
+                Ok(SaveAction::Updated)
+            } else {
+                Ok(SaveAction::Unchanged)
+            }
+        } else {
+            db.insert_song(
+                title,
+                artist_id.as_ref(),
+                album_id.as_ref(),
+                &path_str,
+                duration,
+                track_number,
+                track.year,
+                track.genre.as_deref(),
+            )
+            .await?;
+            debug!("Added new song: {:?}", track.path);
+            Ok(SaveAction::Added)
+        }
+    }
+
+    async fn remove_missing_songs(
+        &self,
+        db: &Database,
+        found_paths: &std::collections::HashSet<String>,
+    ) -> Result<usize> {
+        let all_songs = db.get_all_songs().await?;
+        let mut removed_count = 0;
+
+        for song in all_songs {
+            let song_path = PathBuf::from(&song.file_path);
+            let is_in_scan_path = self
+                .scan_paths
+                .iter()
+                .any(|scan_path| song_path.starts_with(scan_path));
+
+            if !is_in_scan_path || !found_paths.contains(&song.file_path) {
+                debug!("Removing song: {:?}", song.file_path);
+                if let Err(e) = db.delete_song(&song.id).await {
+                    error!("Failed to delete song {:?}: {}", song.id, e);
+                } else {
+                    removed_count += 1;
+                }
+            }
+        }
+
+        Ok(removed_count)
+    }
+
+    async fn save_track(&self, db: &Database, track: &ScannedTrack) -> Result<Cuid> {
+        let artist_id = if let Some(artist_name) = &track.artist {
+            Some(
+                db.insert_artist(artist_name, track.album_artist.as_deref())
+                    .await?,
+            )
+        } else {
+            None
+        };
+
+        let album_id = if let Some(album_name) = &track.album {
+            Some(
+                db.insert_album(
+                    album_name,
+                    artist_id.as_ref(),
+                    track.year,
+                    track.genre.as_deref(),
+                )
+                .await?,
+            )
+        } else {
+            None
+        };
+
+        let song_id = db
+            .insert_song(
+                track.title.as_deref().unwrap_or("Unknown"),
+                artist_id.as_ref(),
+                album_id.as_ref(),
+                track.path.to_string_lossy().as_ref(),
+                track.duration.map(|d| d.as_secs() as i32),
+                track.track_number.map(|n| n as i32),
+                track.year,
+                track.genre.as_deref(),
+            )
+            .await?;
+
+        Ok(song_id)
+    }
+}
+
+pub fn expand_tilde(path: &str) -> PathBuf {
+    if path.starts_with("~/") {
+        if let Some(home) = dirs::home_dir() {
+            return home.join(&path[2..]);
+        }
+    }
+    PathBuf::from(path)
+}
+
+pub fn expand_scan_paths(paths: &[String]) -> Vec<PathBuf> {
+    paths.iter().map(|p| expand_tilde(p)).collect()
+}
+
+pub struct MusicWatcher {
+    _debouncer: Debouncer<RecommendedWatcher, NoCache>,
+    scanner: Arc<MusicScanner>,
+    db: Arc<Database>,
+}
+
+impl MusicWatcher {
+    pub fn new(
+        scanner: Arc<MusicScanner>,
+        db: Arc<Database>,
+    ) -> Result<(Self, mpsc::Receiver<ScanStats>)> {
+        let (tx, rx) = mpsc::channel(100);
+        let scanner_clone = scanner.clone();
+        let db_clone = db.clone();
+
+        let runtime_handle = tokio::runtime::Handle::current();
+
+        let mut debouncer: Debouncer<RecommendedWatcher, NoCache> = new_debouncer(
+            Duration::from_secs(2),
+            None,
+            move |result: DebounceEventResult| match result {
+                Ok(events) => {
+                    let has_audio_changes = events.iter().any(|event| {
+                        let is_meaningful_event = matches!(
+                            event.kind,
+                            EventKind::Create(_)
+                                | EventKind::Modify(ModifyKind::Data(_))
+                                | EventKind::Remove(_)
+                        );
+
+                        is_meaningful_event
+                            && event
+                                .paths
+                                .iter()
+                                .any(|path| MusicScanner::is_audio_file(path))
+                    });
+
+                    if has_audio_changes {
+                        info!("Detected meaningful changes in music files, triggering rescan");
+                        let scanner = scanner_clone.clone();
+                        let db = db_clone.clone();
+                        let tx = tx.clone();
+
+                        runtime_handle.spawn(async move {
+                            match scanner.scan_and_save(&db).await {
+                                Ok(stats) => {
+                                    info!(
+                                        "Auto-scan complete - Added: {}, Updated: {}, Removed: {}",
+                                        stats.added, stats.updated, stats.removed
+                                    );
+                                    let _ = tx.send(stats).await;
+                                }
+                                Err(e) => {
+                                    error!("Auto-scan failed: {}", e);
+                                }
+                            }
+                        });
+                    }
+                }
+                Err(errors) => {
+                    for error in errors {
+                        error!("Filesystem watch error: {:?}", error);
+                    }
+                }
+            },
+        )
+        .context("Failed to create filesystem watcher")?;
+
+        for path in &scanner.scan_paths {
+            info!("Watching directory for changes: {:?}", path);
+            debouncer
+                .watch(path, RecursiveMode::Recursive)
+                .with_context(|| format!("Failed to watch directory: {:?}", path))?;
+        }
+
+        let watcher = Self {
+            _debouncer: debouncer,
+            scanner,
+            db,
+        };
+
+        Ok((watcher, rx))
+    }
+}
