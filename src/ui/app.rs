@@ -7,9 +7,10 @@ use tracing::debug;
 use crate::{
     data::{
         db::{Database, create_pool},
+        scanner::{MusicScanner, MusicWatcher, expand_scan_paths},
         settings::Settings,
     },
-    media::{PlaybackContext, Queue, scanner::{MusicScanner, MusicWatcher, expand_scan_paths}},
+    media::{playback::PlaybackContext, queue::Queue},
     ui::{
         assets::VleerAssetSource,
         layout::{library::Library, navbar::Navbar, player::Player},
@@ -285,7 +286,7 @@ pub async fn run() -> anyhow::Result<()> {
             match MusicWatcher::new(scanner.clone(), std::sync::Arc::new(db.clone())) {
                 std::result::Result::Ok((watcher, mut rx)) => {
                     tokio::spawn(async move {
-                        let _watcher = watcher; 
+                        let _watcher = watcher;
                         while let Some(stats) = rx.recv().await {
                             tracing::info!(
                                 "Library scan completed - Added: {}, Updated: {}, Removed: {}",

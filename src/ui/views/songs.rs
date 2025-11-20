@@ -2,8 +2,15 @@ use gpui::{prelude::FluentBuilder, *};
 use gpui_component::*;
 
 use crate::{
-    data::{db::Database, settings::Settings},
-    media::{MusicScanner, PlaybackContext, Queue, expand_scan_paths},
+    data::{
+        db::Database,
+        scanner::{MusicScanner, expand_scan_paths},
+        settings::Settings,
+    },
+    media::{
+        playback::PlaybackContext,
+        queue::{Queue, QueueItem},
+    },
     ui::{components::title::Title, variables::Variables},
 };
 
@@ -42,7 +49,10 @@ impl SongsView {
                     match scanner.scan_and_save(&db).await {
                         Ok(stats) => tracing::info!(
                             "Scan complete - Scanned: {}, Added: {}, Updated: {}, Removed: {}",
-                            stats.scanned, stats.added, stats.updated, stats.removed
+                            stats.scanned,
+                            stats.added,
+                            stats.updated,
+                            stats.removed
                         ),
                         Err(e) => tracing::error!("Error scanning music library: {}", e),
                     }
@@ -73,7 +83,7 @@ impl SongsView {
                             cx.update_global::<Queue, _>(|queue, _window, _cx| {
                                 queue.clear();
                                 for song in songs {
-                                    let item = crate::media::QueueItem::with_metadata(
+                                    let item = QueueItem::with_metadata(
                                         song.file_path.into(),
                                         Some(song.id),
                                         Some(song.title),

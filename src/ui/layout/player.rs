@@ -1,10 +1,12 @@
 use gpui::*;
 use gpui_component::{StyledExt, h_flex, v_flex};
-use tracing::info;
 
 use crate::{
     data::settings::Settings,
-    media::{PlaybackContext, Queue, RepeatMode},
+    media::{
+        playback::PlaybackContext,
+        queue::{Queue, RepeatMode},
+    },
     ui::{
         components::{
             button::Button,
