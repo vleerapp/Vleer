@@ -7,8 +7,8 @@ use tracing::debug;
 use crate::{
     data::{
         db::{Database, create_pool},
-        scanner::{MusicScanner, MusicWatcher, expand_scan_paths},
-        settings::Settings,
+        scan::{MusicScanner, MusicWatcher, expand_scan_paths},
+        config::{Config, ConfigWatcher},
     },
     media::{playback::PlaybackContext, queue::Queue},
     ui::{
@@ -270,14 +270,46 @@ pub async fn run() -> anyhow::Result<()> {
         .run(move |cx| {
             gpui_component::init(cx);
             Database::init(cx, pool).expect("unable to initizalize database");
-            Settings::init(cx, config_dir).expect("unable to initizalize settings");
+            Config::init(cx, &config_dir).expect("unable to initizalize settings");
             PlaybackContext::init(cx).expect("unable to initizalize playback context");
             Queue::init(cx);
             Variables::init(cx);
             cx.set_global(ViewState::new());
 
-            let settings = cx.global::<Settings>();
-            let scan_paths = expand_scan_paths(&settings.config().scan.paths);
+            let config_path = config_dir.join("config.toml");
+            match ConfigWatcher::new(config_path) {
+                std::result::Result::Ok((_watcher, mut rx)) => {
+                    cx.spawn(|cx: &mut gpui::AsyncApp| {
+                        let cx = cx.clone();
+                        async move {
+                            let _watcher = _watcher;
+                            while rx.recv().await.is_some() {
+                                cx.update(|cx| {
+                                    cx.update_global::<Config, _>(|config, _cx| {
+                                        if let Err(e) = config.reload() {
+                                            tracing::error!("Failed to reload config: {}", e);
+                                        } else {
+                                            tracing::info!("Config reloaded successfully");
+                                        }
+                                    });
+
+                                    let config = cx.global::<Config>().clone();
+                                    cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                                        playback.apply_settings(&config);
+                                        tracing::debug!("Applied reloaded settings to playback");
+                                    });
+                                }).ok();
+                            }
+                        }
+                    }).detach();
+                }
+                Err(e) => {
+                    tracing::error!("Failed to initialize config watcher: {}", e);
+                }
+            }
+
+            let config = cx.global::<Config>();
+            let scan_paths = expand_scan_paths(&config.get().scan.paths);
             let db = cx.global::<Database>().clone();
 
             let scanner = std::sync::Arc::new(MusicScanner::new(scan_paths));
@@ -342,12 +374,15 @@ pub async fn run() -> anyhow::Result<()> {
                     let home_view = cx.new(|_| HomeView::new());
                     let songs_view = cx.new(|_| SongsView::new());
 
-                    let view = cx.new(|_| MainWindow {
-                        library,
-                        navbar,
-                        player,
-                        home_view,
-                        songs_view,
+                    let view = cx.new(|cx| {
+                        PlaybackContext::start_playback_monitor(window, cx);
+                        MainWindow {
+                            library,
+                            navbar,
+                            player,
+                            home_view,
+                            songs_view,
+                        }
                     });
                     cx.new(|cx| Root::new(view, window, cx))
                 },
