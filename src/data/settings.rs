@@ -1,0 +1,224 @@
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use anyhow::{Context, Result};
+use gpui::{App, Global};
+use serde::{Deserialize, Serialize};
+use tracing::{debug, warn};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EqualizerSettings {
+    pub enabled: bool,
+    pub frequencies: Vec<i32>,
+    pub gains: Vec<f32>,
+    pub q_values: Vec<f32>,
+}
+
+impl Default for EqualizerSettings {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            frequencies: vec![32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000],
+            gains: vec![0.0; 10],
+            q_values: vec![1.461; 10],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScanSettings {
+    pub paths: Vec<String>,
+}
+
+impl Default for ScanSettings {
+    fn default() -> Self {
+        Self {
+            paths: vec!["~/Music".to_string()],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AudioSettings {
+    pub normalization: bool,
+    pub volume: i32,
+}
+
+impl Default for AudioSettings {
+    fn default() -> Self {
+        Self {
+            normalization: false,
+            volume: 50,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SettingsConfig {
+    #[serde(default = "default_version")]
+    pub version: u32,
+    pub equalizer: EqualizerSettings,
+    pub scan: ScanSettings,
+    pub audio: AudioSettings,
+}
+
+fn default_version() -> u32 {
+    1
+}
+
+impl Default for SettingsConfig {
+    fn default() -> Self {
+        Self {
+            version: default_version(),
+            equalizer: EqualizerSettings::default(),
+            scan: ScanSettings::default(),
+            audio: AudioSettings::default(),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct Settings {
+    config: SettingsConfig,
+    config_path: PathBuf,
+}
+
+impl Global for Settings {}
+
+impl Settings {
+    pub fn init(cx: &mut App, config_dir: impl AsRef<Path>) -> Result<()> {
+        let settings = Self::load(config_dir)?;
+        cx.set_global(settings);
+        Ok(())
+    }
+
+    pub fn load(config_dir: impl AsRef<Path>) -> Result<Self> {
+        let config_dir = config_dir.as_ref();
+        fs::create_dir_all(config_dir).context("Failed to create config directory")?;
+
+        let config_path = config_dir.join("settings.toml");
+        debug!("Loading settings from {:?}", config_path);
+
+        let mut config = if config_path.exists() {
+            let content =
+                fs::read_to_string(&config_path).context("Failed to read settings file")?;
+
+            match toml::from_str(&content) {
+                Ok(config) => config,
+                Err(e) => {
+                    warn!("Failed to parse settings file: {}. Using defaults.", e);
+                    SettingsConfig::default()
+                }
+            }
+        } else {
+            debug!("Settings file not found, creating default");
+            let config = SettingsConfig::default();
+
+            let content =
+                toml::to_string_pretty(&config).context("Failed to serialize default settings")?;
+            fs::write(&config_path, content).context("Failed to write default settings file")?;
+
+            config
+        };
+
+        Self::validate_equalizer(&mut config.equalizer);
+        let needs_save = config.version < default_version();
+        Self::migrate_config(&mut config);
+
+        let settings = Self {
+            config,
+            config_path,
+        };
+
+        if needs_save {
+            settings
+                .save()
+                .context("Failed to save migrated settings")?;
+        }
+
+        Ok(settings)
+    }
+
+    fn migrate_config(config: &mut SettingsConfig) {
+        const CURRENT_VERSION: u32 = 1;
+
+        if config.version < CURRENT_VERSION {
+            debug!(
+                "Migrating settings from version {} to {}",
+                config.version, CURRENT_VERSION
+            );
+
+            // if config.version < 2 {
+            //
+            // }
+
+            config.version = CURRENT_VERSION;
+        }
+    }
+
+    fn validate_equalizer(eq: &mut EqualizerSettings) {
+        if eq.gains.len() != 10 {
+            warn!(
+                "Equalizer gains array has {} items, expected 10. Resetting to defaults.",
+                eq.gains.len()
+            );
+            eq.gains = vec![0.0; 10];
+        }
+        if eq.q_values.len() != 10 {
+            warn!(
+                "Equalizer q_values array has {} items, expected 10. Resetting to defaults.",
+                eq.q_values.len()
+            );
+            eq.q_values = vec![1.461; 10];
+        }
+    }
+
+    pub fn save(&self) -> Result<()> {
+        debug!("Saving settings to {:?}", self.config_path);
+
+        let mut config = self.config.clone();
+        Self::validate_equalizer(&mut config.equalizer);
+
+        let content = toml::to_string_pretty(&config).context("Failed to serialize settings")?;
+
+        fs::write(&self.config_path, content).context("Failed to write settings file")?;
+
+        Ok(())
+    }
+
+    pub fn config(&self) -> &SettingsConfig {
+        &self.config
+    }
+
+    pub fn config_mut(&mut self) -> &mut SettingsConfig {
+        &mut self.config
+    }
+
+    pub fn update_equalizer<F>(&mut self, f: F) -> Result<()>
+    where
+        F: FnOnce(&mut EqualizerSettings),
+    {
+        f(&mut self.config.equalizer);
+        self.save()
+    }
+
+    pub fn update_scan<F>(&mut self, f: F) -> Result<()>
+    where
+        F: FnOnce(&mut ScanSettings),
+    {
+        f(&mut self.config.scan);
+        self.save()
+    }
+
+    pub fn update_volume<F>(&mut self, f: F) -> Result<()>
+    where
+        F: FnOnce(&mut i32),
+    {
+        f(&mut self.config.audio.volume);
+        self.save()
+    }
+
+    pub fn config_path(&self) -> &Path {
+        &self.config_path
+    }
+}
