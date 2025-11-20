@@ -4,8 +4,8 @@ use gpui_component::*;
 use crate::{
     data::{
         db::Database,
-        scanner::{MusicScanner, expand_scan_paths},
-        settings::Settings,
+        scan::{MusicScanner, expand_scan_paths},
+        config::Config,
     },
     media::{
         playback::PlaybackContext,
@@ -35,7 +35,7 @@ impl SongsView {
         self.is_scanning = true;
         cx.notify();
 
-        let settings = cx.global::<Settings>().clone();
+        let config = cx.global::<Config>().clone();
         let db = cx.global::<Database>().clone();
 
         cx.spawn_in(
@@ -43,7 +43,7 @@ impl SongsView {
             |this: WeakEntity<Self>, cx: &mut AsyncWindowContext| {
                 let mut cx = cx.clone();
                 async move {
-                    let scan_paths = expand_scan_paths(&settings.config().scan.paths);
+                    let scan_paths = expand_scan_paths(&config.get().scan.paths);
                     let scanner = MusicScanner::new(scan_paths);
 
                     match scanner.scan_and_save(&db).await {
@@ -90,6 +90,8 @@ impl SongsView {
                                         None,
                                         None,
                                         song.duration,
+                                        song.replaygain_track_gain,
+                                        song.replaygain_track_peak,
                                     );
                                     queue.add(item);
                                 }
@@ -115,14 +117,16 @@ impl SongsView {
                     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
 
                     cx.update(|_window, cx| {
-                        let settings = cx.global::<Settings>().clone();
+                        let config = cx.global::<Config>().clone();
 
                         if let Some(queue) = cx.try_global::<Queue>() {
                             if let Some(first_item) = queue.current() {
                                 let path = first_item.path.clone();
+                                let rg_gain = first_item.replaygain_track_gain;
+                                let rg_peak = first_item.replaygain_track_peak;
 
                                 cx.update_global::<PlaybackContext, _>(|playback, _cx| {
-                                    if let Err(e) = playback.load_file(&path, &settings) {
+                                    if let Err(e) = playback.load_file_with_replaygain(&path, &config, rg_gain, rg_peak) {
                                         tracing::error!("Failed to load file: {}", e);
                                     } else {
                                         playback.play();

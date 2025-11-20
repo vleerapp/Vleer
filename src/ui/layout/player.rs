@@ -2,7 +2,7 @@ use gpui::*;
 use gpui_component::{StyledExt, h_flex, v_flex};
 
 use crate::{
-    data::settings::Settings,
+    data::config::Config,
     media::{
         playback::PlaybackContext,
         queue::{Queue, RepeatMode},
@@ -73,13 +73,13 @@ impl Render for Player {
             .child(icon(PREVIOUS))
             .on_click(cx.listener(|_this, _event, _window, cx| {
                 let next_item = cx.update_global::<Queue, _>(|queue, _cx| {
-                    queue.previous().map(|item| item.path.clone())
+                    queue.previous().map(|item| (item.path.clone(), item.replaygain_track_gain, item.replaygain_track_peak))
                 });
 
-                if let Some(path) = next_item {
-                    let settings = cx.global::<Settings>().clone();
+                if let Some((path, rg_gain, rg_peak)) = next_item {
+                    let config = cx.global::<Config>().clone();
                     cx.update_global::<PlaybackContext, _>(|playback, _cx| {
-                        if let Err(e) = playback.load_file(&path, &settings) {
+                        if let Err(e) = playback.load_file_with_replaygain(&path, &config, rg_gain, rg_peak) {
                             tracing::error!("Failed to load previous track: {}", e);
                         } else {
                             playback.play();
@@ -92,13 +92,13 @@ impl Render for Player {
         let next_button = Button::new("next").child(icon(NEXT)).on_click(cx.listener(
             |_this, _event, _window, cx| {
                 let next_item = cx.update_global::<Queue, _>(|queue, _cx| {
-                    queue.next().map(|item| item.path.clone())
+                    queue.next().map(|item| (item.path.clone(), item.replaygain_track_gain, item.replaygain_track_peak))
                 });
 
-                if let Some(path) = next_item {
-                    let settings = cx.global::<Settings>().clone();
+                if let Some((path, rg_gain, rg_peak)) = next_item {
+                    let config = cx.global::<Config>().clone();
                     cx.update_global::<PlaybackContext, _>(|playback, _cx| {
-                        if let Err(e) = playback.load_file(&path, &settings) {
+                        if let Err(e) = playback.load_file_with_replaygain(&path, &config, rg_gain, rg_peak) {
                             tracing::error!("Failed to load next track: {}", e);
                         } else {
                             playback.play();
@@ -175,8 +175,9 @@ impl Render for Player {
                     .h(px(16.0))
                     .value(volume)
                     .on_change(|value, _window, cx| {
+                        let mut config = cx.global::<Config>().clone();
                         cx.update_global::<PlaybackContext, _>(|playback, _cx| {
-                            playback.set_volume(value);
+                            playback.set_volume_and_save(value, &mut config);
                         });
                     }),
             );

@@ -1,6 +1,6 @@
 use std::sync::{Arc, RwLock};
 
-use crate::data::settings::EqualizerSettings;
+use crate::data::config::EqualizerSettings;
 
 pub struct Equalizer {
     sample_rate: u32,
@@ -25,18 +25,19 @@ struct Coeffs {
 
 impl Equalizer {
     pub fn new(sample_rate: u32, _channels: u16) -> Self {
-        let settings = EqualizerSettings::default();
-        Self::from_settings(sample_rate, &settings)
+        let config = EqualizerSettings::default();
+        Self::from_settings(sample_rate, &config)
     }
 
-    pub fn from_settings(sample_rate: u32, settings: &EqualizerSettings) -> Self {
-        let num_bands = settings.frequencies.len();
+    pub fn from_settings(sample_rate: u32, config: &EqualizerSettings) -> Self {
+        let num_bands = config.frequencies.len();
 
         let bands: Vec<Band> = (0..num_bands)
             .map(|i| {
-                let fc = settings.frequencies.get(i).copied().unwrap_or(1000) as f32;
-                let q = settings.q_values.get(i).copied().unwrap_or(1.461);
-                let gain_db = settings.gains.get(i).copied().unwrap_or(0.0);
+                let fc = config.frequencies.get(i).copied().unwrap_or(1000) as f32;
+                let q = config.q_values.get(i).copied().unwrap_or(1.461);
+                let gain = config.gains.get(i).copied().unwrap_or(0.0);
+                let gain_db = if config.enabled { gain } else { 0.0 };
 
                 Band { fc, q, gain_db }
             })
@@ -56,19 +57,19 @@ impl Equalizer {
         }
     }
 
-    pub fn apply_settings(&mut self, settings: &EqualizerSettings) {
-        let num_bands = settings.frequencies.len().min(self.bands.len());
+    pub fn apply_settings(&mut self, config: &EqualizerSettings) {
+        let num_bands = config.frequencies.len().min(self.bands.len());
 
         for i in 0..num_bands {
             if let (Some(&freq), Some(&gain), Some(&q)) = (
-                settings.frequencies.get(i),
-                settings.gains.get(i),
-                settings.q_values.get(i),
+                config.frequencies.get(i),
+                config.gains.get(i),
+                config.q_values.get(i),
             ) {
                 self.bands[i].fc = freq as f32;
                 self.bands[i].q = q;
 
-                let effective_gain = if settings.enabled { gain } else { 0.0 };
+                let effective_gain = if config.enabled { gain } else { 0.0 };
                 self.bands[i].gain_db = effective_gain;
 
                 let mut coeffs_guard = self.coeffs.write().unwrap();

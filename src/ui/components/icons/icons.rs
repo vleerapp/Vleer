@@ -12,6 +12,7 @@ pub const PLAY: &str = "!bundled:icons/play.svg";
 pub const PLAYLIST: &str = "!bundled:icons/playlist.svg";
 pub const PLUS: &str = "!bundled:icons/plus.svg";
 pub const PREVIOUS: &str = "!bundled:icons/previous.svg";
+pub const QUEUE: &str = "!bundled:icons/queue.svg";
 pub const REPLAY: &str = "!bundled:icons/replay.svg";
 pub const REPLAY_1: &str = "!bundled:icons/replay-1.svg";
 pub const SEARCH: &str = "!bundled:icons/search.svg";
