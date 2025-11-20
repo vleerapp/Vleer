@@ -28,5 +28,5 @@ notify-debouncer-full = "0.6.0"
 [package.metadata.packager]
 product_name = "Vleer"
 identifier = "app.vleerapp.vleer"
-icons = ["assets/images/Vleer Logo App.png"]
+icons = ["assets/images/icon.png", "assets/images/icon.icns"]
 out_dir = "target/release/bundles"
