@@ -1,7 +1,11 @@
 use gpui::*;
 use gpui_component::*;
 
-use crate::ui::utils::rgba_hex;
+use crate::ui::{
+    components::{icons::icons::HOME, nav_button::NavButton, title::Title},
+    variables::Variables,
+    views::AppView,
+};
 
 pub struct Navbar {
     pub hovered: bool,
@@ -14,11 +18,12 @@ impl Navbar {
 }
 
 impl Render for Navbar {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
-        let color = if self.hovered {
-            rgba_hex(0xA058FF)
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let variables = cx.global::<Variables>();
+        let border_color = if self.hovered {
+            variables.accent
         } else {
-            rgba_hex(0x535353)
+            variables.border
         };
 
         div()
@@ -27,20 +32,11 @@ impl Render for Navbar {
             .child(
                 h_flex()
                     .border(px(1.0))
-                    .border_color(color)
+                    .border_color(border_color)
                     .h_full()
-                    .pt(px(10.0))
-                    .px(px(10.0)),
+                    .paddings(px(variables.default_padding))
+                    .child(NavButton::new(HOME, "Home", AppView::Home)),
             )
-            .child(
-                div()
-                    .absolute()
-                    .top(px(-12.0))
-                    .left(px(6.0))
-                    .px(px(2.0))
-                    .bg(rgba_hex(0x121212))
-                    .text_color(color)
-                    .child("NavBar"),
-            )
+            .child(Title::new("NavBar", self.hovered))
     }
 }

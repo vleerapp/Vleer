@@ -1,14 +1,13 @@
 mod home;
+mod songs;
 
 pub use home::HomeView;
+pub use songs::SongsView;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppView {
     Home,
-    // Add more views here as needed
-    // Artists,
-    // Albums,
-    // Playlists,
+    Songs,
 }
 
 impl Default for AppView {
