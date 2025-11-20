@@ -1,0 +1,13 @@
+<div align="center">
+
+<img width="128px" src="assets/images/icon.png" />
+<h1><b>Vleer</b></h1>
+
+A free, open-source music app powered by the OpenMusic API Spec—the open standard of music streaming. Access your local library, self-hosted servers, or any compatible source, all without subscriptions.
+
+<a href="https://openmusic.vleer.app">OpenMusic Docs</a>
+
+</div>
+<br>
+
+###### This project is in active developement. 4th rewrite btw ._.
