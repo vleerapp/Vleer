@@ -4,8 +4,6 @@ use std::time::Duration;
 
 use anyhow::{Context, Result};
 use futures::stream::{self, StreamExt};
-use lofty::file::{AudioFile, TaggedFileExt};
-use lofty::tag::Accessor;
 use notify::{EventKind, RecursiveMode, event::ModifyKind};
 use notify_debouncer_full::{DebounceEventResult, new_debouncer};
 use tokio::sync::mpsc;
@@ -13,6 +11,7 @@ use tracing::{debug, error, info, warn};
 use walkdir::WalkDir;
 
 use crate::data::db::Database;
+use crate::data::metadata::AudioMetadata;
 
 const SUPPORTED_EXTENSIONS: &[&str] = &["mp3", "flac", "ogg", "m4a", "aac", "wav", "mp1", "mp2"];
 const MAX_CONCURRENT_SCANS: usize = 16;
@@ -35,14 +34,7 @@ enum SaveAction {
 #[derive(Debug, Clone)]
 pub struct ScannedTrack {
     pub path: PathBuf,
-    pub title: Option<String>,
-    pub artist: Option<String>,
-    pub album: Option<String>,
-    pub album_artist: Option<String>,
-    pub track_number: Option<u32>,
-    pub year: Option<i32>,
-    pub duration: Option<Duration>,
-    pub genre: Option<String>,
+    pub metadata: AudioMetadata,
 }
 
 pub struct MusicScanner {
@@ -139,48 +131,10 @@ impl MusicScanner {
     }
 
     fn read_metadata(path: &Path) -> Result<ScannedTrack> {
-        let tagged_file = lofty::read_from_path(path)
-            .with_context(|| format!("Failed to read audio file: {:?}", path))?;
-
-        let properties = tagged_file.properties();
-        let duration = properties.duration();
-
-        let tag = tagged_file
-            .primary_tag()
-            .or_else(|| tagged_file.first_tag());
-
-        let (title, artist, album, album_artist, track_number, year, genre) = if let Some(tag) = tag
-        {
-            (
-                tag.title().map(|s| s.to_string()),
-                tag.artist().map(|s| s.to_string()),
-                tag.album().map(|s| s.to_string()),
-                tag.get_string(&lofty::tag::ItemKey::AlbumArtist)
-                    .map(|s| s.to_string()),
-                tag.track(),
-                tag.year().map(|y| y as i32),
-                tag.genre().map(|s| s.to_string()),
-            )
-        } else {
-            (None, None, None, None, None, None, None)
-        };
-
-        let title = title.or_else(|| {
-            path.file_stem()
-                .and_then(|s| s.to_str())
-                .map(|s| s.to_string())
-        });
-
+        let metadata = AudioMetadata::from_path(path)?;
         Ok(ScannedTrack {
             path: path.to_path_buf(),
-            title,
-            artist,
-            album,
-            album_artist,
-            track_number,
-            year,
-            duration: Some(duration),
-            genre,
+            metadata,
         })
     }
 
@@ -251,25 +205,26 @@ impl MusicScanner {
         track: &ScannedTrack,
     ) -> Result<SaveAction> {
         let path_str = track.path.to_string_lossy().to_string();
+        let meta = &track.metadata;
 
         let existing_song = db.get_song_by_path(&path_str).await?;
 
-        let artist_id = if let Some(artist_name) = &track.artist {
+        let artist_id = if let Some(artist_name) = &meta.artist {
             Some(
-                db.insert_artist(artist_name, track.album_artist.as_deref())
+                db.insert_artist(artist_name, meta.album_artist.as_deref())
                     .await?,
             )
         } else {
             None
         };
 
-        let album_id = if let Some(album_name) = &track.album {
+        let album_id = if let Some(album_name) = &meta.album {
             Some(
                 db.insert_album(
                     album_name,
                     artist_id.as_ref(),
-                    track.year,
-                    track.genre.as_deref(),
+                    meta.year,
+                    meta.genre.as_deref(),
                 )
                 .await?,
             )
@@ -277,9 +232,9 @@ impl MusicScanner {
             None
         };
 
-        let title = track.title.as_deref().unwrap_or("Unknown");
-        let duration = track.duration.map(|d| d.as_secs() as i32);
-        let track_number = track.track_number.map(|n| n as i32);
+        let title = meta.title.as_deref().unwrap_or("Unknown");
+        let duration = meta.duration.map(|d| d.as_secs() as i32);
+        let track_number = meta.track_number.map(|n| n as i32);
 
         if let Some(existing) = existing_song {
             let metadata_changed = existing.title != title
@@ -287,8 +242,10 @@ impl MusicScanner {
                 || existing.album_id.as_ref() != album_id.as_ref()
                 || existing.duration != duration
                 || existing.track_number != track_number
-                || existing.date != track.year.map(|y| y.to_string())
-                || existing.genre.as_deref() != track.genre.as_deref();
+                || existing.date != meta.year.map(|y| y.to_string())
+                || existing.genre.as_deref() != meta.genre.as_deref()
+                || existing.replaygain_track_gain != meta.replaygain_track_gain
+                || existing.replaygain_track_peak != meta.replaygain_track_peak;
 
             if metadata_changed {
                 db.update_song_metadata(
@@ -298,8 +255,10 @@ impl MusicScanner {
                     album_id.as_ref(),
                     duration,
                     track_number,
-                    track.year,
-                    track.genre.as_deref(),
+                    meta.year,
+                    meta.genre.as_deref(),
+                    meta.replaygain_track_gain,
+                    meta.replaygain_track_peak,
                 )
                 .await?;
                 debug!("Updated metadata for: {:?}", track.path);
@@ -315,8 +274,10 @@ impl MusicScanner {
                 &path_str,
                 duration,
                 track_number,
-                track.year,
-                track.genre.as_deref(),
+                meta.year,
+                meta.genre.as_deref(),
+                meta.replaygain_track_gain,
+                meta.replaygain_track_peak,
             )
             .await?;
             debug!("Added new song: {:?}", track.path);
