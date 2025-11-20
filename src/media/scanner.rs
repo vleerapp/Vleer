@@ -6,18 +6,15 @@ use anyhow::{Context, Result};
 use futures::stream::{self, StreamExt};
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::tag::Accessor;
-use notify::{EventKind, RecommendedWatcher, RecursiveMode, event::ModifyKind};
-use notify_debouncer_full::{DebounceEventResult, Debouncer, NoCache, new_debouncer};
+use notify::{EventKind, RecursiveMode, event::ModifyKind};
+use notify_debouncer_full::{DebounceEventResult, new_debouncer};
 use tokio::sync::mpsc;
 use tracing::{debug, error, info, warn};
 use walkdir::WalkDir;
 
 use crate::data::db::Database;
-use crate::data::types::Cuid;
-use crate::media::QueueItem;
 
 const SUPPORTED_EXTENSIONS: &[&str] = &["mp3", "flac", "ogg", "m4a", "aac", "wav", "mp1", "mp2"];
-
 const MAX_CONCURRENT_SCANS: usize = 16;
 
 #[derive(Debug, Clone)]
@@ -46,19 +43,6 @@ pub struct ScannedTrack {
     pub year: Option<i32>,
     pub duration: Option<Duration>,
     pub genre: Option<String>,
-}
-
-impl ScannedTrack {
-    pub fn to_queue_item(&self) -> QueueItem {
-        QueueItem::with_metadata(
-            self.path.clone(),
-            None,
-            self.title.clone(),
-            self.artist.clone(),
-            self.album.clone(),
-            self.duration.map(|d| d.as_secs() as i32),
-        )
-    }
 }
 
 pub struct MusicScanner {
@@ -367,46 +351,6 @@ impl MusicScanner {
 
         Ok(removed_count)
     }
-
-    async fn save_track(&self, db: &Database, track: &ScannedTrack) -> Result<Cuid> {
-        let artist_id = if let Some(artist_name) = &track.artist {
-            Some(
-                db.insert_artist(artist_name, track.album_artist.as_deref())
-                    .await?,
-            )
-        } else {
-            None
-        };
-
-        let album_id = if let Some(album_name) = &track.album {
-            Some(
-                db.insert_album(
-                    album_name,
-                    artist_id.as_ref(),
-                    track.year,
-                    track.genre.as_deref(),
-                )
-                .await?,
-            )
-        } else {
-            None
-        };
-
-        let song_id = db
-            .insert_song(
-                track.title.as_deref().unwrap_or("Unknown"),
-                artist_id.as_ref(),
-                album_id.as_ref(),
-                track.path.to_string_lossy().as_ref(),
-                track.duration.map(|d| d.as_secs() as i32),
-                track.track_number.map(|n| n as i32),
-                track.year,
-                track.genre.as_deref(),
-            )
-            .await?;
-
-        Ok(song_id)
-    }
 }
 
 pub fn expand_tilde(path: &str) -> PathBuf {
@@ -423,9 +367,8 @@ pub fn expand_scan_paths(paths: &[String]) -> Vec<PathBuf> {
 }
 
 pub struct MusicWatcher {
-    _debouncer: Debouncer<RecommendedWatcher, NoCache>,
-    scanner: Arc<MusicScanner>,
-    db: Arc<Database>,
+    _scanner: Arc<MusicScanner>,
+    _db: Arc<Database>,
 }
 
 impl MusicWatcher {
@@ -439,7 +382,7 @@ impl MusicWatcher {
 
         let runtime_handle = tokio::runtime::Handle::current();
 
-        let mut debouncer: Debouncer<RecommendedWatcher, NoCache> = new_debouncer(
+        let mut debouncer = new_debouncer(
             Duration::from_secs(2),
             None,
             move |result: DebounceEventResult| match result {
@@ -498,9 +441,8 @@ impl MusicWatcher {
         }
 
         let watcher = Self {
-            _debouncer: debouncer,
-            scanner,
-            db,
+            _scanner: scanner,
+            _db: db,
         };
 
         Ok((watcher, rx))
