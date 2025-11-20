@@ -5,17 +5,21 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use anyhow::{Context, Result};
-use gpui::{App, Global};
+use gpui::{App, AsyncWindowContext, BorrowAppContext, Global, Window};
 use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
 use tracing::debug;
 
+use super::queue::Queue;
+
 use super::equalizer::{Equalizer, EqualizerSource};
-use crate::data::settings::Settings;
+use super::normalization::{NormalizationSource, NormalizationState};
+use crate::data::config::{self, Config};
 
 pub struct PlaybackContext {
     _stream: Arc<OutputStream>,
     sink: Arc<Sink>,
     equalizer: Arc<Mutex<Equalizer>>,
+    normalization: Arc<std::sync::RwLock<NormalizationState>>,
     volume: f32,
     is_paused: bool,
     current_file: Option<String>,
@@ -37,11 +41,13 @@ impl PlaybackContext {
         sink.pause();
 
         let equalizer = Arc::new(Mutex::new(Equalizer::new(44100, 2)));
+        let normalization = Arc::new(std::sync::RwLock::new(NormalizationState::default()));
 
         Ok(Self {
             _stream: Arc::new(stream),
             sink: Arc::new(sink),
             equalizer,
+            normalization,
             volume: 0.5,
             is_paused: true,
             current_file: None,
@@ -51,7 +57,7 @@ impl PlaybackContext {
     pub fn init(cx: &mut App) -> Result<()> {
         let mut context = Self::new()?;
 
-        if let Some(settings) = cx.try_global::<Settings>() {
+        if let Some(settings) = cx.try_global::<Config>() {
             context.apply_settings(settings);
         }
 
@@ -59,15 +65,24 @@ impl PlaybackContext {
         Ok(())
     }
 
-    pub fn load_file(&mut self, path: impl AsRef<Path>, settings: &Settings) -> Result<()> {
+    pub fn load_file(&mut self, path: impl AsRef<Path>, settings: &Config) -> Result<()> {
+        self.load_file_with_replaygain(path, settings, None, None)
+    }
+
+    pub fn load_file_with_replaygain(
+        &mut self,
+        path: impl AsRef<Path>,
+        settings: &Config,
+        replaygain_track_gain: Option<f32>,
+        replaygain_track_peak: Option<f32>,
+    ) -> Result<()> {
         let path = path.as_ref();
         debug!("Loading audio file: {:?}", path);
 
-        let file = File::open(path)
-            .with_context(|| format!("Failed to open audio file: {:?}", path))?;
+        let file =
+            File::open(path).with_context(|| format!("Failed to open audio file: {:?}", path))?;
 
-        let source = Decoder::new(BufReader::new(file))
-            .context("Failed to decode audio file")?;
+        let source = Decoder::new(BufReader::new(file)).context("Failed to decode audio file")?;
 
         let sample_rate = source.sample_rate();
         let channels = source.channels();
@@ -75,12 +90,29 @@ impl PlaybackContext {
         debug!("Audio file info: {}Hz, {} channels", sample_rate, channels);
 
         *self.equalizer.lock().unwrap() =
-            Equalizer::from_settings(sample_rate, &settings.config().equalizer);
+            Equalizer::from_settings(sample_rate, &settings.get().equalizer);
+
+        {
+            let mut norm_state = self.normalization.write().unwrap();
+            norm_state.enabled = settings.get().audio.normalization;
+            norm_state.reset();
+
+            if norm_state.enabled {
+                if let Some(gain_db) = replaygain_track_gain {
+                    norm_state.set_replaygain(gain_db, replaygain_track_peak);
+                    debug!(
+                        "Applied ReplayGain: {:.2} dB, peak: {:?}",
+                        gain_db, replaygain_track_peak
+                    );
+                }
+            }
+        }
 
         self.sink.stop();
 
         let eq_source = EqualizerSource::new(source, self.equalizer.clone());
-        self.sink.append(eq_source);
+        let norm_source = NormalizationSource::new(eq_source, self.normalization.clone());
+        self.sink.append(norm_source);
         self.sink.set_volume(Self::log_volume(self.volume));
 
         self.current_file = Some(path.to_string_lossy().to_string());
@@ -125,7 +157,19 @@ impl PlaybackContext {
         self.volume = vol.clamp(0.0, 1.0);
         let actual_vol = Self::log_volume(self.volume);
         self.sink.set_volume(actual_vol);
-        debug!("Volume set to {:.2} (actual: {:.2})", self.volume, actual_vol);
+        debug!(
+            "Volume set to {:.2} (actual: {:.2})",
+            self.volume, actual_vol
+        );
+    }
+
+    pub fn set_volume_and_save(&mut self, vol: f32, config: &mut Config) {
+        self.set_volume(vol);
+
+        config.get_mut().audio.volume = self.volume;
+        if let Err(e) = config.save() {
+            tracing::error!("Failed to save volume to config: {}", e);
+        }
     }
 
     pub fn get_volume(&self) -> f32 {
@@ -187,24 +231,55 @@ impl PlaybackContext {
         eq.get_bands().iter().map(|b| b.q).collect()
     }
 
-    pub fn load_equalizer_from_settings(&mut self, settings: &Settings) {
-        let config = settings.config();
+    pub fn load_equalizer_from_settings(&mut self, settings: &Config) {
+        let config = settings.get();
         let eq_settings = &config.equalizer;
 
         let mut eq = self.equalizer.lock().unwrap();
         eq.apply_settings(eq_settings);
 
-        debug!("Loaded equalizer settings from config (enabled: {})", eq_settings.enabled);
+        debug!(
+            "Loaded equalizer settings from config (enabled: {})",
+            eq_settings.enabled
+        );
     }
 
-    pub fn apply_settings(&mut self, settings: &Settings) {
-        let config = settings.config();
+    pub fn apply_settings(&mut self, settings: &Config) {
+        let config = settings.get();
 
-        self.set_volume(config.audio.volume as f32 / 100.0);
-
+        self.set_volume(config.audio.volume);
         self.load_equalizer_from_settings(settings);
+        self.set_normalization_enabled(config.audio.normalization);
 
         debug!("Applied all settings to playback context");
+    }
+
+    pub fn set_normalization_enabled(&mut self, enabled: bool) {
+        let mut state = self.normalization.write().unwrap();
+        state.enabled = enabled;
+        debug!(
+            "Normalization {}",
+            if enabled { "enabled" } else { "disabled" }
+        );
+    }
+
+    pub fn is_normalization_enabled(&self) -> bool {
+        self.normalization.read().unwrap().enabled
+    }
+
+    pub fn set_track_replaygain(&mut self, gain_db: f32, peak: Option<f32>) {
+        let mut state = self.normalization.write().unwrap();
+        state.set_replaygain(gain_db, peak);
+        debug!("Set ReplayGain: {:.2} dB, peak: {:?}", gain_db, peak);
+    }
+
+    pub fn set_track_loudness(&mut self, lufs: f32) {
+        let mut state = self.normalization.write().unwrap();
+        state.set_track_loudness(lufs);
+        debug!(
+            "Set track loudness: {:.2} LUFS, gain: {:.3}",
+            lufs, state.gain
+        );
     }
 
     fn log_volume(volume: f32) -> f32 {
@@ -220,11 +295,68 @@ impl PlaybackContext {
     }
 
     pub fn seek(&mut self, position: Duration) -> Result<()> {
-        self.sink.try_seek(position)
+        self.sink
+            .try_seek(position)
             .map_err(|e| anyhow::anyhow!("Failed to seek to position: {:?}", e))
     }
 
     pub fn is_empty(&self) -> bool {
         self.sink.empty()
+    }
+
+    pub fn start_playback_monitor<T: 'static>(window: &Window, cx: &mut gpui::Context<T>) {
+        cx.spawn_in(window, |_entity, cx: &mut AsyncWindowContext| {
+            let mut cx = cx.clone();
+            async move {
+                loop {
+                    tokio::time::sleep(tokio::time::Duration::from_millis(250)).await;
+
+                    let should_advance = cx
+                        .update(|_window, cx| {
+                            if let Some(playback) = cx.try_global::<PlaybackContext>() {
+                                playback.is_empty() && playback.is_playing()
+                            } else {
+                                false
+                            }
+                        })
+                        .unwrap_or(false);
+
+                    if should_advance {
+                        cx.update(|_window, cx| {
+                            let next_item = cx.update_global::<Queue, _>(|queue, _cx| {
+                                queue.next().map(|item| {
+                                    (
+                                        item.path.clone(),
+                                        item.replaygain_track_gain,
+                                        item.replaygain_track_peak,
+                                    )
+                                })
+                            });
+
+                            if let Some((path, rg_gain, rg_peak)) = next_item {
+                                let config = cx.global::<Config>().clone();
+                                cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                                    if let Err(e) = playback
+                                        .load_file_with_replaygain(&path, &config, rg_gain, rg_peak)
+                                    {
+                                        tracing::error!("Failed to auto-advance: {}", e);
+                                    } else {
+                                        playback.play();
+                                        debug!("Auto-advanced to next track");
+                                    }
+                                });
+                            } else {
+                                cx.update_global::<PlaybackContext, _>(|playback, _cx| {
+                                    playback.pause();
+                                });
+                                debug!("Queue finished");
+                            }
+                        })
+                        .ok();
+                    }
+                }
+            }
+        })
+        .detach();
     }
 }

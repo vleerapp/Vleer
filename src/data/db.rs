@@ -50,12 +50,14 @@ impl Database {
         track_number: Option<i32>,
         year: Option<i32>,
         genre: Option<&str>,
+        replaygain_track_gain: Option<f32>,
+        replaygain_track_peak: Option<f32>,
     ) -> Result<Cuid, sqlx::Error> {
         let id = Cuid::new();
         let year_str = year.map(|y| y.to_string());
         sqlx::query(
-                "INSERT INTO songs (id, title, artist_id, album_id, file_path, duration, track_number, date, genre)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "INSERT INTO songs (id, title, artist_id, album_id, file_path, duration, track_number, date, genre, replaygain_track_gain, replaygain_track_peak)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             )
             .bind(&id)
             .bind(title)
@@ -66,6 +68,8 @@ impl Database {
             .bind(track_number)
             .bind(year_str)
             .bind(genre)
+            .bind(replaygain_track_gain)
+            .bind(replaygain_track_peak)
             .execute(&self.pool)
             .await?;
         Ok(id)
@@ -73,7 +77,7 @@ impl Database {
 
     pub async fn get_all_songs(&self) -> Result<Vec<Song>, sqlx::Error> {
         sqlx::query_as::<_, Song>(
-            "SELECT id, title, artist_id, album_id, file_path, genre, date, date_added, duration, cover, track_number, favorite
+            "SELECT id, title, artist_id, album_id, file_path, genre, date, date_added, duration, cover, track_number, favorite, replaygain_track_gain, replaygain_track_peak
              FROM songs"
         )
         .fetch_all(&self.pool)
@@ -89,7 +93,7 @@ impl Database {
 
     pub async fn get_song_by_path(&self, file_path: &str) -> Result<Option<Song>, sqlx::Error> {
         sqlx::query_as::<_, Song>(
-            "SELECT id, title, artist_id, album_id, file_path, genre, date, date_added, duration, cover, track_number, favorite
+            "SELECT id, title, artist_id, album_id, file_path, genre, date, date_added, duration, cover, track_number, favorite, replaygain_track_gain, replaygain_track_peak
              FROM songs WHERE file_path = ?"
         )
         .bind(file_path)
@@ -123,10 +127,12 @@ impl Database {
         track_number: Option<i32>,
         year: Option<i32>,
         genre: Option<&str>,
+        replaygain_track_gain: Option<f32>,
+        replaygain_track_peak: Option<f32>,
     ) -> Result<(), sqlx::Error> {
         let year_str = year.map(|y| y.to_string());
         sqlx::query(
-            "UPDATE songs SET title = ?, artist_id = ?, album_id = ?, duration = ?, track_number = ?, date = ?, genre = ?
+            "UPDATE songs SET title = ?, artist_id = ?, album_id = ?, duration = ?, track_number = ?, date = ?, genre = ?, replaygain_track_gain = ?, replaygain_track_peak = ?
              WHERE id = ?"
         )
         .bind(title)
@@ -136,6 +142,8 @@ impl Database {
         .bind(track_number)
         .bind(year_str)
         .bind(genre)
+        .bind(replaygain_track_gain)
+        .bind(replaygain_track_peak)
         .bind(id)
         .execute(&self.pool)
         .await?;
@@ -145,7 +153,7 @@ impl Database {
     pub async fn get_recently_played_songs(&self) -> Result<Vec<Song>, sqlx::Error> {
         sqlx::query_as::<_, Song>(
             "SELECT DISTINCT s.id, s.title, s.artist_id, s.album_id, s.file_path, s.genre, s.date, s.date_added,
-                    s.duration, s.cover, s.track_number, s.favorite
+                    s.duration, s.cover, s.track_number, s.favorite, s.replaygain_track_gain, s.replaygain_track_peak
              FROM playback_history ph
              JOIN songs s ON ph.song_id = s.id
              WHERE ph.event_type = 'PLAY'

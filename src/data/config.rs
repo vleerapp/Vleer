@@ -266,7 +266,6 @@ impl ConfigWatcher {
             None,
             move |result: DebounceEventResult| match result {
                 Ok(events) => {
-                    // Only trigger on actual data modifications
                     let has_data_change = events.iter().any(|event| {
                         matches!(
                             event.kind,

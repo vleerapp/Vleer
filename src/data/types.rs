@@ -31,6 +31,8 @@ pub struct Song {
     pub cover: Option<String>,
     pub track_number: Option<i32>,
     pub favorite: bool,
+    pub replaygain_track_gain: Option<f32>,
+    pub replaygain_track_peak: Option<f32>,
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]

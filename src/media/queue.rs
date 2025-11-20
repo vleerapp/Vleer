@@ -13,6 +13,8 @@ pub struct QueueItem {
     pub artist_name: Option<String>,
     pub album_name: Option<String>,
     pub duration: Option<i32>,
+    pub replaygain_track_gain: Option<f32>,
+    pub replaygain_track_peak: Option<f32>,
 }
 
 impl QueueItem {
@@ -24,6 +26,8 @@ impl QueueItem {
             artist_name: None,
             album_name: None,
             duration: None,
+            replaygain_track_gain: None,
+            replaygain_track_peak: None,
         }
     }
 
@@ -34,6 +38,8 @@ impl QueueItem {
         artist_name: Option<String>,
         album_name: Option<String>,
         duration: Option<i32>,
+        replaygain_track_gain: Option<f32>,
+        replaygain_track_peak: Option<f32>,
     ) -> Self {
         Self {
             song_id,
@@ -42,6 +48,8 @@ impl QueueItem {
             artist_name,
             album_name,
             duration,
+            replaygain_track_gain,
+            replaygain_track_peak,
         }
     }
 }

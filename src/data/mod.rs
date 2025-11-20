@@ -1,4 +1,5 @@
 pub mod db;
-pub mod scanner;
-pub mod settings;
+pub mod metadata;
+pub mod scan;
+pub mod config;
 pub mod types;
