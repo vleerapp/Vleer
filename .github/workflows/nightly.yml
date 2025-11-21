@@ -12,19 +12,12 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            args: ""
 
           - os: macos-latest
             target: aarch64-apple-darwin
-            args: ""
-
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            args: "--target x86_64-apple-darwin"
 
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            args: ""
 
     runs-on: ${{ matrix.os }}
 
@@ -53,7 +46,7 @@ jobs:
           version: "0.11"
 
       - name: Build and Package
-        run: cargo packager --release --target ${{ matrix.args }}
+        run: cargo packager --release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
