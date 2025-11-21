@@ -40,7 +40,10 @@ jobs:
         uses: cargo-bins/cargo-binstall@main
 
       - name: Install cargo-packager
-        run: cargo binstall cargo-packager -y
+        uses: baptiste0928/cargo-install@v3
+        with:
+          crate: cargo-packager
+          version: "0.11"
 
       - name: Build and Package
         run: cargo packager --release --target ${{ matrix.target }}
