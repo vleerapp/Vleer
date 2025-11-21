@@ -1,3 +1,8 @@
+#![cfg_attr(
+    all(not(test), not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
+
 mod ui;
 mod data;
 mod media;
