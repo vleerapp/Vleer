@@ -26,6 +26,7 @@ notify = "8.2.0"
 notify-debouncer-full = "0.6.0"
 
 [package.metadata.packager]
+before_packaging_command = "cargo build --release"
 product_name = "Vleer"
 identifier = "app.vleerapp.vleer"
 icons = ["assets/images/icon.png", "assets/images/icon.icns"]
