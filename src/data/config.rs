@@ -6,7 +6,7 @@ use anyhow::{Context, Result};
 use gpui::{App, Global};
 use notify_debouncer_full::{
     DebounceEventResult, new_debouncer,
-    notify::{event::ModifyKind, EventKind, RecursiveMode},
+    notify::{EventKind, RecursiveMode, event::ModifyKind},
 };
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -248,12 +248,7 @@ impl Config {
     }
 }
 
-pub struct ConfigWatcher {
-    _debouncer: notify_debouncer_full::Debouncer<
-        notify_debouncer_full::notify::RecommendedWatcher,
-        notify_debouncer_full::NoCache,
-    >,
-}
+pub struct ConfigWatcher {}
 
 impl ConfigWatcher {
     pub fn new(config_path: PathBuf) -> Result<(Self, mpsc::Receiver<()>)> {
@@ -293,11 +288,6 @@ impl ConfigWatcher {
         debouncer.watch(&config_path, RecursiveMode::NonRecursive)?;
         debug!("Watching config file: {:?}", config_path);
 
-        Ok((
-            Self {
-                _debouncer: debouncer,
-            },
-            rx,
-        ))
+        Ok((Self {}, rx))
     }
 }
